@@ -115,7 +115,7 @@ public class TestsViewModel : ViewModelBase
     public Task RunTestsAsync(TestNodeViewModel testNodeViewModel)
         => RunTestCases(testNodeViewModel.EnumerateTestCases().ToList(), interactive: false);
 
-    // Headless run narrowed by a vstest --filter predicate (Android/iOS launcher passes the
+    // Headless run narrowed by a vstest --filter predicate (Android launcher passes the
     // expression as a launch parameter). Mirrors the desktop StrideXunitRunner.RunHeadless filter.
     public Task RunFilteredAsync(Func<ITestCase, bool> predicate)
         => RunTestCases(EnumerateAllTestCases().Where(c => predicate(c.TestCase)).ToList(), interactive: false);
@@ -299,7 +299,7 @@ public class TestsViewModel : ViewModelBase
                         }
                     },
                 };
-                // Headless mode (Android/iOS launcher + desktop STRIDE_TESTS_INTERACTIVE!=1)
+                // Headless mode (Android launcher + desktop STRIDE_TESTS_INTERACTIVE!=1)
                 // needs a TRX for the host driver to parse. Compose alongside the UI sink so
                 // both observe the same test stream.
                 using var trxSink = App.HeadlessMode ? new TrxWriter() : null;

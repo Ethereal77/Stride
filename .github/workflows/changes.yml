@@ -12,10 +12,6 @@ on:
     outputs:
       runtime:
         value: ${{ jobs.detect.outputs.runtime }}
-      ios:
-        value: ${{ jobs.detect.outputs.ios }}
-      ios-tests:
-        value: ${{ jobs.detect.outputs.ios-tests }}
       android:
         value: ${{ jobs.detect.outputs.android }}
       full:
@@ -30,8 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runtime: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.runtime || 'true' }}
-      ios: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.ios || 'true' }}
-      ios-tests: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.ios-tests || 'true' }}
       android: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.android || 'true' }}
       full: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.full || 'true' }}
     steps:
@@ -147,26 +141,6 @@ jobs:
               - 'deps/**'
               - 'tests/**'
               - 'build/Stride.Runtime.slnf'
-            ios:
-              - 'sources/engine/**'
-              - 'sources/core/**'
-              - 'sources/native/**'
-              - 'sources/shared/**'
-              - 'sources/sdk/**'
-              - 'deps/**'
-              - 'build/Stride.iOS.slnf'
-            # Strictly iOS-specific paths: shared engine / MoltenVK / AVFoundation code is
-            # already covered per-PR by macOS-Tests-Game on the cheaper macOS-vs-iOS surface.
-            ios-tests:
-              - 'sources/engine/Stride.Games/**'
-              - 'sources/**/*.iOS.*'
-              - 'sources/**/Platforms/iOS/**'
-              - 'sources/native/**'
-              - 'sources/sdk/**'
-              - 'tests/ios/**'
-              - 'tests/**/iOS.Vulkan/**'
-              - 'build/Stride.iOS.slnf'
-              - '.github/workflows/test-ios-game.yml'
             android:
               - 'sources/engine/Stride.Games/**'
               - 'sources/**/*.Android.*'

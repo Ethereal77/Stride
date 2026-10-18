@@ -1,6 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-#if STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS
+#if STRIDE_PLATFORM_MACOS
 #pragma warning disable SA1300
 using System;
 using System.Diagnostics;
@@ -15,14 +15,9 @@ namespace Stride.Audio
     /// </summary>
     internal class Celt : IDisposable
     {
-        // iOS: static-only linkage, libCelt.a is force-loaded into the app binary, __Internal hits dlsym(RTLD_DEFAULT).
         // macOS: libstrideaudio.dylib statically embeds libCelt at engine build time, exposing opus_custom_* as
         // dynamic exports — DllImport("strideaudio") resolves them at runtime via the loaded dylib.
-#if STRIDE_PLATFORM_IOS
-        private const string LibCelt = "__Internal";
-#else
         private const string LibCelt = "strideaudio";
-#endif
 
         // OPUS control request codes, copied from deps/Celt/include/opus_defines.h.
         private const int OPUS_RESET_STATE = 4028;

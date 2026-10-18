@@ -336,8 +336,7 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
         (".Windows", PlatformType.Windows),
         (".Linux",   PlatformType.Linux),
         (".macOS",   PlatformType.macOS),
-        (".iOS",     PlatformType.iOS),
-        (".Android", PlatformType.Android),
+        (".Android", PlatformType.Android)
     };
 
     /// <summary>

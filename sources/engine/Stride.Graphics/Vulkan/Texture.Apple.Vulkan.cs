@@ -1,6 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-#if STRIDE_GRAPHICS_API_VULKAN && (STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS)
+#if STRIDE_GRAPHICS_API_VULKAN && STRIDE_PLATFORM_MACOS
 using System;
 using System.Runtime.InteropServices;
 using Vortice.Vulkan;

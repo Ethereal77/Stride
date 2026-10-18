@@ -7,11 +7,7 @@ namespace Stride.VirtualReality
 {
     internal static class NativeInvoke
     {
-#if STRIDE_PLATFORM_IOS
-        internal const string Library = "__Internal";
-#else
         internal const string Library = "libstridevr";
-#endif
 
         internal static void PreLoad()
         {

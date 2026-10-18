@@ -38,7 +38,7 @@ async function init() {
 
 // Re-query /api/platforms across all suites and rebuild the dropdown. Called from init and
 // after any source-add — server-side returns platforms from gold + every configured source,
-// so a freshly-added Local pointing at tests/local/ surfaces its new platforms (e.g. iOS/Vulkan)
+// so a freshly-added Local pointing at tests/local/ surfaces its new platforms (e.g. Windows/Vulkan)
 // without forcing a page reload. When `autoSelect` is true (after a source add/remove), we
 // auto-jump to the first platform that has source images so the user doesn't land on an
 // empty bucket. On the initial F5, we preserve whatever currentPlatform was selected even
@@ -1426,7 +1426,7 @@ async function loadCiRuns() {
     const res = await fetch('/api/ci/runs?limit=30');
     const allRuns = await res.json();
     // Deduplicate by (repo, SHA, workflow) so each platform-specific workflow at a SHA gets
-    // its own row (a commit with separate iOS + Android dispatches shows both). The "CI"
+    // its own row (a commit with separate Windows + Android dispatches shows both). The "CI"
     // umbrella collapses to one row across re-runs. Different forks at the same SHA also get
     // separate rows. Latest run wins per key (allRuns is created_at desc).
     const seen = new Map();

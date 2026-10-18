@@ -16,7 +16,7 @@ public static class StrideXunitRunner
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
-#if !ANDROID && !IOS
+#if !ANDROID
     public static void Main(string[] args, Action<bool>? setInteractiveMode = null, Action<bool>? setForceSaveImage = null, Action<string?>? setRenderDocMode = null, Action<Action<ImageCompareResult>>? subscribeImageComparison = null)
     {
         // Stash on App's static slots — Android's MainActivity assigns the same way, so the App
@@ -158,7 +158,7 @@ public static class StrideXunitRunner
     private static List<Assembly> DiscoverTestAssemblies()
     {
         // Android has no managed entry point, so Assembly.GetEntryAssembly() returns null; the
-        // launcher sets App.TestAssembly to the host assembly instead. Desktop/iOS keep a real
+        // launcher sets App.TestAssembly to the host assembly instead. Desktop keep a real
         // entry assembly. Without this fallback the null deref aborts the headless run silently.
         var entry = Assembly.GetEntryAssembly() ?? App.TestAssembly
             ?? throw new InvalidOperationException("No test host assembly: GetEntryAssembly() and App.TestAssembly are both null.");
@@ -212,7 +212,7 @@ public static class StrideXunitRunner
         return null;
     }
 
-    // Shared by the desktop --filter args path and the Android/iOS headless launcher, which
+    // Shared by the desktop --filter args path and the Android headless launcher, which
     // passes the raw expression as an intent/launch parameter (App.HeadlessFilter).
     internal static Func<ITestCase, bool>? ParseVstestFilter(string expr)
     {
@@ -256,9 +256,8 @@ public static class StrideXunitRunner
     }
 
     // Headless trx: Android writes to internal FilesDir (targetSdk 30+ scoped storage
-    // blocks app writes through the FUSE-bound external-files path); iOS writes to the
-    // sandboxed Documents (bundle dir is read-only); host scripts pull via
-    // `adb shell run-as <pkg>` / `xcrun simctl get_app_container ... data` respectively.
+    // blocks app writes through the FUSE-bound external-files path); host scripts pull via
+    // `adb shell run-as <pkg>`.
     // Desktop drops it beside the test binary so `dotnet test --logger trx` parity tools
     // find it without extra config.
     internal static string GetTrxPath(Assembly testAssembly)
@@ -266,9 +265,6 @@ public static class StrideXunitRunner
         var name = testAssembly.GetName().Name ?? "tests";
 #if ANDROID
         var root = Android.App.Application.Context.FilesDir!.AbsolutePath;
-        return Path.Combine(root, "tests", "local", name, $"{name}.trx");
-#elif IOS
-        var root = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         return Path.Combine(root, "tests", "local", name, $"{name}.trx");
 #else
         var binDir = Path.GetDirectoryName(testAssembly.Location) ?? AppContext.BaseDirectory;
@@ -319,7 +315,7 @@ public static class StrideXunitRunner
         return Environment.GetEnvironmentVariable("STRIDE_TESTS_INTERACTIVE") != "1";
     }
 
-#if !ANDROID && !IOS
+#if !ANDROID
     // Avalonia configuration, don't remove; also used by visual designer.
     // Mobile platforms wire Avalonia through their own AppDelegate / Activity (CustomizeAppBuilder
     // overrides), not through this desktop BuildAvaloniaApp helper.

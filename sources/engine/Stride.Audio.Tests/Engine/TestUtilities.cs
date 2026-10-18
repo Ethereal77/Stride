@@ -31,9 +31,8 @@ namespace Stride.Audio.Tests.Engine
                 game.AfterDrawing += onAfterDraw;
 
                 // DesktopSDL doesn't work for xunit on macOS (AppKit main-thread requirement),
-                // Android (SDL can't init its window without an Activity), or iOS (SDL_VideoInit
-                // calls UIApplication.setIdleTimerDisabled which asserts on non-main thread).
-                var context = OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()
+                // Android (SDL can't init its window without an Activity).
+                var context = OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()
                     ? GameContextFactory.NewGameContext(AppContextType.Headless)
                     : null;
                 game.Run(context);

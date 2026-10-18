@@ -85,10 +85,6 @@ public static partial class VirtualFileSystem
         ApplicationData = new FileSystemProvider("/data", Path.Combine(PlatformFolders.ApplicationDataDirectory, PlatformFolders.ApplicationDataSubDirectory));
 #endif
         ApplicationCache = new FileSystemProvider("/cache", PlatformFolders.ApplicationCacheDirectory);
-#if STRIDE_PLATFORM_IOS
-            // On iOS, we don't want cache folder to be cleared by the OS.
-            ((FileSystemProvider)ApplicationCache).AutoSetSkipBackupAttribute = true;
-#endif
         ApplicationRoaming = new FileSystemProvider("/roaming", PlatformFolders.ApplicationRoamingDirectory);
         ApplicationLocal = new FileSystemProvider("/local", PlatformFolders.ApplicationLocalDirectory);
         ApplicationTemporary = new FileSystemProvider("/tmp", PlatformFolders.ApplicationTemporaryDirectory);

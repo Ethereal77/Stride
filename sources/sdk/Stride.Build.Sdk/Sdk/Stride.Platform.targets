@@ -27,13 +27,6 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Platform Defines - iOS -->
-  <!-- ================================================================ -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)'">
-    <StridePlatformDefines>STRIDE_PLATFORM_MONO_MOBILE;STRIDE_PLATFORM_IOS</StridePlatformDefines>
-  </PropertyGroup>
-
-  <!-- ================================================================ -->
   <!-- Platform Defines - macOS -->
   <!-- ================================================================ -->
   <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
@@ -81,19 +74,6 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
-
-  <!-- ================================================================ -->
-  <!-- iOS-Specific Build Properties -->
-  <!-- ================================================================ -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)'">
-    <Platform Condition="'$(Platform)' == ''">iPhone</Platform>
-    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-  </PropertyGroup>
-  <!-- Create empty platform configuration so MSBuild/VS Configuration Manager knows about them -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' And '$(Configuration)|$(Platform)' == 'Debug|iPhone'" />
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' And '$(Configuration)|$(Platform)' == 'Release|iPhone'" />
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' And '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator'" />
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' And '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator'" />
 
   <!-- UWP platform support intentionally omitted (UWP is being phased out) -->
 

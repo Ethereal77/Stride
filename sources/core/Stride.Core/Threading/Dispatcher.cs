@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 #if PROFILING_SCOPES
 using System.Reflection;
-#endif // PROFILING_SCOPES
+#endif
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using Stride.Core.Collections;
@@ -17,7 +17,7 @@ namespace Stride.Core.Threading;
 
 public static class Dispatcher
 {
-#if STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_ANDROID
+#if STRIDE_PLATFORM_ANDROID
     public static readonly int MaxDegreeOfParallelism = 1;
 #else
     public static int MaxDegreeOfParallelism
@@ -28,7 +28,7 @@ public static class Dispatcher
             field = value;
             OnMaxDegreeOfParallelismChanged?.Invoke();
         }
-    } = int.TryParse(Environment.GetEnvironmentVariable("STRIDE_MAX_PARALLELISM"), out var envValue) && envValue > 0 
+    } = int.TryParse(Environment.GetEnvironmentVariable("STRIDE_MAX_PARALLELISM"), out var envValue) && envValue > 0
         ? envValue
         : Environment.ProcessorCount;
 #endif
@@ -667,7 +667,7 @@ public static class Dispatcher
                     caller = new StackFrame(skipFrames++, true).GetMethod();
                 }
                 while (caller.DeclaringType == typeof(Dispatcher));
-                
+
                 node = nodes.GetOrAdd(Action.Method, key => new DispatcherNode());
                 node.Caller = caller;
             }

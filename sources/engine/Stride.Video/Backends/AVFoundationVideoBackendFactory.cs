@@ -10,7 +10,7 @@ namespace Stride.Video.Backends;
 public sealed class AVFoundationVideoBackendFactory : VideoBackendFactory
 {
     public override string Name => "AVFoundation";
-    public override int Priority => 200; // platform-native HW decode on iOS/macOS
+    public override int Priority => 200; // platform-native HW decode on macOS
     public override bool IsSupported(GraphicsDevice device) => true;
 
     public override VideoBackend CreateBackend(VideoInstance instance) => new AVFoundationVideoBackend(instance);

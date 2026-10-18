@@ -45,7 +45,7 @@ internal static class Module
     // resolve the Lavapipe type ref at Initialize's JIT time and load the assembly on the GPU
     // path too, racing BundledMoltenVK for VK_DRIVER_FILES.
     // Desktop only: the Lavapipe package ships win/linux/osx software-Vulkan (see csproj) and
-    // throws from its ModuleInitializer on mobile; Android/iOS provide Vulkan via emulator/device.
+    // throws from its ModuleInitializer on mobile; Android provide Vulkan via emulator/device.
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ConfigureLavapipe()
     {

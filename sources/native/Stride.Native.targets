@@ -5,7 +5,7 @@
     <!-- ignore bin and obj folders -->
     <StrideNativeDefaultItemExcludes>$(StrideNativeDefaultItemExcludes);$(BaseOutputPath)/**</StrideNativeDefaultItemExcludes>
     <StrideNativeDefaultItemExcludes>$(StrideNativeDefaultItemExcludes);$(BaseIntermediateOutputPath)/**</StrideNativeDefaultItemExcludes>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
     <StrideNativeCFile Include="**\*.c;**\*.cpp" Exclude="$(StrideNativeDefaultItemExcludes)" />
     <StrideNativeHFile Include="**\*.h;**\*.hpp" Exclude="$(StrideNativeDefaultItemExcludes)" />
@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <!--Use "-v" to debug the tooling -->
-    <StrideNativeToolingDebug></StrideNativeToolingDebug> 
+    <StrideNativeToolingDebug></StrideNativeToolingDebug>
 
     <!-- Windows hosts get the toolchain from Stride.Dependencies.LLVM.Windows (referenced
          in Stride.Build.Sdk); other hosts use the system clang/lld. -->
@@ -25,8 +25,7 @@
     <StrideNativeClangCommand>clang</StrideNativeClangCommand>
     <StrideNativeClangCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(StrideNativeLlvmDir)clang.exe</StrideNativeClangCommand>
 
-    <!-- ar produces the static archives (.a) consumed by the iOS app linker.
-         macOS/Linux use system ar (BSD-format on macOS, but the Apple linker only
+    <!-- macOS/Linux use system ar (BSD-format on macOS, but the Apple linker only
          needs Mach-O archives, which both produce). Windows host uses the bundled
          llvm-ar with the bsd format flag to match. -->
     <StrideNativeArCommand>ar</StrideNativeArCommand>
@@ -36,7 +35,7 @@
 
     <StrideNativeClang>$(StrideNativeToolingDebug) -Wno-ignored-attributes -Wno-delete-non-virtual-dtor -Wno-macro-redefined -I&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath&quot; -I&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\standard&quot;</StrideNativeClang>
     <StrideNativeClangCPP>-std=c++11 -fno-rtti -fno-exceptions</StrideNativeClangCPP>
-  
+
     <!--<StrideNativeOutputPath>$([MSBuild]::MakeRelative('$(OutputPath)', '$(StridePackageStridePlatformBin)\'))</StrideNativeOutputPath>-->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>.so; .a; $(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
@@ -93,7 +92,7 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  
+
   <!-- Define default CPU architectures.
        Each desktop RID is gated by both StridePlatforms membership (user opt-in) and the host
        OS being able to produce it. Today only the Windows host has the bundled toolchain to
@@ -107,9 +106,6 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == '$(StrideFrameworkAndroid)'">
     <StrideNativeCPU Include="android-arm64;android-arm;android-x86;android-x64" LibraryExtension=".so" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == '$(StrideFrameworkiOS)'">
-    <StrideNativeCPU Include="ios-arm64;iossimulator-arm64" LibraryExtension=".a" />
   </ItemGroup>
   <!-- Only a macOS host builds the osx-arm64 dylib (system clang, CompileNativeClang_macOSOnMac); declaring it on
        another host would pack a file that never exists. -->
@@ -145,7 +141,7 @@
     <UpToDateCheckInput Include="@(StrideNativeHFile)" />
     <UpToDateCheckOutput Include="@(StrideNativeOutput)" />
   </ItemGroup>
-  
+
   <!-- Update StrideNativeOutput.Link and add to StrideNativeLib. Runs before _StrideGenerateDependenciesCore
        (not just the targets depending on it) so the .ssdeps generator never sees StrideNativeLib empty and deletes it. -->
   <Target Name="_StrideRegisterNativeOutputs" Condition="'$(TargetFramework)' != ''" BeforeTargets="_StrideGenerateDependenciesCore;_StrideRegisterDependenciesOutputs;_StrideGenerateDependencies" DependsOnTargets="_StrideResolveWindowsArm64Toolchain">
@@ -195,7 +191,7 @@
   <!--<Target Name="_StrideGenerateNativeFile" BeforeTargets="Build">
     <Touch AlwaysCreate="true" Files="$(OutputPath)\$(StrideNativeOutputName).ss_native"/>
   </Target>-->
-  
+
 
   <!-- TODO: Target uses vcxproj. This blocks the use of dotnet core msbuild-->
   <Target Name="CompileNativeClang_Windows" Inputs="@(StrideNativeCFile);@(StrideNativeHFile)" Outputs="@(StrideNativeOutput)" Condition="('$(TargetFramework)' == '$(StrideFramework)') And $([MSBuild]::IsOSPlatform('Windows')) And $(_StridePlatforms.Contains(';Windows;')) And $(DesignTimeBuild) != true And $(BuildingProject) != false And '$(StrideNativeBuildModeMsvc)' == 'true'" BeforeTargets="CoreCompile" DependsOnTargets="_StrideRegisterNativeOutputs">
@@ -220,60 +216,6 @@
     <Exec Command="&quot;$(StrideNativeClangCommand)&quot; --driver-mode=cl $(StrideNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\ARM\%(StrideNativeCFile.Filename).obj&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m32 --target=thumbv7-windows-msvc" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="StrideNativeOutputName=$(StrideNativeOutputName);StrideNativeOutputDir=$(StrideNativeOutputPath)\ARM;StrideDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;StrideNativePathLibs=libNativePath.lib $(StrideNativePathLibsUWP);StrideNativeProjectFolder=$(ProjectDir);StrideNativeProjectObjFolder=$(OutputObjectPath)\ARM;Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
 
-  </Target>
-
-  <!-- iOS: arm64 device + arm64 simulator, each as a single-arch static archive.
-       Modern iOS dropped 32-bit and Intel-simulator support; the only remaining
-       targets are arm64-apple-ios (device) and arm64-apple-ios-simulator (Apple
-       Silicon simulator). Device and simulator slices must be SEPARATE archives
-       (different platform load commands), so we no longer lipo-merge them. -->
-  <Target Name="CompileNativeClang_iOS" Inputs="@(StrideNativeCFile);@(StrideNativeHFile)" Outputs="@(StrideNativeOutput)" Condition="'$(TargetFramework)' == '$(StrideFrameworkiOS)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_StrideRegisterNativeOutputs">
-    <MakeDir Directories="$(OutputObjectPath)/ios-arm64;$(OutputObjectPath)/iossimulator-arm64;$(StrideNativeOutputPath)/runtimes/ios-arm64/native/;$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/"/>
-
-    <!-- On macOS host, system clang defaults to the MacOSX SDK; without an explicit -isysroot
-         for the iOS SDKs the compile emits objects against macOS headers (and a -Wincompatible-sysroot
-         warning) and the resulting .a fails to link into an iOS app. Resolve via xcrun.
-         On Windows host the bundled clang ships its own sysroot logic, so leave the flags empty. -->
-    <Exec Command="xcrun --sdk iphoneos --show-sdk-path" ConsoleToMSBuild="true" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-      <Output TaskParameter="ConsoleOutput" PropertyName="_StrideIOSDeviceSdkPath" />
-    </Exec>
-    <Exec Command="xcrun --sdk iphonesimulator --show-sdk-path" ConsoleToMSBuild="true" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-      <Output TaskParameter="ConsoleOutput" PropertyName="_StrideIOSSimSdkPath" />
-    </Exec>
-    <PropertyGroup>
-      <_StrideIOSDeviceIsysroot Condition="'$(_StrideIOSDeviceSdkPath)' != ''">-isysroot &quot;$(_StrideIOSDeviceSdkPath)&quot;</_StrideIOSDeviceIsysroot>
-      <_StrideIOSSimIsysroot Condition="'$(_StrideIOSSimSdkPath)' != ''">-isysroot &quot;$(_StrideIOSSimSdkPath)&quot;</_StrideIOSSimIsysroot>
-    </PropertyGroup>
-
-    <!-- arm64 device. Forward slashes throughout so the same paths work on both Windows host
-         (cmd.exe accepts /) and macOS host (where \ would be passed through as literal chars
-         to ar/clang and produce backslash-named files instead of nested directories). -->
-    <Exec Condition="'%(StrideNativeCFile.Extension)' != '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClang) -o &quot;$(OutputObjectPath)/ios-arm64/%(StrideNativeCFile.Filename).o&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -DIOS -mios-version-min=12.0 -target arm64-apple-ios $(_StrideIOSDeviceIsysroot)" />
-    <Exec Condition="'%(StrideNativeCFile.Extension)' == '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClangCPP) $(StrideNativeClang) -o &quot;$(OutputObjectPath)/ios-arm64/%(StrideNativeCFile.Filename).o&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -DIOS -mios-version-min=12.0 -target arm64-apple-ios $(_StrideIOSDeviceIsysroot)" />
-    <Exec Command="&quot;$(StrideNativeArCommand)&quot; $(StrideNativeArArgs) &quot;$(StrideNativeOutputPath)/runtimes/ios-arm64/native/$(StrideNativeOutputName).a&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)/ios-arm64/%(Filename).o&quot;', ' ')" />
-
-    <!-- arm64 simulator -->
-    <Exec Condition="'%(StrideNativeCFile.Extension)' != '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClang) -o &quot;$(OutputObjectPath)/iossimulator-arm64/%(StrideNativeCFile.Filename).o&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -DIOS -mios-simulator-version-min=12.0 -target arm64-apple-ios-simulator $(_StrideIOSSimIsysroot)" />
-    <Exec Condition="'%(StrideNativeCFile.Extension)' == '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClangCPP) $(StrideNativeClang) -o &quot;$(OutputObjectPath)/iossimulator-arm64/%(StrideNativeCFile.Filename).o&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -DIOS -mios-simulator-version-min=12.0 -target arm64-apple-ios-simulator $(_StrideIOSSimIsysroot)" />
-    <Exec Command="&quot;$(StrideNativeArCommand)&quot; $(StrideNativeArArgs) &quot;$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/$(StrideNativeOutputName).a&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)/iossimulator-arm64/%(Filename).o&quot;', ' ')" />
-
-    <!-- Stage prebuilt NativePath libs alongside our archive. Each RID has its
-         own slice (device vs simulator differ by Mach-O platform tag, not arch). -->
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/ios-arm64/libNativePath.a;@(StrideNativePathLibsiOSArm64)" DestinationFolder="$(StrideNativeOutputPath)/runtimes/ios-arm64/native/" />
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/iossimulator-arm64/libNativePath.a;@(StrideNativePathLibsiOSSimulatorArm64)" DestinationFolder="$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/" />
-
-    <ItemGroup>
-      <StrideNativeLib Include="$(StrideNativeOutputPath)/runtimes/ios-arm64/native/libNativePath.a" />
-      <StrideNativeLib Include="$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/libNativePath.a" />
-      <StrideNativeLib Include="@(StrideNativePathLibsiOSArm64->'$(StrideNativeOutputPath)/runtimes/ios-arm64/native/%(Filename)%(Extension)')" />
-      <StrideNativeLib Include="@(StrideNativePathLibsiOSSimulatorArm64->'$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/%(Filename)%(Extension)')" />
-    </ItemGroup>
-
-  </Target>
-
-  <Target Name="CompileNativeClang_iOS_Clean" Condition="'$(TargetFramework)' == '$(StrideFrameworkiOS)'" BeforeTargets="Clean">
-    <Delete Files="@(StrideNativePathLibsiOSArm64->'$(StrideNativeOutputPath)/runtimes/ios-arm64/native/%(Filename).a', ' ')" />
-    <Delete Files="@(StrideNativePathLibsiOSSimulatorArm64->'$(StrideNativeOutputPath)/runtimes/iossimulator-arm64/native/%(Filename).a', ' ')" />
   </Target>
 
   <Target Name="CompileNativeClang_Android" Inputs="@(StrideNativeCFile);@(StrideNativeHFile)" Outputs="@(StrideNativeOutput)" Condition="'$(TargetFramework)' == '$(StrideFrameworkAndroid)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_StrideRegisterNativeOutputs">
@@ -347,9 +289,9 @@
     <Exec Command="&quot;$(StrideNativeLldCommand)&quot; -flavor darwin -arch x86_64 -w -flat_namespace -undefined dynamic_lookup -platform_version macos 10.11 10.11 -dylib -o &quot;$(StrideNativeOutputPath)\runtimes\osx-x64\native\$(StrideNativeOutputName).dylib&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)\osx-x64\%(Filename)_x64.o&quot;', ' ') @(StrideNativePathLibsmacOS->'&quot;$(MSBuildThisFileDirectory)..\..\deps\NativePath\dotnet\osx-x64\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\NativePath\dotnet\osx-x64\libNativePath.a&quot;" />
 
   </Target>
-  
+
   <!-- macOS host: system clang (no LLD). Celt and NativePath are true-macOS-arm64 rebuilds
-       under deps/NativePath/dotnet/osx-arm64/ (iOS objects refuse to link into macOS dylibs).
+       under deps/NativePath/dotnet/osx-arm64/.
        Fires for net10.0 (with -p:StridePlatforms=macOS opt-in) and net10.0-macos (TFM is
        definitionally macOS, no opt-in gate). Net effect: each TFM lays its own dylib down
        in bin/<TFM>/runtimes/osx-arm64/native/, so ProjectReference consumers building for
@@ -362,8 +304,7 @@
     <!-- -Wl,-force_load on StrideNativePathLibs* archives (e.g. libCelt.a): without it the dylib
          linker strips symbols the .a provides that no native object references, even though
          managed P/Invoke needs them at runtime — e.g. stride_celt_get_lookahead, which is
-         only called from Celt.AVFoundation.cs. iOS hits the same need via NativeReference
-         ForceLoad=True on the consumer .app link; macOS embeds the archive at dylib-build
+         only called from Celt.AVFoundation.cs.; macOS embeds the archive at dylib-build
          time, so we re-export via the linker here. -->
     <Exec Command="clang++ -arch arm64 -dynamiclib -o &quot;$(StrideNativeOutputPath)/runtimes/osx-arm64/native/$(StrideNativeOutputName).dylib&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)/osx-arm64/%(Filename)_arm64.o&quot;', ' ') @(StrideNativePathLibsmacOSArm64->'-Wl,-force_load,&quot;%(FullPath)&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\NativePath\dotnet\osx-arm64\libNativePath.a&quot;" />
   </Target>

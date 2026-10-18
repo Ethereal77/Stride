@@ -33,12 +33,7 @@ namespace Stride.Assets.Tests2
             { Tuple.Create(PlatformType.Android, AlphaFormat.None), PixelFormat.ASTC_6x6_UNorm },
             { Tuple.Create(PlatformType.Android, AlphaFormat.Mask), PixelFormat.ASTC_6x6_UNorm },
             { Tuple.Create(PlatformType.Android, AlphaFormat.Explicit), PixelFormat.ASTC_6x6_UNorm },
-            { Tuple.Create(PlatformType.Android, AlphaFormat.Interpolated), PixelFormat.ASTC_6x6_UNorm },
-
-            { Tuple.Create(PlatformType.iOS, AlphaFormat.None), PixelFormat.ASTC_6x6_UNorm },
-            { Tuple.Create(PlatformType.iOS, AlphaFormat.Mask), PixelFormat.ASTC_6x6_UNorm },
-            { Tuple.Create(PlatformType.iOS, AlphaFormat.Explicit), PixelFormat.ASTC_6x6_UNorm },
-            { Tuple.Create(PlatformType.iOS, AlphaFormat.Interpolated), PixelFormat.ASTC_6x6_UNorm },
+            { Tuple.Create(PlatformType.Android, AlphaFormat.Interpolated), PixelFormat.ASTC_6x6_UNorm }
         };
 
         private static void CheckTextureFormat(Game game, string textureUrl, AlphaFormat expectedFormat)

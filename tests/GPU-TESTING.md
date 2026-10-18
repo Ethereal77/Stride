@@ -31,11 +31,11 @@ This sets `STRIDE_TESTS_GPU=1`, which skips software rendering. Note that GPU re
 
 Gold images are stored under `tests/<TestProject>/Windows.Vulkan/Lavapipe/` (and `Linux.Vulkan/Lavapipe/`, plus `Android.Vulkan/Lavapipe-LinuxHost/` and `Lavapipe-WindowsHost/` for the emulator).
 
-Lavapipe is included automatically when building with `StrideGraphicsApi=Vulkan`. When software rendering is active (the default), the test framework invokes the package's module initializer, which sets `VK_DRIVER_FILES` so the Vulkan loader picks Lavapipe — no registry or environment setup needed locally. This path is desktop-only (Windows/Linux/macOS); Android and iOS get Vulkan from the emulator/device.
+Lavapipe is included automatically when building with `StrideGraphicsApi=Vulkan`. When software rendering is active (the default), the test framework invokes the package's module initializer, which sets `VK_DRIVER_FILES` so the Vulkan loader picks Lavapipe — no registry or environment setup needed locally. This path is desktop-only (Windows/Linux/macOS); Android gets Vulkan from the emulator/device.
 
-### macOS / iOS — MoltenVK
+### macOS — MoltenVK
 
-macOS defaults to the **real GPU** via [MoltenVK](https://github.com/KhronosGroup/MoltenVK) (Vulkan-on-Metal), since that's the real-world Apple renderer; its gold lives under `macOS.Vulkan/MoltenVK/` and per-chip buckets like `macOS.Vulkan/Apple M4/`. Set `STRIDE_TESTS_GPU=0` to force macOS onto Lavapipe instead. iOS uses MoltenVK on-device (`iOS.Vulkan/MoltenVK/`).
+macOS defaults to the **real GPU** via [MoltenVK](https://github.com/KhronosGroup/MoltenVK) (Vulkan-on-Metal), since that's the real-world Apple renderer; its gold lives under `macOS.Vulkan/MoltenVK/` and per-chip buckets like `macOS.Vulkan/Apple M4/`. Set `STRIDE_TESTS_GPU=0` to force macOS onto Lavapipe instead.
 
 ### Direct3D — WARP
 

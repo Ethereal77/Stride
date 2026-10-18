@@ -101,10 +101,10 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Install Apple Workloads
-        # VS provisions the android workload but not ios/macos.
+        # VS provisions the android workload but not macos.
         uses: ./.github/actions/stride-workload
         with:
-          workloads: ios macos
+          workloads: macos
 
       - name: Build Package
         run: |
@@ -112,7 +112,7 @@ jobs:
             -t:Package `
             --no-restore `
             -m -nr:false `
-            -p:StridePlatforms=Windows%3BLinux%3BAndroid%3BiOS%3BmacOS `
+            -p:StridePlatforms=Windows%3BLinux%3BAndroid%3BmacOS `
             -p:StrideGraphicsApiDependentBuildAll=true `
             -p:StrideSign=false `
             -p:StrideBuildPrerequisitesInstaller=false `

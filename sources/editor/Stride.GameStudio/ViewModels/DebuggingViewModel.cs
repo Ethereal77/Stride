@@ -1,14 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Microsoft.Build.Execution;
 using Microsoft.CodeAnalysis;
 using Stride.Core.Assets;
@@ -547,10 +541,6 @@ namespace Stride.GameStudio.ViewModels
                             extraProperties.Add("AdbTarget", "-s " + androidDevices[0].Serial);
 
                             extraProperties.Add("SolutionPlatform", "Android");
-                            break;
-                        case PlatformType.iOS:
-                            platformName = "iPhone";
-                            extraProperties.Add("SolutionPlatform", "iPhone");
                             break;
 
                         case PlatformType.Linux:

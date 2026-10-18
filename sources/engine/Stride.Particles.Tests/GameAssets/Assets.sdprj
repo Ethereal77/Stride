@@ -18,11 +18,6 @@ BuildConfiguration:
             GraphicsPlatform: OpenGLES20
             GraphicsProfile: Level_9_1
             OutputDirectory: ../obj/Android-AnyCPU-OpenGLES/assets/data
-        iOS: !StrideProjectBuildProfile
-            Platform: iOS
-            GraphicsPlatform: OpenGLES20
-            GraphicsProfile: Level_9_1
-            OutputDirectory: ../../../../Bin/iOS-AnyCPU-OpenGLES/data/Stride.Input.Tests
 ExplicitFolders: []
 PluginReferences: []
 PackageReferences: []

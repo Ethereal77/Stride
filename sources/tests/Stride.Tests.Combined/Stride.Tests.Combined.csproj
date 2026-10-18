@@ -7,7 +7,7 @@
     <AssemblyName>Stride.Tests.Combined</AssemblyName>
     <RootNamespace>Stride.Tests.Combined</RootNamespace>
     <!-- StrideTestPlatforms defaults from StridePlatforms via the MultiPlatform Tests SDK; pass
-         -p:StridePlatforms=<iOS|Android|macOS|Windows|Linux> to target a different platform. -->
+         -p:StridePlatforms=<Android|macOS|Windows|Linux> to target a different platform. -->
     <StrideCompileAssets>false</StrideCompileAssets>
     <StrideGraphicsRegression>true</StrideGraphicsRegression>
     <!-- Forwarded to each suite ref: drop its launcher/entry point but keep asset compile +
@@ -120,20 +120,20 @@
           Condition="Exists('%(_StrideSuiteAliases.Identity)')" />
   </Target>
 
-  <!-- iOS/Android: package the collected data/db tree into the .app/APK. CompilerApp.targets'
+  <!-- Android: package the collected data/db tree into the .app/APK. CompilerApp.targets'
        deploy targets only fire when StrideCompileAssets=true; the meta consumes per-suite
        outputs instead, so do the platform packaging here. -->
   <Target Name="_StrideEmitCombinedAssetItems"
           AfterTargets="_StrideCollectSuiteBundles"
           BeforeTargets="_CollectBundleResources;_GenerateAndroidAssetsDir"
-          Condition="'$(StridePlatform)' == 'iOS' Or '$(StridePlatform)' == 'macOS' Or '$(StridePlatform)' == 'Android'">
+          Condition="'$(StridePlatform)' == 'macOS' Or '$(StridePlatform)' == 'Android'">
     <ItemGroup>
       <_StrideCombinedAssetFile Include="$(OutputPath)data\db\**\*.*" />
     </ItemGroup>
     <AssignTargetPath Files="@(_StrideCombinedAssetFile)" RootFolder="$([System.IO.Path]::GetFullPath('$(OutputPath)'))">
       <Output TaskParameter="AssignedFiles" ItemName="_StrideCombinedAssetTargeted" />
     </AssignTargetPath>
-    <ItemGroup Condition="'$(StridePlatform)' == 'iOS' Or '$(StridePlatform)' == 'macOS'">
+    <ItemGroup Condition="'$(StridePlatform)' == 'macOS'">
       <BundleResource Include="@(_StrideCombinedAssetTargeted)">
         <LogicalName>%(_StrideCombinedAssetTargeted.TargetPath)</LogicalName>
       </BundleResource>

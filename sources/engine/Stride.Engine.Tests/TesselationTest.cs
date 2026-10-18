@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,7 +8,6 @@ using Xunit;
 
 using Stride.Core;
 using Stride.Core.Mathematics;
-using Stride.Rendering.Lights;
 using Stride.Rendering;
 using Stride.Rendering.ProceduralModels;
 using Stride.Rendering.Tessellation;
@@ -17,7 +15,6 @@ using Stride.Games;
 using Stride.Graphics;
 using Stride.Graphics.Regression;
 using Stride.Input;
-using Stride.Rendering.Compositing;
 
 namespace Stride.Engine.Tests
 {
@@ -202,7 +199,6 @@ namespace Stride.Engine.Tests
         [SkippableFact]
         public void RunTestGame()
         {
-            SkipTestForPlatform(PlatformType.iOS);
             RunGameTest(new TesselationTest());
         }
 

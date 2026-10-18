@@ -6,8 +6,8 @@ namespace Stride.Audio
 {
     /// <summary>
     /// Cross-platform audio device abstraction. Static method bodies live in platform-specific partials:
-    /// AudioLayer.OpenAL.cs (Windows/Linux/Android/iOS — DllImport into libstrideaudio),
-    /// AudioLayer.AVFoundation.cs (iOS/macOS — managed AVAudioEngine implementation).
+    /// AudioLayer.OpenAL.cs (Windows/Linux/Android — DllImport into libstrideaudio),
+    /// AudioLayer.AVFoundation.cs (macOS — managed AVAudioEngine implementation).
     /// </summary>
     public partial class AudioLayer
     {

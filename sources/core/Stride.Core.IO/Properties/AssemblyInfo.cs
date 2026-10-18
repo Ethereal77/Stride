@@ -9,7 +9,3 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Stride.Engine" + Stride.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("Stride.Engine.Step1" + Stride.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("Stride.Core.Tests" + Stride.PublicKeys.Default)]
-
-#if STRIDE_PLATFORM_IOS
-[assembly: InternalsVisibleTo("StrideCoreTests" + Stride.PublicKeys.Default)]
-#endif

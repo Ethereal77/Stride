@@ -68,7 +68,7 @@ Our [Roadmap](https://doc.stride3d.net/latest/en/contributors/roadmap.html) comm
    - **.NET desktop development** (bundles the .NET 10 SDK)
    - **Desktop development with C++**
 
-> See [docs/build/README.md](docs/build/README.md) for detailed prerequisites (specific MSVC toolset versions, optional iOS/Android/ARM64/VSIX components, command-line builds without VS, and troubleshooting).
+> See [docs/build/README.md](docs/build/README.md) for detailed prerequisites (specific MSVC toolset versions, optional Android/ARM64/VSIX components, command-line builds without VS, and troubleshooting).
 
 ### Build Stride
 
@@ -86,7 +86,6 @@ Please check our [Contributing Guidelines](https://doc.stride3d.net/latest/en/co
 |:--|:--:|
 | Windows | [![](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml) |
 | Linux Vulkan/OpenGL | [![](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml) |
-| iOS | [![](https://github.com/stride3d/stride/actions/workflows/build-ios.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-ios.yml) |
 | Tests (Simple) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
 | Tests (Game/WARP) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
 
@@ -97,7 +96,7 @@ The Stride documentation is organized across different locations. Here's how it'
 1. [Stride Game Engine](https://github.com/stride3d/stride) - The main repository for Stride.
    - [Contributing to Stride](https://doc.stride3d.net/latest/en/contributors/engine/index.html) - A guide for developers interested in contributing to or developing the Stride engine.
 1. [Stride Website](https://www.stride3d.net/) - The official site showcasing Stride, featuring:
-   - [Features](https://www.stride3d.net/features/) 
+   - [Features](https://www.stride3d.net/features/)
    - [Blog](https://www.stride3d.net/blog/)
    - [Community](https://www.stride3d.net/community/)
    - [Download](https://www.stride3d.net/download/)
@@ -122,7 +121,7 @@ This project is supported by the [.NET Foundation](http://www.dotnetfoundation.o
 
 Stride is covered by the [MIT License](LICENSE.md) unless stated otherwise (i.e. for some files that are copied from other projects). You can find the list of third-party projects [here](THIRD%20PARTY.md). Contributors need to sign the following [Contribution License Agreement](https://github.com/dotnet-foundation/.github/blob/main/CLA/dotnetfoundation.yml).
 
-## ✨ Contributors 
+## ✨ Contributors
 
 Thanks to all these wonderful people who have contributed to Stride!
 

@@ -14,7 +14,7 @@ name: PR Label Suites
 #   the suites of its own run, and main.yml's required Gate is never recomputed here.
 #
 # Only list suites here that main.yml does NOT already run on a path filter, OR gate them on the
-# shared `changes` filter (see `ios`/`android`) so a forced run yields to main's run whenever main
+# shared `changes` filter (see `android`) so a forced run yields to main's run whenever main
 # will already run it — avoiding both a double-run and a gap.
 
 on:
@@ -33,7 +33,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Shared path-filter, consulted by suites that overlap main.yml's auto-run set (e.g. ios).
+  # Shared path-filter, consulted by suites that overlap main.yml's auto-run set.
   # Skipped for non-ci labels, which skips every suite (they all need it).
   changes:
     if: github.event.action != 'labeled' || startsWith(github.event.label.name, 'ci-')
@@ -69,23 +69,9 @@ jobs:
     with:
       build-type: Debug
 
-  # iOS auto-runs in main.yml on the narrow ios-tests filter. Run it here only when main.yml won't:
+  # Android auto-runs in main.yml on the narrow android-tests filter. Run it here only when main.yml won't:
   # on a draft that ci-run-on-draft doesn't punch through, or when the path filter didn't match.
-  # On a draft, only the ci-ios label event itself runs it; pushes skip it like main.yml does.
-  ios:
-    needs: changes
-    if: >
-      contains(github.event.pull_request.labels.*.name, 'ci-ios')
-      && ((github.event.action == 'labeled' && github.event.label.name == 'ci-ios')
-          || (github.event.action != 'labeled'
-              && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))))
-      && ((github.event.pull_request.draft == true && !contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-          || needs.changes.outputs.ios-tests != 'true')
-    uses: ./.github/workflows/test-ios-game.yml
-    with:
-      build-type: Debug
-
-  # Android: identical pattern to iOS, gated on the android path filter.
+  # On a draft, only the ci-android label event itself runs it; pushes skip it like main.yml does.
   android:
     needs: changes
     if: >

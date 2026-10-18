@@ -3,10 +3,4 @@
     <StrideNativePathLibsWindows_x64>$(MSBuildThisFileDirectory)..\..\..\deps\NativePath\dotnet\win-x64\LibOVR.lib</StrideNativePathLibsWindows_x64>
     <StrideNativePathLibsWindowsArm64>$(MSBuildThisFileDirectory)..\..\..\deps\NativePath\dotnet\win-arm64\LibOVR.lib</StrideNativePathLibsWindowsArm64>
   </PropertyGroup>
-
-  <!--
-  <ItemGroup>
-    <StrideNativePathLibsiOS Include="$(MSBuildThisFileDirectory)..\..\..\deps\GoogleVR\lib\iOS\libgvr.a;" />
-  </ItemGroup>
-  -->
 </Project>

@@ -1,13 +1,10 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-#if STRIDE_PLATFORM_DESKTOP || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_DESKTOP
 using System;
-using Stride.Core;
 using Stride.Core.Mathematics;
-using Stride.Graphics;
 using Stride.Input;
-using TextAlignment = Stride.Graphics.TextAlignment;
 
 namespace Stride.UI.Controls
 {
@@ -22,14 +19,14 @@ namespace Stride.UI.Controls
                 if (currentPosition < selectionStop)
                     Select(currentPosition, selectionStop - currentPosition, true);
                 else
-                    Select(selectionStop, currentPosition - selectionStop);  
+                    Select(selectionStop, currentPosition - selectionStop);
             }
             else
             {
                 if (currentPosition < SelectionStart)
                     Select(currentPosition, selectionStart - currentPosition, true);
                 else
-                    Select(selectionStart, currentPosition - selectionStart);  
+                    Select(selectionStart, currentPosition - selectionStart);
             }
         }
 
@@ -38,7 +35,7 @@ namespace Stride.UI.Controls
             // Find the appropriate position for the caret.
             CaretPosition = FindNearestCharacterIndex(args.WorldPosition.XY());
         }
-        
+
         /// <summary>
         /// Find the index of the nearest character to the provided position in <see cref="TouchEventArgs.WorldPosition"/> space
         /// </summary>
@@ -104,14 +101,14 @@ namespace Stride.UI.Controls
 
         private void InterpretKey(Keys key, InputManager input)
         {
-            // delete and back space have same behavior when there is a selection 
+            // delete and back space have same behavior when there is a selection
             if (SelectionLength > 0 && (key == Keys.Delete || key == Keys.Back))
             {
                 SelectedText = "";
                 return;
             }
 
-            // backspace with caret 
+            // backspace with caret
             if (key == Keys.Back)
             {
                 selectionStart = Math.Max(0, selectionStart - 1);
@@ -161,7 +158,7 @@ namespace Stride.UI.Controls
                 return;
             }
 
-            // select backward 
+            // select backward
             if (key == Keys.Left && (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)))
             {
                 if (caretAtStart || selectionStart == selectionStop)

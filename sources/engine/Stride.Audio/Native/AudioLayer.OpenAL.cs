@@ -1,6 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-#if !(STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS)
+#if !STRIDE_PLATFORM_MACOS
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -9,7 +9,7 @@ using Stride.Core.Mathematics;
 namespace Stride.Audio
 {
     /// <summary>
-    /// libstrideaudio (OpenAL on desktop / OpenSL ES on Android / XAudio2 on Windows / static-linked OpenAL on iOS) backend.
+    /// libstrideaudio (OpenAL on desktop / OpenSL ES on Android / XAudio2 on Windows) backend.
     /// </summary>
     public partial class AudioLayer
     {

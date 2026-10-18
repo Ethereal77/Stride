@@ -147,10 +147,6 @@ public partial class FileSystemProvider : VirtualFileProviderBase
         return Directory.GetFiles(ConvertUrlToFullPath(url), searchPattern, (SearchOption)searchOption).Select(ConvertFullPathToUrl).ToArray();
     }
 
-#if STRIDE_PLATFORM_IOS
-        public bool AutoSetSkipBackupAttribute { get; set; }
-#endif
-
     /// <inheritdoc/>
     public override Stream OpenStream(string url, VirtualFileMode mode, VirtualFileAccess access, VirtualFileShare share = VirtualFileShare.Read, StreamFlags streamType = StreamFlags.None)
     {
@@ -158,13 +154,6 @@ public partial class FileSystemProvider : VirtualFileProviderBase
             throw new InvalidOperationException("Relative path is not allowed in FileSystemProvider.");
         var filename = ConvertUrlToFullPath(url);
         var result = new FileStream(filename, (FileMode)mode, (FileAccess)access, (FileShare)share);
-
-#if STRIDE_PLATFORM_IOS
-            if (AutoSetSkipBackupAttribute && (mode == VirtualFileMode.CreateNew || mode == VirtualFileMode.Create || mode == VirtualFileMode.OpenOrCreate))
-            {
-                Foundation.NSFileManager.SetSkipBackupAttribute(filename, true);
-            }
-#endif
 
         return result;
     }

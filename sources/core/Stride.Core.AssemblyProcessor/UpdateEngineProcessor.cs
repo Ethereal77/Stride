@@ -199,7 +199,7 @@ internal partial class UpdateEngineProcessor : ICecilSerializerProcessor
         // Generates calls like:
         //   UpdateEngine.RegisterMemberResolver(new ListUpdateResolver<ElementType>());
         //   UpdateEngine.RegisterMemberResolver(new ArrayUpdateResolver<ElementType>());
-        //   ParameterCollectionResolver.InstantiateValueAccessor<KeyType>();  // iOS AOT only
+        //   ParameterCollectionResolver.InstantiateValueAccessor<KeyType>();
         //   UpdateGeneric_TypeName<T1, T2>();  // for closed generic types
         var il = new ILBuilder(mainPrepareMethod.Body, module);
         foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes).ToArray())
@@ -234,13 +234,6 @@ internal partial class UpdateEngineProcessor : ICecilSerializerProcessor
                 var elementType = ResolveGenericsVisitor.Process(serializableType.Key, arrayType.ElementType);
                 il.Emit(OpCodes.Newobj, il.Import(updatableArrayUpdateResolverGenericCtor).MakeGeneric(il.Import(elementType)))
                   .Emit(OpCodes.Call, updateEngineRegisterMemberResolverMethod);
-            }
-
-            // Generic instantiation for AOT platforms
-            if (context.Platform == Core.PlatformType.iOS && serializableType.Key.Name == "ValueParameterKey`1")
-            {
-                var keyType = ((GenericInstanceType)serializableType.Key).GenericArguments[0];
-                il.Emit(OpCodes.Call, il.Import(parameterCollectionResolverInstantiateValueAccessor).MakeGenericMethod(il.Import(keyType)));
             }
 
             if (serializableType.Key is GenericInstanceType genericInstanceType)

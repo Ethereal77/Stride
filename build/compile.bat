@@ -76,11 +76,6 @@ set _platform_target=Android
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
-set Project=Stride.iOS.slnf
-set _platform_target=iPhone
-call :compile
-if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
-
 goto exit
 
 rem Compile our solution. The following variables needs to be set:

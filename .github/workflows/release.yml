@@ -11,10 +11,6 @@ on:
         description: Include Android
         default: true
         type: boolean
-      platform-ios:
-        description: Include iOS
-        default: true
-        type: boolean
       platform-macos:
         description: Include macOS
         default: true
@@ -95,11 +91,11 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Install Apple Workloads
-        # VS provisions the android workload but not ios/macos.
-        if: ${{ inputs.platform-ios || inputs.platform-macos }}
+        # VS provisions the android workload but not macos.
+        if: ${{ inputs.platform-macos }}
         uses: ./.github/actions/stride-workload
         with:
-          workloads: ${{ inputs.platform-ios && inputs.platform-macos && 'ios macos' || inputs.platform-ios && 'ios' || 'macos' }}
+          workloads: ${{ inputs.platform-macos || 'macos' }}
 
       - name: Install Advanced Installer
         if: ${{ inputs.build-prerequisites-installer }}
@@ -117,7 +113,6 @@ jobs:
           $platforms = "Windows"
           if ("${{ inputs.platform-linux }}" -eq "true") { $platforms += ";Linux" }
           if ("${{ inputs.platform-android }}" -eq "true") { $platforms += ";Android" }
-          if ("${{ inputs.platform-ios }}" -eq "true") { $platforms += ";iOS" }
           if ("${{ inputs.platform-macos }}" -eq "true") { $platforms += ";macOS" }
           echo "Building for platforms: $platforms"
           # --no-restore: Stride.build's targets restore their own solutions (same as the

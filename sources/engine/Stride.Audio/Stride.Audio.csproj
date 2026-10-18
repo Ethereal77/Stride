@@ -8,7 +8,7 @@
     <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
     <StrideCodeAnalysis>true</StrideCodeAnalysis>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
+  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
     <DefineConstants>STRIDE_VIDEO_AVFOUNDATION;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

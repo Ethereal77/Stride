@@ -241,7 +241,7 @@ namespace Stride.Rendering.Compositing
             {
                 if (PostEffects.RequiresNormalBuffer)
                 {
-                    renderOutputValidator.Add<NormalTargetSemantic>(Platform.Type == PlatformType.Android || Platform.Type == PlatformType.iOS
+                    renderOutputValidator.Add<NormalTargetSemantic>(Platform.Type == PlatformType.Android
                         ? PixelFormat.R16G16B16A16_Float
                         : PixelFormat.R10G10B10A2_UNorm);
                 }

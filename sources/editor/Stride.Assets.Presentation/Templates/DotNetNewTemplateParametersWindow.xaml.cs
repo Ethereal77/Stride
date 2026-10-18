@@ -292,9 +292,8 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
             "windows" => PlatformType.Windows,
             "linux"   => PlatformType.Linux,
             "macos"   => PlatformType.macOS,
-            "ios"     => PlatformType.iOS,
             "android" => PlatformType.Android,
-            _         => null,
+            _         => null
         };
         if (!platform.HasValue)
             return label;

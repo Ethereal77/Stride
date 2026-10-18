@@ -11,12 +11,7 @@ namespace Stride.Audio
         /// <returns>A platform specific instance of <see cref="AudioEngine"/></returns>
         public static AudioEngine NewAudioEngine(AudioDevice device = null, AudioLayer.DeviceFlags deviceFlags = AudioLayer.DeviceFlags.None)
         {
-            AudioEngine engine = null;
-#if STRIDE_PLATFORM_IOS
-            engine = new AudioEngineIos();
-#else
-            engine = new AudioEngine(device);
-#endif
+            AudioEngine engine = new AudioEngine(device);
             engine.InitializeAudioEngine(deviceFlags);
             return engine;
         }

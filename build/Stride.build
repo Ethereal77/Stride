@@ -49,7 +49,7 @@ Example: dotnet build build/Stride.build -t:Package
   </Target>
 
   <Target Name="Help">
-    <Message Importance="high" Text="Stride build targets (run: dotnet build build/Stride.build -t:&lt;Target&gt;)%0a%0a  Build         - build the full Stride solution (Windows)%0a  BuildWindows / BuildWindowsDirect3D11 / BuildWindowsDirect3D12 / BuildWindowsVulkan%0a  BuildLinux / BuildAndroid / BuildiOS / BuildmacOS - build a platform's runtime%0a  BuildRuntime  - build the runtime slnf (with tests/packing)%0a  Package       - build + pack + sign NuGet packages (BuildPackages = build only, no signing)%0a  VSIXPlugin    - build + pack the Visual Studio extension%0a  FullBuildLauncher - build the launcher + installer%0a  PackageCli    - build + pack + sign the Stride CLI dotnet tool (Stride.Cli)%0a  Publish / PublishVSIX / PublishLauncher - push packages to the NuGet store%0a  Clean         - delete the Bin output folder%0a%0aCommon properties: -p:StrideSign=false  -p:StrideGraphicsApiDependentBuildAll=true" />
+    <Message Importance="high" Text="Stride build targets (run: dotnet build build/Stride.build -t:&lt;Target&gt;)%0a%0a  Build         - build the full Stride solution (Windows)%0a  BuildWindows / BuildWindowsDirect3D11 / BuildWindowsDirect3D12 / BuildWindowsVulkan%0a  BuildLinux / BuildAndroid / BuildmacOS - build a platform's runtime%0a  BuildRuntime  - build the runtime slnf (with tests/packing)%0a  Package       - build + pack + sign NuGet packages (BuildPackages = build only, no signing)%0a  VSIXPlugin    - build + pack the Visual Studio extension%0a  FullBuildLauncher - build the launcher + installer%0a  PackageCli    - build + pack + sign the Stride CLI dotnet tool (Stride.Cli)%0a  Publish / PublishVSIX / PublishLauncher - push packages to the NuGet store%0a  Clean         - delete the Bin output folder%0a%0aCommon properties: -p:StrideSign=false  -p:StrideGraphicsApiDependentBuildAll=true" />
   </Target>
 
   <!--
@@ -79,12 +79,12 @@ Example: dotnet build build/Stride.build -t:Package
       <Output TaskParameter="TargetOutputs" PropertyName="StrideVsPackageVersion" />
     </MSBuild>
     <Exec Command='"$(NuGetPath)" pack "$(StrideRoot)sources\tools\Stride.VisualStudio.Package\Stride.VisualStudio.Package.nuspec" -BasePath "$(StrideRoot)sources\tools\Stride.VisualStudio.Package" -Version "$(StrideVsPackageVersion)" -Properties "VsixPath=$(StrideVsixPath);ShadersVsixPath=$(StrideShadersVsixPath)" -OutputDirectory "$(StrideRoot)bin\vsix"' />
- 
+
     <!-- Invoke _SignFiles via MSBuild (not CallTarget) so StrideSignDir reaches it and its *.nupkg glob resolves -->
     <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_SignFiles"
              Properties="StrideSign=$(StrideSign);StrideSignDir=$(MSBuildThisFileDirectory)..\bin\vsix" />
   </Target>
-  
+
   <!--
   Package Installer: install-prerequisites.exe
   -->
@@ -102,7 +102,7 @@ Example: dotnet build build/Stride.build -t:Package
     <CallTarget Targets="Package"/>
     <CallTarget Targets="VSIXPlugin"/>
   </Target>
-  
+
   <!--
   Publish Stride nupkg from this folder to the store
   -->
@@ -126,20 +126,20 @@ Example: dotnet build build/Stride.build -t:Package
     <Error Condition="'$(StrideStoreApiKey)' == ''" Text="Missing env variable StrideStoreApiKey"/>
     <Exec Command='"$(NuGetPath)" push ..\bin\vsix\*.nupkg -ApiKey $(StrideStoreApiKey) -Source $(StrideStoreUrl) -NoSymbols'/>
   </Target>
-  
+
   <!--
-  Build Stride: Windows, Android, iOS, Windows 10 (UWP)
+  Build Stride: Windows, Android, Windows 10 (UWP)
   -->
   <Target Name="Clean">
     <RemoveDir Directories="$(StrideRoot)Bin"/>
   </Target>
-  
+
   <!-- Package -->
   <Target Name="PreparePackageBuild">
     <PropertyGroup>
       <BuildProperties>$(BuildProperties);StridePublicApi=true;StridePackageBuild=true</BuildProperties>
     </PropertyGroup>
-    
+
     <ItemGroup>
       <FilesToDeletePackages Include="$(StrideRoot)bin\packages\*.nupkg"/>
     </ItemGroup>
@@ -215,7 +215,7 @@ Example: dotnet build build/Stride.build -t:Package
   <Target Name="RestoreInternal">
     <MSBuild Targets="Restore" Projects="$(StrideSolution)" Properties="StrideGraphicsApiDependentBuildAll=$(StrideGraphicsApiDependentBuildAll);StrideGraphicsApis=$(StrideGraphicsApis);StridePlatforms=$(StridePlatforms)" />
   </Target>
-  
+
   <Target Name="Restore">
     <CallTarget Targets="RestoreInternal" />
   </Target>
@@ -252,10 +252,6 @@ Example: dotnet build build/Stride.build -t:Package
 
   <Target Name="BuildAndroid">
     <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_BuildPlatform" Properties="StrideTargetSolution=$(StrideRoot)build\Stride.Android.slnf;StridePlatforms=Android" />
-  </Target>
-
-  <Target Name="BuildiOS">
-    <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_BuildPlatform" Properties="StrideTargetSolution=$(StrideRoot)build\Stride.iOS.slnf;StridePlatforms=iOS" />
   </Target>
 
   <Target Name="BuildLinux">

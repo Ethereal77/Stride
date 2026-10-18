@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -20,7 +19,6 @@ using Stride.Core.IO;
 using Stride.Core.Mathematics;
 using Stride.Engine;
 using Stride.Games;
-using Stride.Graphics;
 using Stride.Input;
 using Stride.Rendering;
 using Stride.Rendering.Compositing;
@@ -784,17 +782,12 @@ namespace Stride.Graphics.Regression
         {
 #if STRIDE_PLATFORM_ANDROID
             return Android.App.Application.Context.FilesDir!.AbsolutePath;
-#elif STRIDE_PLATFORM_IOS
-            // Gold images get pushed into Documents/tests/<Suite>/ by run-ios-tests.ps1, and
-            // generated images / trx are written to Documents/tests/local/<Suite>/ for the host
-            // to pull back via `xcrun simctl get_app_container ... data`.
-            return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 #else
             return FindStrideSolutionRootDirectory();
 #endif
         }
 
-#if !STRIDE_PLATFORM_ANDROID && !STRIDE_PLATFORM_IOS
+#if !STRIDE_PLATFORM_ANDROID
         /// <summary>
         ///   Searches for the root folder of the Stride solution by traversing upward from the test's binary directory.
         /// </summary>
@@ -989,7 +982,6 @@ namespace Stride.Graphics.Regression
                 PlatformType.Linux => "Linux",
                 PlatformType.macOS => "macOS",
                 PlatformType.Android => "Android",
-                PlatformType.iOS => "iOS",
                 _ => throw new NotImplementedException($"Platform {Platform.Type} is not supported for image regression tests")
             };
 
@@ -1022,10 +1014,6 @@ namespace Stride.Graphics.Regression
             else if (driverId == "GoogleSwiftShader" && desc.StartsWith("SwiftShader", StringComparison.OrdinalIgnoreCase))
                 deviceName = "SwiftShader";
             else if (adapter.VendorId == 0x1414) deviceName = "WARP"; // Microsoft Basic / WARP
-            // iOS: MoltenVK reports the underlying Metal device (e.g. "Apple Paravirtual device"
-            // on the simulator, "Apple A17 Pro GPU" on hardware). Collapse to a single "MoltenVK"
-            // bucket so gold paths stay stable across simulator/device and host-chip variants.
-            else if (Platform.Type == PlatformType.iOS) deviceName = "MoltenVK";
             // Virtualized macOS (e.g. GitHub's macos-15 runner) reports the GPU as
             // "Apple Paravirtual device". On Apple Silicon the GPU is on the same chip as
             // the CPU, so the CPU brand string (minus the "(Virtual)" suffix) is a stable

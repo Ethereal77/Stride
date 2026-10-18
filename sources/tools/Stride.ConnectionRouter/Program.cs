@@ -80,17 +80,6 @@ namespace Stride.ConnectionRouter
                     // Start Android management thread
                     new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
 
-                    //Start iOS device discovery and proxy launcher
-                    //Currently this is used only internally for QA testing... as we cannot attach the debugger from windows for normal usages..
-                    if (IosTracker.CanProxy())
-                    {
-                        new Thread(async () =>
-                        {
-                            var iosTracker = new IosTracker(router);
-                            await iosTracker.TrackDevices();
-                        }) { IsBackground = true }.Start();
-                    }
-
                     SetupTrayIcon(logFileName);
 
                     // Start WinForms loop

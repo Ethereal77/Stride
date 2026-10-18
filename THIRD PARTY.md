@@ -34,7 +34,7 @@ Stride uses the following open-source products.
 * [DirectX 12 Agility SDK](https://www.nuget.org/packages/Microsoft.Direct3D.D3D12) (Microsoft Software License Terms; its distributable `D3D12Core.dll` and `D3D12SDKLayers.dll` are copied next to Direct3D 12 games)
 * [WinPixEventRuntime](https://www.nuget.org/packages/WinPixEventRuntime) (MIT License)
 
-### Linux, iOS, Android
+### Linux, Android
 * [Mono Class Libraries](https://github.com/mono/mono/tree/master/mcs/class) (MIT License)
 
 ### Android
@@ -149,7 +149,7 @@ respective owners.
   XFN icon is licensed under a Creative Commons
   Attribution-Share Alike 2.5 License.
   <http://creativecommons.org/licenses/by-sa/2.5/>
-  
+
 ### ModernUIIcons.com
 
 Please carefully understand the license and download the latest icons at https://github.com/Templarian/WindowsIcons

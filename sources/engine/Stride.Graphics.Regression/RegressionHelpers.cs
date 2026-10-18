@@ -1,14 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
-using System.Text;
 using Stride.Core;
-using Stride.Core.LZ4;
 
 #if STRIDE_PLATFORM_UWP
 using Windows.Security.Cryptography;
@@ -36,7 +30,7 @@ namespace Stride.Graphics.Regression
         SendImage = 1,
         RequestImageComparisonStatus = 2,
     }
-    
+
     public class PlatformPermutator
     {
         public static ImageTestResultConnection GetDefaultImageTestResultConnection()
@@ -60,10 +54,6 @@ namespace Stride.Graphics.Regression
             result.Platform = "Android";
             result.DeviceName = Android.OS.Build.Manufacturer + " " + Android.OS.Build.Model;
             result.Serial = Android.OS.Build.Serial ?? "Unknown";
-#elif STRIDE_PLATFORM_IOS
-            result.Platform = "iOS";
-            result.DeviceName = iOSDeviceType.Version.ToString();
-            result.Serial = UIKit.UIDevice.CurrentDevice.Name;
 #elif STRIDE_PLATFORM_UWP
             result.Platform = "UWP";
             var deviceInfo = new EasClientDeviceInformation();
@@ -94,8 +84,6 @@ namespace Stride.Graphics.Regression
                     return "Windows_Direct3D11";
                 case TestPlatform.Android:
                     return "Android";
-                case TestPlatform.Ios:
-                    return "IOS";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -105,8 +93,6 @@ namespace Stride.Graphics.Regression
         {
 #if STRIDE_PLATFORM_ANDROID
             return TestPlatform.Android;
-#elif STRIDE_PLATFORM_IOS
-            return TestPlatform.Ios;
 #elif STRIDE_GRAPHICS_API_NULL
             return TestPlatform.None;
 #elif STRIDE_GRAPHICS_API_DIRECT3D
@@ -171,7 +157,6 @@ namespace Stride.Graphics.Regression
         None,
         WindowsDx,
         WindowsVulkan,
-        Android,
-        Ios
+        Android
     }
 }

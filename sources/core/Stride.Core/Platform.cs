@@ -25,7 +25,6 @@ public static class Platform
         : OperatingSystem.IsLinux()  ? PlatformType.Linux
         : OperatingSystem.IsMacOS() ? PlatformType.macOS
         : OperatingSystem.IsAndroid() ? PlatformType.Android
-        : OperatingSystem.IsIOS() ? PlatformType.iOS
         : PlatformType.Windows; // For now we use Windows as fallback, but it might be better to throw an exception?
 #endif
 

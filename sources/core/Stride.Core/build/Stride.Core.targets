@@ -27,8 +27,8 @@
 
     <Error Condition="'@(_StrideVisualCRuntimeNotInstalled)' != ''" Text="@(_StrideVisualCRuntimeNotInstalled->'%(Identity) is not installed. Please download from %(DownloadUrl)', '%0a')"/>
   </Target>
-  
-  <!-- 
+
+  <!--
   *****************************************************************************************************************************
   Platform Detection
   *****************************************************************************************************************************
@@ -39,13 +39,12 @@
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'macOS'">macOS</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'UAP'">UWP</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Android'">Android</StridePlatform>
-    <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'iOS'">iOS</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('osx'))">macOS</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('linux'))">Linux</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == ''">Windows</StridePlatform>
   </PropertyGroup>
 
-  <!-- 
+  <!--
   *****************************************************************************************************************************
   Assembly Processor
   *****************************************************************************************************************************
@@ -55,7 +54,7 @@
   <PropertyGroup>
     <TEMP>$([System.IO.Path]::GetTempPath())</TEMP>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <!--By default, turn on assembly processor-->
     <StrideAssemblyProcessor Condition="'$(StrideAssemblyProcessor)' == ''">true</StrideAssemblyProcessor>
@@ -69,7 +68,7 @@
     <StrideAssemblyProcessorBasePath Condition="'$(StrideAssemblyProcessorBasePath)' == ''">$(MSBuildThisFileDirectory)..\tools\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\</StrideAssemblyProcessorBasePath>
     <StrideAssemblyProcessorPath>$(StrideAssemblyProcessorBasePath)Stride.Core.AssemblyProcessor$(StrideAssemblyProcessorExt)</StrideAssemblyProcessorPath>
     <StrideAssemblyProcessorSerializationHashFile>$(IntermediateOutputPath)$(TargetName).sdserializationhash</StrideAssemblyProcessorSerializationHashFile>
-    
+
     <StrideAssemblyProcessorHash>$([System.IO.File]::ReadAllText('$(StrideAssemblyProcessorPath).hash'))</StrideAssemblyProcessorHash>
     <StrideAssemblyProcessorTempBasePath>$(TEMP)\stride\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\$(StrideAssemblyProcessorHash)\</StrideAssemblyProcessorTempBasePath>
     <StrideAssemblyProcessorTempPath>$(StrideAssemblyProcessorTempBasePath)Stride.Core.AssemblyProcessor$(StrideAssemblyProcessorExt)</StrideAssemblyProcessorTempPath>
@@ -117,7 +116,7 @@
     </PrepareForRunDependsOn>
   </PropertyGroup>
 
-  <!-- 
+  <!--
   *****************************************************************************************************************************
   NuGet tweaks
   *****************************************************************************************************************************
@@ -137,7 +136,7 @@
                     and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
-  
+
   <!-- Dependencies reading (from .ssdeps): discover .ssdeps files alongside referenced
        assemblies. The parse + native-lib wiring lives in Stride.Core.NativeLibraries.targets
        (imported at the bottom) so the NuGet PackageReference path here and the engine
@@ -164,19 +163,4 @@
     <StrideAssetBuildManifestImported>true</StrideAssetBuildManifestImported>
   </PropertyGroup>
 
-  <!-- Strip publish globals from ProjectReferences on iOS exes: PublishAot in the iOS .csproj
-       must not propagate to cross-platform library refs or they fail NETSDK1203. Set as static
-       metadata (not inside a target) so it applies in BOTH restore and build phases — restore
-       has its own P2P graph traversal that runs before our targets do. UndefineProperties on
-       the item works for SDK-propagated AdditionalProperties but NOT for command-line globals —
-       users passing -p:PublishAot=true on the CLI will still fail (set it in the csproj instead). -->
-  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'iOS'">
-    <ProjectReference Update="@(ProjectReference)"
-                      UndefineProperties="%(ProjectReference.UndefineProperties);PublishAot;PublishTrimmed;PublishReadyToRun;PublishSingleFile;SelfContained" />
-  </ItemGroup>
-
-  <!-- Override macios _PrePublish to allow iossimulator publish: https://github.com/dotnet/macios/issues/25648 -->
-  <PropertyGroup Condition="'$(TargetPlatformIdentifier)' == 'iOS'">
-    <AfterMicrosoftNETSdkTargets>$(AfterMicrosoftNETSdkTargets);$(MSBuildThisFileDirectory)Stride.Core.iOSPublishOverride.targets</AfterMicrosoftNETSdkTargets>
-  </PropertyGroup>
 </Project>

@@ -185,7 +185,7 @@ namespace Stride.Graphics
         internal bool HasAndroidHardwareBufferSupport { get; private set; }
 #endif
 
-#if STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS
+#if STRIDE_PLATFORM_MACOS
         // True when VK_EXT_metal_objects was enabled — lets us import CVPixelBuffer IOSurfaces as VkImage.
         internal bool HasMetalObjectsSupport { get; private set; }
 #endif
@@ -485,7 +485,7 @@ namespace Stride.Graphics
             {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME,
                 VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
-#if STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS
+#if STRIDE_PLATFORM_MACOS
                 // IOSurface-backed VkImage import (zero-copy CVPixelBuffer upload on Apple platforms).
                 VK_EXT_METAL_OBJECTS_EXTENSION_NAME,
 #endif
@@ -519,7 +519,7 @@ namespace Stride.Graphics
             if (isPortabilitySubsetDevice)
                 desiredExtensionProperties.Add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
 
-#if STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_MACOS
+#if STRIDE_PLATFORM_MACOS
             // VK_EXT_metal_objects lets us import IOSurface-backed CVPixelBuffers as VkImages for
             // zero-copy video upload. MoltenVK 1.2+ supports it; no extra dependency extensions needed.
             HasMetalObjectsSupport = availableExtensionProperties.Contains(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
@@ -1126,7 +1126,7 @@ namespace Stride.Graphics
         protected override void Destroy()
         {
             using (OptionalLock.Lock(liveObjects, threadsafe))
-            { 
+            {
                 foreach (var item in liveObjects)
                 {
                     DestroyObject(item.Value);

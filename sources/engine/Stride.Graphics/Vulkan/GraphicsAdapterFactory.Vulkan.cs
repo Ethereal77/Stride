@@ -28,13 +28,10 @@ namespace Stride.Graphics
             // when one is installed (e.g. via 'brew install vulkan-loader') because only the loader
             // chains validation layers — bundled MoltenVK alone is an ICD and ignores VK_LAYER_*.
             // If no loader is available, fall back to the bundled MoltenVK at runtimes/<rid>/native/.
-            // On iOS, MoltenVK is statically linked into the app binary: dlopen the executable itself,
-            // which exports vkGetInstanceProcAddr (see Stride.Core.NativeLibraries.targets).
             string vkLibraryName = Platform.Type switch
             {
                 PlatformType.macOS => ResolveMacOSVulkanLibrary(),
-                PlatformType.iOS => Environment.ProcessPath,
-                _ => null,
+                _ => null
             };
             var result = vkInitialize(vkLibraryName);
             result.CheckResult();
@@ -49,7 +46,7 @@ namespace Stride.Graphics
 
             Span<VkPhysicalDevice> nativePhysicalDevices = stackalloc VkPhysicalDevice[(int)physicalDevicesCount];
             defaultInstance.NativeInstanceApi.vkEnumeratePhysicalDevices(defaultInstance.NativeInstance, nativePhysicalDevices).CheckResult();
-            
+
             var physicalDevices = new List<(VkPhysicalDevice Device, VkPhysicalDeviceProperties Properties, VkPhysicalDeviceDriverProperties DriverProperties, int EnumerationIndex)>();
             for (int index = 0; index < nativePhysicalDevices.Length; index++)
             {
@@ -251,8 +248,8 @@ namespace Stride.Graphics
             HasXlibSurfaceSupport = desiredExtensionNames.Contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 
             // MoltenVK is a non-conformant Vulkan ICD; without VK_KHR_portability_enumeration
-            // and the matching create-info flag, vkCreateInstance skips it on macOS/iOS.
-            bool enablePortabilityEnumeration = (Platform.Type == PlatformType.macOS || Platform.Type == PlatformType.iOS)
+            // and the matching create-info flag, vkCreateInstance skips it on macOS.
+            bool enablePortabilityEnumeration = (Platform.Type == PlatformType.macOS)
                 && availableExtensionNames.Contains(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
             if (enablePortabilityEnumeration)
                 desiredExtensionNames.Add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
@@ -315,7 +312,7 @@ namespace Stride.Graphics
                     settingCount = 1,
                     pSettings = &mvkLogLevelSetting,
                 };
-                if ((Platform.Type == PlatformType.macOS || Platform.Type == PlatformType.iOS)
+                if ((Platform.Type == PlatformType.macOS)
                     && Environment.GetEnvironmentVariable("MVK_CONFIG_LOG_LEVEL") == null)
                     instanceCreateInfo.pNext = &layerSettings;
 
@@ -386,7 +383,7 @@ namespace Stride.Graphics
                     throw new InvalidOperationException("None of the supported surface extensions VK_KHR_xcb_surface or VK_KHR_xlib_surface is available");
                 }
             }
-            else if (Platform.Type == PlatformType.macOS || Platform.Type == PlatformType.iOS)
+            else if (Platform.Type == PlatformType.macOS)
             {
                 if (!availableExtensionNames.Contains(VK_EXT_METAL_SURFACE_EXTENSION_NAME))
                     throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_EXT_METAL_SURFACE_EXTENSION_NAME)} is not available");
@@ -416,7 +413,7 @@ namespace Stride.Graphics
                     surfaceExtensionName = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
                 }
             }
-            else if (Platform.Type == PlatformType.macOS || Platform.Type == PlatformType.iOS)
+            else if (Platform.Type == PlatformType.macOS)
             {
                 surfaceExtensionName = VK_EXT_METAL_SURFACE_EXTENSION_NAME;
             }
@@ -494,4 +491,4 @@ namespace Stride.Graphics
         }
     }
 }
-#endif 
+#endif

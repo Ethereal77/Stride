@@ -2,19 +2,15 @@ name: "Dep: Build MoltenVK"
 
 # Vendors MoltenVK binaries for Stride. Clones KhronosGroup/MoltenVK at the
 # requested git ref (tag / branch / commit), runs fetchDependencies, and
-# builds the macOS dylib + iOS + iOS-simulator static libs.
+# builds the macOS dylib static libs.
 #
 # Output per RID:
 #   osx-arm64           libvulkan.1.dylib  (arm64-thinned dynamic dylib,
 #                                           renamed + signed so dyld matches
 #                                           the leaf name Vortice.Vulkan
 #                                           dlopen()s)
-#   ios-arm64           libMoltenVK.a      (device static, statically linked
-#                                           into the .app, accessed via
-#                                           [DllImport("__Internal")])
-#   iossimulator-arm64  libMoltenVK.a      (Apple Silicon simulator static)
 #
-# RIDs covered: osx-arm64, ios-arm64, iossimulator-arm64.
+# RIDs covered: osx-arm64.
 
 on:
   workflow_dispatch:
@@ -39,11 +35,9 @@ jobs:
           git fetch --depth 1 origin "${{ github.event.inputs.moltenvk-version }}"
           git checkout -q FETCH_HEAD
           # SPIRV-Cross / SPIRV-Tools / etc. — must be built per-platform.
-          ./fetchDependencies --macos --ios --iossim
+          ./fetchDependencies --macos
           # Release config for parity with upstream release artifacts.
           make macos
-          make ios
-          make iossim
           BUILT_SHA=$(git rev-parse --short HEAD)
           echo "MVK_BUILD_LABEL=${{ github.event.inputs.moltenvk-version }}@${BUILT_SHA}" >> $GITHUB_ENV
 
@@ -60,20 +54,6 @@ jobs:
           # install_name_tool invalidates the ad-hoc signature; re-sign so macOS
           # will load the dylib on Apple Silicon.
           codesign --sign - --force out/dotnet/osx-arm64/libvulkan.1.dylib
-
-      - name: Repackage iOS device static (ios-arm64)
-        run: |
-          mkdir -p out/dotnet/ios-arm64
-          cp mvk-src/Package/Release/MoltenVK/static/MoltenVK.xcframework/ios-arm64/libMoltenVK.a \
-             out/dotnet/ios-arm64/libMoltenVK.a
-
-      - name: Repackage iOS simulator static (iossimulator-arm64)
-        run: |
-          mkdir -p out/dotnet/iossimulator-arm64
-          # Upstream ships a fat arm64+x86_64 simulator slice; thin to arm64.
-          lipo -thin arm64 \
-            mvk-src/Package/Release/MoltenVK/static/MoltenVK.xcframework/ios-arm64_x86_64-simulator/libMoltenVK.a \
-            -output out/dotnet/iossimulator-arm64/libMoltenVK.a
 
       - name: Write VERSION.txt
         run: |

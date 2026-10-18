@@ -36,16 +36,16 @@ namespace Stride.Input
                 Released.Clear();
             }
         }
-        
+
         //this is used in some mobile platform for accelerometer stuff
         internal const float G = 9.81f;
         internal const float DesiredSensorUpdateRate = 60;
-        
+
         /// <summary>
         /// The deadzone amount applied to all game controller axes
         /// </summary>
         public static float GameControllerAxisDeadZone = 0.05f;
-        
+
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
         private readonly List<IInputDevice> devices = new List<IInputDevice>();
@@ -101,7 +101,7 @@ namespace Stride.Input
         /// List of the gestures to recognize.
         /// </summary>
         public TrackingCollection<GestureConfig> Gestures { get; }
-        
+
         /// <summary>
         /// Input sources
         /// </summary>
@@ -287,7 +287,7 @@ namespace Stride.Input
             get { return false; }
             set { }
 #endif
-        }   
+        }
 
         /// <summary>
         /// Raised before new input is sent to their respective event listeners
@@ -303,7 +303,7 @@ namespace Stride.Input
         /// Raised when a device was added to the system
         /// </summary>
         public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
-        
+
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>
@@ -443,7 +443,7 @@ namespace Stride.Input
 
             // Notify PreUpdateInput
             PreUpdateInput?.Invoke(this, new InputPreUpdateEventArgs { GameTime = gameTime });
-            
+
             RouteEvents(events);
 
             // Update virtual buttons
@@ -524,13 +524,13 @@ namespace Stride.Input
             {
                 return 0.0f;
             }
-            
+
             virtualButtonStates[configIndex].Values.TryGetValue(bindingName, out float value);
             return value;
         }
 
         /// <summary>
-        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> was pressed since the previous Update. 
+        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> was pressed since the previous Update.
         /// </summary>
         /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/>.</param>
         /// <param name="bindingName">Name of the binding.</param>
@@ -541,13 +541,13 @@ namespace Stride.Input
             {
                 return false;
             }
-            
+
             virtualButtonStates[configIndex].Pressed.TryGetValue(bindingName, out bool isPressed);
             return isPressed;
         }
-        
+
         /// <summary>
-        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> is currently pressed down. 
+        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> is currently pressed down.
         /// </summary>
         /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/>.</param>
         /// <param name="bindingName">Name of the binding.</param>
@@ -558,13 +558,13 @@ namespace Stride.Input
             {
                 return false;
             }
-            
+
             virtualButtonStates[configIndex].Down.TryGetValue(bindingName, out bool isDown);
             return isDown;
         }
-        
+
         /// <summary>
-        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> was released since the previous Update. 
+        /// Determines whether the specified binding in the specified config in the current <see cref="VirtualButtonConfigSet"/> was released since the previous Update.
         /// </summary>
         /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/>.</param>
         /// <param name="bindingName">Name of the binding.</param>
@@ -575,7 +575,7 @@ namespace Stride.Input
             {
                 return false;
             }
-            
+
             virtualButtonStates[configIndex].Released.TryGetValue(bindingName, out bool isReleased);
             return isReleased;
         }
@@ -644,7 +644,7 @@ namespace Stride.Input
         {
             eventRouters[inputEvent.GetType()].PoolEvent(inputEvent);
         }
-        
+
         /// <summary>
         /// Resets the <see cref="Sources"/> collection back to it's default values
         /// </summary>
@@ -653,7 +653,7 @@ namespace Stride.Input
             Sources.Clear();
             AddSources();
         }
-        
+
         /// <summary>
         /// Suggests an index that is unused for a given <see cref="IGamePadDevice"/>
         /// </summary>
@@ -702,17 +702,13 @@ namespace Stride.Input
                 case AppContextType.Android:
                     break;
 #endif
-#if STRIDE_PLATFORM_IOS
-                case AppContextType.iOS:
-                    break;
-#endif
 #if STRIDE_PLATFORM_UWP
                 case AppContextType.UWPXaml:
                 case AppContextType.UWPCoreWindow:
                     break;
 #endif
                 case AppContextType.DesktopWinForms:
-#if (STRIDE_UI_WINFORMS || STRIDE_UI_WPF)
+#if STRIDE_UI_WINFORMS || STRIDE_UI_WPF
                     // Gate on the feature switch so trimming/AOT can drop the whole Win32 controller
                     // stack (DirectInput/XInput/raw input + SharpDX) when the WinForms backend is off.
                     if (GameContextFactory.WinFormsBackendEnabled)
@@ -770,7 +766,7 @@ namespace Stride.Input
 
         private void StartGestureRecognition(GestureConfig config)
         {
-            float aspectRatio = Pointer?.SurfaceAspectRatio ?? 1.0f; 
+            float aspectRatio = Pointer?.SurfaceAspectRatio ?? 1.0f;
             gestureConfigToRecognizer.Add(config, config.CreateRecognizer(aspectRatio));
         }
 
@@ -932,7 +928,7 @@ namespace Stride.Input
             {
                 gamePad.Index = GetFreeGamePadIndex(gamePad);
             }
-            
+
             // Handle later index changed
             gamePad.IndexChanged += GamePadOnIndexChanged;
             UpdateGamePadRequestedIndices();

@@ -68,7 +68,7 @@ jobs:
   macOS-Tests-Game:
     name: macOS (Vulkan, ${{ github.event.inputs.build-type || inputs.build-type || 'Debug' }})
     # macos-26 ships Xcode 26.x; we select 26.5 below to match the .NET macOS 26.5 SDK pack's
-    # strict version check (same situation as test-ios-game.yml).
+    # strict version check.
     runs-on: macos-26
     # macOS minutes bill 10× Linux on GitHub-hosted runners; keep timeouts tight.
     timeout-minutes: 20
@@ -108,7 +108,7 @@ jobs:
           xcodebuild -version
       - name: Ensure Xcode toolchain utilities resolve
         # Xcode 26.6 on the runner image has a broken `xcodebuild -sdk … -find <tool>`, so the .NET
-        # macOS/iOS SDK can't locate the utilities it needs to build/link/package the .app
+        # macOS SDK can't locate the utilities it needs to build/link/package the .app
         # (install_name_tool, mdimport, actool, …). Symlink each into the active toolchain bin from a
         # real copy (Command Line Tools, Xcode's own bin, PATH, or the llvm-named variant); the SDK's
         # fallback then finds it there.
@@ -216,7 +216,7 @@ jobs:
             if [ -n "$STRIDE_TEST_FILTER" ]; then args+=(--xunit-filter "$STRIDE_TEST_FILTER"); fi
             "$app/Contents/MacOS/$suite" "${args[@]}" || worst=$?
             # The binary's exit code doesn't reflect test failures; parse the TRX like the
-            # Android/iOS drivers do.
+            # Android drivers do.
             trx="$app/Contents/MonoBundle/TestResults/$suite.trx"
             if [ -f "$trx" ]; then
               cp "$trx" TestResults/

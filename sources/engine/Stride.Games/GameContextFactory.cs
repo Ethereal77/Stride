@@ -57,9 +57,6 @@ namespace Stride.Games
                 case AppContextType.UWPCoreWindow:
                     res = NewGameContextUWPCoreWindow(requestedWidth, requestedHeight);
                     break;
-                case AppContextType.iOS:
-                    res = NewGameContextiOS();
-                    break;
                 case AppContextType.Headless:
                     res = new GameContextHeadless(requestedWidth, requestedHeight);
                     break;
@@ -71,15 +68,6 @@ namespace Stride.Games
             }
 
             return res;
-        }
-
-        public static GameContext NewGameContextiOS()
-        {
-#if STRIDE_PLATFORM_IOS
-            return new GameContextiOS(null);
-#else
-            return null;
-#endif
         }
 
         public static GameContext NewGameContextAndroid()

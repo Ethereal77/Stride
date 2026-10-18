@@ -204,7 +204,6 @@ namespace Stride.Assets.Textures
                     switch (parameters.Platform)
                     {
                         case PlatformType.Android:
-                        case PlatformType.iOS:
                             if (inputImageFormat.IsHDR)
                             {
                                 outputFormat = inputImageFormat;
@@ -225,7 +224,7 @@ namespace Stride.Assets.Textures
                                     case GraphicsProfile.Level_11_0:
                                     case GraphicsProfile.Level_11_1:
                                     case GraphicsProfile.Level_11_2:
-                                        // ASTC LDR is mandatory on Vulkan-capable Android (2017+) and on every iOS device since A8.
+                                        // ASTC LDR is mandatory on Vulkan-capable Android (2017+).
                                         // Block size 6x6 (~3.56 bpp) is a good default: matches ETC2_RGB storage while carrying
                                         // a full alpha channel, and beats ETC2_RGBA at half the size.
                                         // ASTC encodes alpha implicitly so the alphaMode branches all map to the same block size;

@@ -971,7 +971,7 @@ public enum PixelFormat
     ///   <br/>
     ///   ASTC blocks are 128 bits (16 bytes) regardless of block dimensions; varying the block size trades quality for storage.
     ///   <br/>
-    ///   Typically used for high-quality color textures on Android (Vulkan / GLES 3.2+) and iOS (A8+).
+    ///   Typically used for high-quality color textures on Android (Vulkan / GLES 3.2+).
     /// </summary>
     ASTC_4x4_UNorm = 1098,
     /// <summary>ASTC LDR sRGB compressed format with a 4x4 block size (8.00 bpp).</summary>

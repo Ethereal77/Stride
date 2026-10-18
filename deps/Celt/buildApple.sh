@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Build Celt (Opus v1.1.3) for Apple RIDs: macOS arm64, iOS arm64 device, and
-# iOS arm64 simulator. Output goes alongside other Stride native libs under
+# Build Celt (Opus v1.1.3) for Apple RIDs: macOS arm64.
+# Output goes alongside other Stride native libs under
 # deps/NativePath/dotnet/<rid>/ (deps/Celt holds source + scripts only).
 
 CELT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -22,7 +22,7 @@ CELT_EXTRAS="$CELT_DIR/celt_extras.c"
 CFLAGS="-O2 -fPIC -DUSE_ALLOCA -DHAVE_LRINTF -DCUSTOM_MODES -DOPUS_BUILD -Iinclude -Icelt"
 
 # Compile + archive Celt for one RID. Each (target, sdk) pair encodes the
-# deployment target via the triple (e.g. arm64-apple-ios12.0-simulator).
+# deployment target via the triple (e.g. arm64-apple-macos11.0).
 build_rid() {
     local rid="$1"
     local target="$2"
@@ -52,5 +52,3 @@ build_rid() {
 }
 
 build_rid osx-arm64           arm64-apple-macos11.0           macosx
-build_rid ios-arm64           arm64-apple-ios12.0             iphoneos
-build_rid iossimulator-arm64  arm64-apple-ios12.0-simulator   iphonesimulator

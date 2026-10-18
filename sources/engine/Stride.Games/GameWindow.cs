@@ -2,17 +2,17 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,7 +92,7 @@ namespace Stride.Games
         /// <value>The client area bounds.</value>
         /// <remarks>
         /// X and Y are the client area origin in screen coordinates. On platforms where the window system
-        /// does not expose global window positions (Wayland, Android, iOS, headless), the origin is (0,0)
+        /// does not expose global window positions (Wayland, Android, headless), the origin is (0,0)
         /// and coordinates are window-relative.
         /// Returns an empty rectangle when the window is minimized or has no usable client area;
         /// check for a positive size before using it for rendering or resize decisions.
@@ -134,7 +134,7 @@ namespace Stride.Games
         /// </summary>
         /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
         public abstract bool Visible { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the opacity of the window.
         /// </summary>
@@ -148,7 +148,7 @@ namespace Stride.Games
         /// </summary>
         /// <remarks>
         /// Matches the origin of <see cref="ClientBounds"/>. On platforms where the window system
-        /// does not expose global window positions (Wayland, Android, iOS, headless), getting
+        /// does not expose global window positions (Wayland, Android, headless), getting
         /// returns (0,0) and setting has no effect.
         /// </remarks>
         public virtual Int2 Position { get; set; }
@@ -270,7 +270,7 @@ namespace Stride.Games
         internal Action RunCallback;
 
         internal Action ExitCallback;
-        
+
         private bool isFullscreen;
 
         internal abstract void Run();

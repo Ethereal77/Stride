@@ -657,24 +657,26 @@ internal class TemplatePreprocessor
 
     /// <summary>
     /// Maps a per-platform exec project's suffix to the template parameter name guarding its
-    /// inclusion. Mirrors the *Active computed bools emitted by <see cref="EmitParameterSymbols"/>;
-    /// the <c>iOS</c> entry uses <c>iOsActive</c> (mixed case) to dodge the customOperations
-    /// C++-evaluator clash with the <c>iOS</c> quoteless choice literal.
+    /// inclusion. Mirrors the *Active computed bools emitted by <see cref="EmitParameterSymbols"/>.
     /// </summary>
     private static readonly Dictionary<string, string> PlatformActiveSymbol = new(StringComparer.Ordinal)
     {
         { "Windows", "WindowsActive" },
         { "Linux",   "LinuxActive"   },
         { "macOS",   "MacOSActive"   },
-        { "iOS",     "iOsActive"     },
-        { "Android", "AndroidActive" },
+        { "Android", "AndroidActive" }
     };
 
     // Default-startup priority: desktop platforms first, then mobile. The highest-priority platform the
     // user keeps gets the .slnx DefaultStartup. PlatformType (not strings) so the names stay
     // compile-checked; covers every PlatformActiveSymbol platform.
     private static readonly PlatformType[] StartupPlatformPriority =
-        [PlatformType.Windows, PlatformType.Linux, PlatformType.macOS, PlatformType.Android, PlatformType.iOS];
+    [
+        PlatformType.Windows,
+        PlatformType.Linux,
+        PlatformType.macOS,
+        PlatformType.Android
+    ];
 
     /// <summary>
     /// Synthesizes a <c>MyTemplate.slnx</c> at the staged root when no solution is already present.
@@ -757,7 +759,7 @@ internal class TemplatePreprocessor
     }
 
     /// <summary>
-    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,macOS,iOS,Android,Windows}</c>)
+    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,macOS,Android,Windows}</c>)
     /// from <see cref="PlatformTemplatePath"/> into the staged output when the sample didn't ship
     /// its own. Verbatim copy — the reference template (NewGame) and samples both use
     /// <c>MyTemplate.Game/</c> as the shared-library dir name, so injected csprojs reference the
@@ -785,7 +787,7 @@ internal class TemplatePreprocessor
         foreach (var srcDir in Directory.EnumerateDirectories(PlatformTemplatePath, "MyTemplate.*", SearchOption.TopDirectoryOnly))
         {
             var dirName = Path.GetFileName(srcDir);
-            // Only inject directories that match a known platform suffix (Linux/macOS/iOS/Android/Windows).
+            // Only inject directories that match a known platform suffix (Linux/macOS/Android/Windows).
             if (!dirName.StartsWith("MyTemplate.", StringComparison.Ordinal))
                 continue;
             var suffix = dirName["MyTemplate.".Length..];
@@ -848,7 +850,6 @@ internal class TemplatePreprocessor
         // Word-boundary regex with optional Stride exec-project suffix lookahead. Matches:
         //   - SampleName             (followed by non-word — covered by \b in lookahead)
         //   - SampleNameApp          (App suffix preserved)
-        //   - SampleNameAppDelegate  (iOS pattern)
         //   - SampleNameActivity     (Android pattern)
         // The lookahead means only "SampleName" is consumed; the suffix stays intact, so
         // CSharpBeginnerApp.cs → MyTemplateApp.cs (then sourceName substitutes at instantiation).
@@ -901,7 +902,7 @@ internal class TemplatePreprocessor
 
     /// <summary>
     /// Reads the first <c>.sdpkg</c>'s <c>Name:</c> field and strips a trailing <c>.Game</c> /
-    /// <c>.Windows</c> / <c>.Linux</c> / <c>.macOS</c> / <c>.iOS</c> / <c>.Android</c> suffix.
+    /// <c>.Windows</c> / <c>.Linux</c> / <c>.macOS</c> / <c>.Android</c> suffix.
     /// Stride convention is <c>SampleName.Game</c> for the library package; the base name is
     /// what gets referenced in code namespaces.
     /// </summary>
@@ -917,7 +918,7 @@ internal class TemplatePreprocessor
             return null;
 
         var name = nameLine.Substring(nameLine.IndexOf(':') + 1).Trim();
-        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux", ".macOS", ".iOS", ".Android" })
+        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux", ".macOS", ".Android" })
         {
             if (name.EndsWith(suffix, StringComparison.Ordinal))
                 return name.Substring(0, name.Length - suffix.Length);
@@ -1167,8 +1168,7 @@ internal class TemplatePreprocessor
     /// Rewrites orientation values in the staged tree into placeholders the orientation
     /// template.json symbols replace at instantiation: the engine-wide <c>DisplayOrientation</c>
     /// in every GameSettings variant (→ <c>STRIDE_ORIENTATION</c>), the Android activity's
-    /// <c>ScreenOrientation</c> (→ <c>STRIDE_ANDROID_ORIENTATION</c>), and the iOS Info.plist's
-    /// <c>UIInterfaceOrientation*</c> entry (→ <c>UIInterfaceOrientationSTRIDE_IOS_ORIENTATION</c>).
+    /// <c>ScreenOrientation</c> (→ <c>STRIDE_ANDROID_ORIENTATION</c>).
     /// The source scaffold keeps real, buildable values; only the staged copy is tokenized.
     /// </summary>
     private void InjectOrientationPlaceholders(ILogger logger)
@@ -1192,18 +1192,6 @@ internal class TemplatePreprocessor
                 continue;
             File.WriteAllText(csPath, content.Replace("ScreenOrientation.Landscape", "ScreenOrientation.STRIDE_ANDROID_ORIENTATION"));
             logger.Info($"Injected ScreenOrientation placeholder into {Path.GetFileName(csPath)}");
-        }
-
-        // iOS Info.plist carries UISupportedInterfaceOrientations. The scaffold ships
-        // UIInterfaceOrientationLandscapeRight (matching the choice's Default branch); rewrite
-        // the orientation token so the iosInterfaceOrientation switch symbol can swap it in.
-        foreach (var plistPath in Directory.EnumerateFiles(OutputDirectory!, "Info.plist", SearchOption.AllDirectories))
-        {
-            var content = File.ReadAllText(plistPath);
-            if (!content.Contains("UIInterfaceOrientationLandscapeRight", StringComparison.Ordinal))
-                continue;
-            File.WriteAllText(plistPath, content.Replace("UIInterfaceOrientationLandscapeRight", "UIInterfaceOrientationSTRIDE_IOS_ORIENTATION"));
-            logger.Info($"Injected UIInterfaceOrientation placeholder into {Path.GetFileName(plistPath)}");
         }
     }
 
@@ -1371,7 +1359,6 @@ internal class TemplatePreprocessor
                     { "choice": "windows", "description": "Windows x64 desktop" },
                     { "choice": "linux",   "description": "Linux x64 desktop" },
                     { "choice": "macos",   "description": "macOS arm64/x64" },
-                    { "choice": "ios",     "description": "iOS arm64" },
                     { "choice": "android", "description": "Android arm64/x64" }
                   ]
                 },
@@ -1396,7 +1383,6 @@ internal class TemplatePreprocessor
                 "WindowsActive": { "type": "computed", "value": "(platforms == \"windows\") || ((platforms == \"host\") && IsWindows)" },
                 "LinuxActive":   { "type": "computed", "value": "(platforms == \"linux\")   || ((platforms == \"host\") && IsLinux)"   },
                 "MacOSActive":   { "type": "computed", "value": "(platforms == \"macos\")   || ((platforms == \"host\") && IsMacOS)"   },
-                "iOsActive":     { "type": "computed", "value": "(platforms == \"ios\")"     },
                 "AndroidActive": { "type": "computed", "value": "(platforms == \"android\")" },
         """);
     }
@@ -1429,10 +1415,9 @@ internal class TemplatePreprocessor
     /// <summary>
     /// Per-template opt-in mobile display Orientation choice. The choice values match the engine's
     /// <c>RequiredDisplayOrientation</c> enum names, so the parameter replaces the GameSettings
-    /// placeholder verbatim. Android and iOS use platform-native enums (<c>ScreenOrientation</c> /
+    /// placeholder verbatim. Android use platform-native enums (<c>ScreenOrientation</c> /
     /// <c>UIInterfaceOrientation*</c>), so a switch symbol maps the choice onto each:
     /// Android — Default/LandscapeRight → Landscape, LandscapeLeft → ReverseLandscape, Portrait → Portrait;
-    /// iOS     — Default/LandscapeRight → LandscapeRight, LandscapeLeft → LandscapeLeft, Portrait → Portrait.
     /// </summary>
     private static void EmitOrientationSymbol(StringBuilder sb) => sb.AppendLine("""
                 "orientation": {
@@ -1462,20 +1447,6 @@ internal class TemplatePreprocessor
                     ]
                   }
                 },
-                "iosInterfaceOrientation": {
-                  "type": "generated",
-                  "generator": "switch",
-                  "replaces": "STRIDE_IOS_ORIENTATION",
-                  "parameters": {
-                    "evaluator": "C++",
-                    "datatype": "string",
-                    "cases": [
-                      { "condition": "(orientation == \"LandscapeLeft\")", "value": "LandscapeLeft" },
-                      { "condition": "(orientation == \"Portrait\")",      "value": "Portrait" },
-                      { "condition": "",                                   "value": "LandscapeRight" }
-                    ]
-                  }
-                },
     """);
 
     /// <summary>Computed bool used by HDR/LDR scene-variant sources/modifiers. Requires both HDR + GraphicsProfile.</summary>
@@ -1501,7 +1472,6 @@ internal class TemplatePreprocessor
                 { "condition": "(!WindowsActive)", "exclude": [ "MyTemplate.Windows/**" ] },
                 { "condition": "(!LinuxActive)",   "exclude": [ "MyTemplate.Linux/**"   ] },
                 { "condition": "(!MacOSActive)",   "exclude": [ "MyTemplate.macOS/**"   ] },
-                { "condition": "(!iOsActive)",     "exclude": [ "MyTemplate.iOS/**"     ] },
                 { "condition": "(!AndroidActive)", "exclude": [ "MyTemplate.Android/**" ] },
                 { "condition": "(updateOnly)",     "exclude": [ "MyTemplate.Game/**", "*.slnx" ] },
                 { "condition": "(skipSolution)",   "exclude": [ "*.slnx" ] },
@@ -1587,7 +1557,7 @@ internal class TemplatePreprocessor
     /// <summary>Directory names never staged into a template: build outputs and editor/VS state.</summary>
     private static readonly HashSet<string> ExcludedCopyDirs = new(StringComparer.OrdinalIgnoreCase)
     {
-        "bin", "obj", ".vs",
+        "bin", "obj", ".vs"
     };
 
     public static void CopyDirectory(string source, string dest)

@@ -183,55 +183,9 @@ jobs:
           name: freetype-${{ matrix.rid }}
           path: out/${{ matrix.rid }}/
 
-  build-ios:
-    name: Build FreeType (${{ matrix.rid }})
-    runs-on: macos-15
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - rid: ios-arm64
-            sysroot: iphoneos
-          - rid: iossimulator-arm64
-            sysroot: iphonesimulator
-    steps:
-      - name: Checkout FreeType
-        uses: actions/checkout@v7
-        with:
-          repository: freetype/freetype
-          ref: ${{ github.event.inputs.freetype-version }}
-          path: freetype-src
-
-      - name: Build
-        run: |
-          cmake -S freetype-src -B freetype-build \
-            -DBUILD_SHARED_LIBS=OFF \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_SYSTEM_NAME=iOS \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_SYSROOT=${{ matrix.sysroot }} \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
-            -DFT_DISABLE_BZIP2=ON \
-            -DFT_DISABLE_BROTLI=ON \
-            -DFT_DISABLE_HARFBUZZ=ON \
-            -DFT_DISABLE_PNG=ON \
-            -DFT_DISABLE_ZLIB=ON
-          cmake --build freetype-build -- -j$(sysctl -n hw.ncpu)
-
-      - name: Collect output
-        run: |
-          mkdir -p out/${{ matrix.rid }}
-          cp freetype-build/libfreetype.a out/${{ matrix.rid }}/
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: freetype-${{ matrix.rid }}
-          path: out/${{ matrix.rid }}/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-macos, build-android, build-ios]
+    needs: [build-windows, build-linux, build-macos, build-android]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout FreeType (for version info)
@@ -251,8 +205,8 @@ jobs:
         run: |
           OUT=freetype-out
 
-          # Desktop + iOS → dotnet/{rid}/
-          for rid in win-x64 win-arm64 linux-x64 osx-x64 osx-arm64 ios-arm64 iossimulator-arm64; do
+          # Desktop → dotnet/{rid}/
+          for rid in win-x64 win-arm64 linux-x64 osx-x64 osx-arm64; do
             mkdir -p $OUT/dotnet/$rid
             cp artifacts/freetype-$rid/* $OUT/dotnet/$rid/ 2>/dev/null || true
           done

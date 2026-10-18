@@ -1,17 +1,14 @@
 name: "Dep: Build NativePath"
 
 # Builds libNativePath.a from stride3d/NativePath upstream for the Apple RIDs
-# Stride consumes (osx-arm64 + iOS device + iOS simulator). The upstream
-# buildApple.sh handles all three slices in one xcodebuild invocation; this
-# workflow just packages the outputs into the per-RID layout the engine
-# expects under deps/NativePath/dotnet/<rid>/.
+# Stride consumes (osx-arm64). The upstream buildApple.sh handles it in one
+# xcodebuild invocation; this workflow just packages the outputs into the per-RID
+# layout the engine expects under deps/NativePath/dotnet/<rid>/.
 #
 # Output per RID:
 #   dotnet/osx-arm64/libNativePath.a          (PLATFORM_MACOS)
-#   dotnet/ios-arm64/libNativePath.a          (PLATFORM_IOS)
-#   dotnet/iossimulator-arm64/libNativePath.a (PLATFORM_IOSSIMULATOR)
 #
-# RIDs covered: osx-arm64, ios-arm64, iossimulator-arm64.
+# RIDs covered: osx-arm64.
 
 on:
   workflow_dispatch:
@@ -27,7 +24,7 @@ on:
 
 jobs:
   build:
-    name: Build NativePath (osx-arm64 + iOS device + simulator)
+    name: Build NativePath (osx-arm64)
     runs-on: macos-15
     steps:
       - name: Checkout NativePath
@@ -43,10 +40,8 @@ jobs:
 
       - name: Stage outputs under dotnet/<rid>/
         run: |
-          mkdir -p out/dotnet/osx-arm64 out/dotnet/ios-arm64 out/dotnet/iossimulator-arm64
+          mkdir -p out/dotnet/osx-arm64
           cp NativePath/build/osx-arm64/libNativePath.a          out/dotnet/osx-arm64/
-          cp NativePath/build/ios-arm64/libNativePath.a          out/dotnet/ios-arm64/
-          cp NativePath/build/iossimulator-arm64/libNativePath.a out/dotnet/iossimulator-arm64/
 
       - name: Write VERSION.txt
         run: |

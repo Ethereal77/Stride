@@ -491,7 +491,7 @@ namespace Stride.Graphics
 
             var layerCount = Dimension == TextureDimension.Texture3D ? 1 : arrayOrDepthCount;
 
-            // Narrow view usage to what it's actually bound as (drops ColorAttachment etc.) — avoids MoltenVK's layered-render check on iOS sim.
+            // Narrow view usage to what it's actually bound as (drops ColorAttachment etc.)
             var viewUsage = default(VkImageUsageFlags);
             if (IsShaderResource) viewUsage |= VkImageUsageFlags.Sampled;
             if (IsUnorderedAccess) viewUsage |= VkImageUsageFlags.Storage;

@@ -86,7 +86,7 @@ public class AssemblyProcessorProgram
             string.Empty,
             { "h|help", "Show this message and exit", v => localShowHelp = v != null },
             { "o|output=", "Output file name", v => localOutputFilePath = v },
-            { "p|platform=", "The platform (Windows, Android, iOS)", v => app.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
+            { "p|platform=", "The platform (Windows, Android)", v => app.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
             { "parameter-key", "Automatically initialize parameter keys in module static constructor", _ => app.ParameterKey = true },
             { "rename-assembly=", "Rename assembly", v => app.NewAssemblyName = v },
             { "auto-module-initializer", "Execute function tagged with [ModuleInitializer] at module initialization (automatically enabled)", _ => app.ModuleInitializer = true },

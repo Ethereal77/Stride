@@ -7,15 +7,11 @@ using Stride.Core.Diagnostics;
 using Stride.Engine;
 using Stride.Games;
 
-#if STRIDE_PLATFORM_ANDROID || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_ANDROID
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Stride.Core;
 using Stride.Games;
-#endif
-
-#if STRIDE_PLATFORM_IOS
-using UIKit;
 #endif
 
 namespace Stride.Graphics.Regression
@@ -27,7 +23,7 @@ namespace Stride.Graphics.Regression
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("GameTester");
 
-#if STRIDE_PLATFORM_ANDROID || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_ANDROID
         private static object uniThreadLock = new();
 #endif
 
@@ -43,7 +39,7 @@ namespace Stride.Graphics.Regression
         ///       On desktop platforms, the game is executed in a blocking manner.
         ///     </item>
         ///     <item>
-        ///       On iOS and Android platforms, the game is executed within a platform-specific activity or view,
+        ///       On Android platforms, the game is executed within a platform-specific activity or view,
         ///       with proper handling for game completion and exceptions.
         ///       It also uses synchronization mechanisms to ensure thread safety and waits for the game to
         ///       complete before returning.
@@ -80,13 +76,13 @@ namespace Stride.Graphics.Regression
 
             throw new NotImplementedException();
 
-#elif STRIDE_PLATFORM_IOS || STRIDE_PLATFORM_ANDROID
+#elif STRIDE_PLATFORM_ANDROID
 
-#if STRIDE_PLATFORM_ANDROID || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_ANDROID
             // Headless path mirrors desktop: when ScreenShotAutomationEnabled (set from
-            // !ForceInteractiveMode), run offscreen in-process — no separate Activity (Android)
-            // or SDL-over-Avalonia window switch (iOS), no per-test process. Interactive runs
-            // fall through to the SDL-window path below for visual inspection.
+            // !ForceInteractiveMode), run offscreen in-process — no separate Activity (Android),
+            // no per-test process. Interactive runs fall through to the SDL-window path below
+            // for visual inspection.
             if (game is GameTestBase { ScreenShotAutomationEnabled: true })
             {
                 try
@@ -127,56 +123,7 @@ namespace Stride.Graphics.Regression
                     game.UnhandledException += exceptionhandler;
 
                     Logger.Info(@"Starting activity");
-#if STRIDE_PLATFORM_IOS
-                    // Marshal to the iOS main thread: SDL_Init/SDL_CreateWindow + UIKit gesture
-                    // recognizer setup must run on the main thread. InvokeOnMainThread blocks
-                    // the calling (test) thread until the lambda returns, and the lambda contains
-                    // the blocking game.Run call — so test-thread synchronization is implicit.
-                    // game.Exit() (called by the test or by the edge-swipe gesture handler) ends
-                    // the game loop, the lambda returns, control flows back to the test thread.
-                    // Avalonia.iOS's run loop is paused while we hold the main thread; that's fine
-                    // for an interactive test session (the user is looking at the game, not the
-                    // runner UI). When the SDL window is disposed, iOS makes Avalonia's window key
-                    // again automatically.
-                    Exception runError = null;
-                    UIApplication.SharedApplication.InvokeOnMainThread(() =>
-                    {
-                        Stride.Graphics.SDL.Window sdlWindow = null;
-                        UIWindow keyWindow = null;
-                        UIScreenEdgePanGestureRecognizer swipe = null;
-                        try
-                        {
-                            // SDL2 detects the already-running UIApplication (Avalonia.iOS) and
-                            // creates only a new UIWindow rather than installing its own delegate.
-                            sdlWindow = new Stride.Graphics.SDL.Window("Stride Tests");
-
-                            // iOS-standard left-edge swipe to exit (mirrors Android's system back
-                            // gesture). Attach to the now-key window — that's SDL's window since
-                            // SDL_CreateWindow makes the new window key on creation.
-                            keyWindow = UIApplication.SharedApplication.KeyWindow;
-                            if (keyWindow != null)
-                            {
-                                swipe = new UIScreenEdgePanGestureRecognizer(g =>
-                                {
-                                    if (g.State == UIGestureRecognizerState.Ended) game.Exit();
-                                }) { Edges = UIRectEdge.Left };
-                                keyWindow.AddGestureRecognizer(swipe);
-                            }
-
-                            var gameContext = new GameContextiOS(sdlWindow);
-                            game.Run(gameContext);  // blocks main thread; returns on game.Exit()
-                        }
-                        catch (Exception ex) { runError = ex; }
-                        finally
-                        {
-                            if (keyWindow != null && swipe != null) keyWindow.RemoveGestureRecognizer(swipe);
-                            sdlWindow?.Dispose();
-                        }
-                    });
-                    if (runError != null) ExceptionDispatchInfo.Capture(runError).Throw();
-                    // The Android path below uses tcs.Task.Wait — iOS doesn't need it because
-                    // InvokeOnMainThread already blocked us until game.Run completed.
-#elif STRIDE_PLATFORM_ANDROID
+#if STRIDE_PLATFORM_ANDROID
                     // Start activity
                     AndroidGameTestActivity.GameToStart = game;
                     AndroidGameTestActivity.Destroyed += gameFinishedCallback;

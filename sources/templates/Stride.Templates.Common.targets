@@ -250,7 +250,7 @@
          literals + concrete Stride.* PackageReference versions), so packed content instantiates
          against the engine it shipped with — including via plain `dotnet new`, which has no
          Stride-side rewrite hook. platform-template-path points the preprocessor at the NewGame
-         scaffold so samples that ship only Windows (most of them) gain Linux/macOS/iOS/Android
+         scaffold so samples that ship only Windows (most of them) gain Linux/macOS/Android
          exec projects in the packed output. -->
     <Exec Command="dotnet &quot;$(StrideTemplatesDll)&quot; preprocess-template --input-path=&quot;%(StrideSampleTemplate.SamplePath)&quot; --output-path=&quot;$(TemplateContentRoot)/%(StrideSampleTemplate.Identity)&quot; --template-name=%(StrideSampleTemplate.Identity) --engine-version=&quot;$(_StrideTemplatesEngineVersion)&quot; --platform-template-path=&quot;$(StrideRoot)samples/NewGame/NewGame&quot; $(_StrideTemplatesSkipPruneFlag)" />
 

@@ -4,7 +4,7 @@ This folder houses bullet, the physics engine used by `Stride.Physics` assembly.
 
 * `libbulletc.*` is the bullet c++ library, we should have one lib compiled for each platform and architecture.
 
-* `BulletSharp.NetStandard.dll` is the C# wrapper around that c++ library, there's one dll for iOS (within /iOS) and the other for any other platform. Take a look at https://xamarin.github.io/bugzilla-archives/24/24943/bug.html for more info about the reason as to why we have to make a specific dll for iOS.
+* `BulletSharp.NetStandard.dll` is the C# wrapper around that C++ library, there's one DLL for any platform.
 
 ### Sources
 

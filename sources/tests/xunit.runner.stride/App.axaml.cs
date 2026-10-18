@@ -3,7 +3,6 @@
 
 using System.Reflection;
 using System.Text;
-using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using xunit.runner.stride.ViewModels;
@@ -34,7 +33,7 @@ public partial class App : Avalonia.Application
     //   adb shell am start --es xunit_command run --ez xunit_exit_on_complete true
     public static bool HeadlessMode;
 
-    // Optional vstest --filter expression for headless runs (Android/iOS launcher reads it from
+    // Optional vstest --filter expression for headless runs (Android launcher reads it from
     // the launch Intent: --es xunit_filter "<expr>"). Null/empty runs the whole suite.
     public static string? HeadlessFilter;
 
@@ -172,8 +171,7 @@ public partial class App : Avalonia.Application
             var name = Path.GetFileName(dir);
             int dash = name.IndexOf('-');
             if (dash > 0 && (name.StartsWith("Windows-") || name.StartsWith("macOS-")
-                || name.StartsWith("Linux-") || name.StartsWith("Android-")
-                || name.StartsWith("iOS-")))
+                || name.StartsWith("Linux-") || name.StartsWith("Android-")))
                 return name[(dash + 1)..];
             dir = Path.GetDirectoryName(dir);
         }

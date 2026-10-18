@@ -2,7 +2,6 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 #if STRIDE_UI_SDL
 using System;
-using Stride.Core;
 using Stride.Core.Mathematics;
 using Silk.NET.SDL;
 using Point = Stride.Core.Mathematics.Point;
@@ -77,7 +76,7 @@ namespace Stride.Graphics.SDL
 #if STRIDE_GRAPHICS_API_VULKAN
             flags |= WindowFlags.Vulkan;
 #endif
-#if STRIDE_PLATFORM_ANDROID || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_ANDROID
             flags |= WindowFlags.Borderless | WindowFlags.Fullscreen | WindowFlags.Shown;
 #else
             flags |= WindowFlags.Hidden | WindowFlags.Resizable;
@@ -95,11 +94,11 @@ namespace Stride.Graphics.SDL
                 // Create the SDL window and then extract the native handle.
                 sdlHandle = SDL.CreateWindow(title, Sdl.WindowposUndefined, Sdl.WindowposUndefined, 640, 480, (uint)flags);
             }
-            
+
 
             if (sdlHandle == null)
             {
-                throw new Exception("Cannot allocate SDL Window: " + SDL.GetErrorS()); 
+                throw new Exception("Cannot allocate SDL Window: " + SDL.GetErrorS());
             }
 
             SysWMInfo info = default;
@@ -343,7 +342,7 @@ namespace Stride.Graphics.SDL
             }
             set { SDL.SetWindowSize(sdlHandle, value.Width, value.Height); }
         }
-        
+
         /// <summary>
         /// The opacity of the window.
         /// </summary>
@@ -583,7 +582,7 @@ namespace Stride.Graphics.SDL
                 case EventType.Fingerup:
                     FingerReleaseActions?.Invoke(e.Tfinger);
                     break;
-                
+
                 case EventType.Dropfile:
                     DropFileActions?.Invoke(Silk.NET.Core.Native.SilkMarshal.PtrToString((IntPtr)e.Drop.File, Silk.NET.Core.Native.NativeStringEncoding.UTF8));
                     break;
@@ -719,7 +718,7 @@ namespace Stride.Graphics.SDL
                 Handle = IntPtr.Zero;
             }
         }
-  
+
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {

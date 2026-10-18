@@ -23,10 +23,6 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
-      ios:
-        description: Run iOS jobs
-        type: boolean
-        default: true
       android:
         description: Run Android jobs
         type: boolean
@@ -81,15 +77,6 @@ jobs:
       build-type: Debug   # Release has a bug and cannot build
 
   ### Runtimes ###
-  # The `ios` filter is narrower than `runtime` on purpose: iOS runners are costly, macOS-Tests-Game
-  # covers the shared engine surface per-PR, and master pushes run this per-commit anyway.
-  iOS-Runtime:
-    needs: changes
-    if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.ios == 'true' && (github.event_name != 'workflow_dispatch' || inputs.ios)
-    uses: ./.github/workflows/build-ios.yml
-    with:
-      build-type: Release
-
   Android-Runtime:
     needs: changes
     if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.runtime == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
@@ -253,21 +240,6 @@ jobs:
     with:
       build-type: Debug
 
-  # iOS Simulator tests run on macOS runners and take ~24 min, so PRs only trigger them on
-  # strictly iOS-specific paths (ios-tests filter); master pushes still run them per-commit.
-  iOS-Tests-Game:
-    needs: [changes, Linux-Runtime]
-    if: |
-      !cancelled()
-      && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-      && needs.changes.outputs.ios-tests == 'true'
-      && needs['Linux-Runtime'].result != 'failure'
-      && needs['Linux-Runtime'].result != 'cancelled'
-      && (github.event_name != 'workflow_dispatch' || inputs.ios)
-    uses: ./.github/workflows/test-ios-game.yml
-    with:
-      build-type: Debug
-
   # Android tests run on Linux + KVM-accelerated x86_64 emulator. Build APKs on the host,
   # boot the emulator inside reactivecircus/android-emulator-runner, run each suite serially.
   Android-Tests-Game:
@@ -292,7 +264,6 @@ jobs:
       - changes
       - Assembly-Processor
       - VS-Package
-      - iOS-Runtime
       - Android-Runtime
       - Linux-Runtime
       - Windows-Runtime-D3D11
@@ -307,7 +278,6 @@ jobs:
       - Linux-Tests-Simple
       - Linux-Tests-Game
       - macOS-Tests-Game
-      - iOS-Tests-Game
       - Android-Tests-Game
     if: always()
     runs-on: ubuntu-latest

@@ -2,17 +2,17 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -77,7 +77,7 @@ namespace Stride.Games
             IsFixedTimeStep = false;
             maximumElapsedTime = TimeSpan.FromMilliseconds(500.0);
             TargetElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond / 60); // target elapsed time is by default 60Hz
-            
+
             TreatNotFocusedLikeMinimized = true;
             WindowMinimumUpdateRate = new ThreadThrottler(TimeSpan.FromSeconds(0d));
             MinimizedMinimumUpdateRate = new ThreadThrottler(15); // by default 15 updates per second while minimized
@@ -150,9 +150,9 @@ namespace Stride.Games
         public GameTime DrawTime { get; }
 
         /// <summary>
-        /// Is used when we draw without running an update beforehand, so when both <see cref="IsFixedTimeStep"/> 
+        /// Is used when we draw without running an update beforehand, so when both <see cref="IsFixedTimeStep"/>
         /// and <see cref="IsDrawDesynchronized"/> are set.<br/>
-        /// It returns a number between 0 and 1 which represents the current position our DrawTime is in relation 
+        /// It returns a number between 0 and 1 which represents the current position our DrawTime is in relation
         /// to the previous and next step.<br/>
         /// 0.5 would mean that we are rendering at a time halfway between the previous and next fixed-step.
         /// </summary>
@@ -287,7 +287,7 @@ namespace Stride.Games
         public ThreadThrottler MinimizedMinimumUpdateRate { get; }
 
         /// <summary>
-        /// Considers windows without user focus like a minimized window for <see cref="MinimizedMinimumUpdateRate"/> 
+        /// Considers windows without user focus like a minimized window for <see cref="MinimizedMinimumUpdateRate"/>
         /// </summary>
         public bool TreatNotFocusedLikeMinimized { get; set; }
 
@@ -434,13 +434,11 @@ namespace Stride.Games
                     c = AppContextType.DesktopWinForms;
                 else if (OperatingSystem.IsAndroid())
                     c = AppContextType.Android;
-                else if (OperatingSystem.IsIOS() || OperatingSystem.IsTvOS() || OperatingSystem.IsWatchOS())
-                    c = AppContextType.iOS;
                 else
                     c = AppContextType.DesktopSDL;
                 gameContext = GameContextFactory.NewGameContext(c);
             }
-            
+
             Context = gameContext;
 
             PrepareContext();
@@ -625,7 +623,7 @@ namespace Stride.Games
         /// <see cref="IsDrawDesynchronized"/>, <see cref="MinimizedMinimumUpdateRate"/> / <see cref="WindowMinimumUpdateRate"/> / <see cref="TreatNotFocusedLikeMinimized"/>.
         /// </summary>
         /// <param name="elapsedTimePerUpdate">
-        /// The amount of time passed between each update of the game's system, 
+        /// The amount of time passed between each update of the game's system,
         /// the total time passed would be <paramref name="elapsedTimePerUpdate"/> * <paramref name="updateCount"/>.
         /// </param>
         /// <param name="updateCount">

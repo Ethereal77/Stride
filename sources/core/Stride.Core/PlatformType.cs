@@ -43,11 +43,6 @@ public enum PlatformType
     Android,
 
     /// <summary>
-    ///   The iOS operating system for Apple mobile devices such as iPhone and iPad.
-    /// </summary>
-    iOS,
-
-    /// <summary>
     ///   The Universal Windows Platform (UWP) for applications that run on Windows 10 and later devices, and XBox gaming consoles.
     /// </summary>
     UWP,

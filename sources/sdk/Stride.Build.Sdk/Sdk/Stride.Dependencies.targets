@@ -20,9 +20,6 @@
     - Android: emitted as AndroidNativeLibrary with the RID→ABI name mapping; engine
       self-build only — NuGet PackageReference consumers get this for free via
       Microsoft.Android.Sdk auto-conversion of runtimes/android-*/native/*.so.
-    - iOS: emitted as NativeReference Kind=Static ForceLoad=True via the shared target in
-      Stride.Core.NativeLibraries.targets, which also handles the NuGet PackageReference
-      path by sourcing items from @(RuntimeCopyLocalItems).
     ================================================================
   -->
 
@@ -79,9 +76,8 @@
   </Target>
 
   <!-- _StrideReadDepsFiles + _StrideDistinctByFilename UsingTasks, _StrideBuildDependencies
-       (.ssdeps parser), and the iOS NativeReference target all live in the shared file so
-       Stride.Core.targets (NuGet PackageReference path) and this (engine self-build path)
-       use one implementation. -->
+       (.ssdeps parser), all live in the shared file so Stride.Core.targets (NuGet PackageReference path)
+       and this (engine self-build path) use one implementation. -->
   <Import Project="$(StrideRoot)sources/core/Stride.Core/build/Stride.Core.NativeLibraries.targets" />
 
   <!-- ================================================================ -->
@@ -128,14 +124,10 @@
         <SmartLink>False</SmartLink>
       </NativeReference>
     </ItemGroup>
-
-    <!-- iOS NativeReference wiring lives in Stride.Core.NativeLibraries.targets
-         (imported at the top of this file) — its needs are identical between the
-         engine self-build path here and the NuGet PackageReference path. -->
   </Target>
 
   <!-- StrideToolingHost (AssetCompiler, GameStudio): drop runtimes/<rid>/ assets that this desktop
-       host can't use from its no-RID output — mobile (android/ios/tvos, ~250 MB) on net10.0, plus
+       host can't use from its no-RID output — mobile (android, ~250 MB) on net10.0, plus
        linux/osx on the Windows-only net10.0-windows. Covers NuGet assets (ReferenceCopyLocalPaths),
        .ssdeps natives and Content copies (_SourceItemsToCopyToOutputDirectory[Always]); items outside
        runtimes/ are untouched. Normalize '\'→'/' — Replace('/','\\') yields a double backslash here,

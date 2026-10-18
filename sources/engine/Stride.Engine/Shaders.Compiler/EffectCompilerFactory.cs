@@ -1,9 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Stride.Core;
 using Stride.Core.IO;
 using Stride.Engine.Design;
@@ -16,7 +14,7 @@ namespace Stride.Shaders.Compiler
         /// <summary>
         /// Whether the remote effect compiler (connecting to Game Studio over a socket to compile shaders)
         /// is available. Set the "Stride.Engine.RemoteEffectCompilerEnabled" feature switch to <c>false</c>
-        /// to let trimming/AOT drop the remote compiler and its networking stack (e.g. for shipping/iOS
+        /// to let trimming/AOT drop the remote compiler and its networking stack (e.g. for shipping
         /// builds, which only load precompiled effects or compile locally).
         /// </summary>
         [FeatureSwitchDefinition("Stride.Engine.RemoteEffectCompilerEnabled")]
@@ -24,11 +22,11 @@ namespace Stride.Shaders.Compiler
             => !AppContext.TryGetSwitch("Stride.Engine.RemoteEffectCompilerEnabled", out var enabled) || enabled;
 
         public static IEffectCompiler CreateEffectCompiler(
-            IVirtualFileProvider fileProvider, 
-            EffectSystem effectSystem = null, 
-            string packageName = null, 
-            EffectCompilationMode effectCompilationMode = EffectCompilationMode.Local, 
-            bool recordEffectRequested = false, 
+            IVirtualFileProvider fileProvider,
+            EffectSystem effectSystem = null,
+            string packageName = null,
+            EffectCompilationMode effectCompilationMode = EffectCompilationMode.Local,
+            bool recordEffectRequested = false,
             TaskSchedulerSelector taskSchedulerSelector = null,
             DatabaseFileProvider database = null)
         {

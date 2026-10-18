@@ -78,7 +78,6 @@ launch-android.bat
 sources/tests/framework/Stride.Framework.Audio.Tests/Resources/Resource.Designer.cs
 Win32
 Win32Debug
-launch-ios.bat
 sources/engine/Stride.Graphics.Tests/log/
 *.androidcache
 sources/engine/Stride.Graphics/log/
@@ -123,7 +122,6 @@ ui-test-out-dpi*
 .DS_Store
 
 ## Build generated
-sources/tools/Stride iOS Relay/build/
 DerivedData
 
 ## Various settings

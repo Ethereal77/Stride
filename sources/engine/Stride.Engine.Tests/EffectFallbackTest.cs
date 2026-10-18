@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Stride.Core;
 using Stride.Core.Mathematics;
 using Stride.Core.Storage;
 using Stride.Graphics;
@@ -121,7 +120,6 @@ namespace Stride.Engine.Tests
         [SkippableFact]
         public void RunTestGame()
         {
-            SkipTestForPlatform(PlatformType.iOS);
             RunGameTest(new EffectFallbackTest());
         }
 

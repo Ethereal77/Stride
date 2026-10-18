@@ -85,10 +85,6 @@ public static class PlatformFolders
         return directory;
 #elif STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
-#elif STRIDE_PLATFORM_IOS
-        var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Local");
-        Directory.CreateDirectory(directory);
-        return directory;
 #else
         // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "local");
@@ -105,10 +101,6 @@ public static class PlatformFolders
         return directory;
 #elif STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
-#elif STRIDE_PLATFORM_IOS
-        var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Roaming");
-        Directory.CreateDirectory(directory);
-        return directory;
 #else
         // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "roaming");
@@ -123,8 +115,6 @@ public static class PlatformFolders
         var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "cache");
 #elif STRIDE_PLATFORM_UWP
         var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
-#elif STRIDE_PLATFORM_IOS
-        var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Caches");
 #else
         // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "cache");
@@ -161,8 +151,6 @@ public static class PlatformFolders
         return PlatformAndroid.Context.CacheDir.AbsolutePath;
 #elif STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.TemporaryFolder.Path;
-#elif STRIDE_PLATFORM_IOS
-        return Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "tmp");
 #else
         return Path.GetTempPath();
 #endif
@@ -203,8 +191,6 @@ public static class PlatformFolders
     {
 #if STRIDE_PLATFORM_ANDROID
         return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/Android/data/" + PlatformAndroid.Context.PackageName + "/data";
-#elif STRIDE_PLATFORM_IOS
-        return Foundation.NSBundle.MainBundle.BundlePath + "/data";
 #elif STRIDE_PLATFORM_UWP
         return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
 #else

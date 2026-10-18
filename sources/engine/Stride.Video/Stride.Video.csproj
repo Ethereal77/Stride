@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Includes net10.0-macos so AVFoundation / CoreVideo / Metal bindings are available
-         for AVFoundationVideoBackend on macOS desktop. iOS already comes via the mobile set. -->
+         for AVFoundationVideoBackend on macOS desktop. -->
     <TargetFrameworks>$(StrideRuntimeTargetFrameworksMacOS)</TargetFrameworks>
     <StrideGraphicsApiDependent>true</StrideGraphicsApiDependent>
     <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
@@ -17,7 +17,7 @@
   <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)'">
     <DefineConstants>STRIDE_VIDEO_MEDIACODEC;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkiOS)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
+  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
     <DefineConstants>STRIDE_VIDEO_AVFOUNDATION;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

@@ -72,16 +72,9 @@ public enum AppContextType
     /// </summary>
     UWPCoreWindow,
 
-#pragma warning disable SA1300 // Element must begin with upper-case letter
-    /// <summary>
-    ///   The <c>Game</c> runs on an iOS device in an <c>iPhoneOSGameView</c>.
-    /// </summary>
-    iOS,
-#pragma warning restore SA1300 // Element must begin with upper-case letter
-
     /// <summary>
     ///   The <c>Game</c> runs in headless mode without a window or display.
     ///   Used for automated testing with software renderers (e.g. Lavapipe).
     /// </summary>
-    Headless,
+    Headless
 }

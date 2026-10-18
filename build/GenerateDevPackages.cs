@@ -846,13 +846,13 @@ static string GenerateRedirectTargets(string pkgId, ProjectInfo projInfo, string
     var relProjDir = Path.GetRelativePath(strideRoot, projInfo.ProjectDir).Replace('\\', '/');
     var gfxSeg = projInfo.IsGraphicsDependent ? "/$(StrideGraphicsApi)" : "";
     // Redirect to the in-tree bin DLL matching the consumer's TFM when that project produced one
-    // (e.g. net10.0-windows brings WinForms/WPF, net10.0-ios its iOS bits), else the portable net10.0
+    // (e.g. net10.0-windows brings WinForms/WPF), else the portable net10.0
     // build. $(TargetFramework) is the short form, which matches the bin folder name; Exists() makes
     // it self-correcting per project/TFM.
     var portableDll = $"$(StrideDevRoot)/{relProjDir}/bin/$(StrideDevConfiguration)/net10.0{gfxSeg}/{projInfo.AssemblyName}.dll";
     var tfmDll = $"$(StrideDevRoot)/{relProjDir}/bin/$(StrideDevConfiguration)/$(TargetFramework){gfxSeg}/{projInfo.AssemblyName}.dll";
-    // Fall back to the no-graphics-API TFM layout when the gfx-segmented dll is absent (e.g. iOS,
-    // which has no per-API subdir), rather than the host net10.0 portable build.
+    // Fall back to the no-graphics-API TFM layout when the gfx-segmented dll is absent,
+    // rather than the host net10.0 portable build.
     var tfmDllNoGfx = $"$(StrideDevRoot)/{relProjDir}/bin/$(StrideDevConfiguration)/$(TargetFramework)/{projInfo.AssemblyName}.dll";
 
     // Replace dots with underscores in target/property names; MSBuild rejects dotted target names.

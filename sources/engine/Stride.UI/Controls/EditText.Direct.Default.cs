@@ -2,7 +2,7 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 // Stub impls (no native widget, in-engine rendering) — same scope as EditText.Direct.cs.
-#if STRIDE_PLATFORM_DESKTOP || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_DESKTOP
 
 namespace Stride.UI.Controls
 {

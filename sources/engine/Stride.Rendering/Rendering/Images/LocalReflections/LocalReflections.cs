@@ -6,7 +6,7 @@
 #define SSLR_DEBUG
 #endif
 
-#if STRIDE_PLATFORM_ANDROID || STRIDE_PLATFORM_IOS
+#if STRIDE_PLATFORM_ANDROID
 // Use different render targets formats on mobile
 #define SSLR_MOBILE
 #endif
@@ -18,7 +18,6 @@ using Stride.Core;
 using Stride.Core.Annotations;
 using Stride.Core.Extensions;
 using Stride.Core.Mathematics;
-using Stride.Engine;
 using Stride.Graphics;
 
 namespace Stride.Rendering.Images
@@ -480,7 +479,7 @@ namespace Stride.Rendering.Images
             if (DepthResolution != ResolutionMode.Full)
             {
                 // Smaller depth buffer improves ray tracing performance.
-                
+
                 var depthBuffersSize = GetBufferResolution(depthBuffer, DepthResolution);
                 smallerDepthBuffer = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
 

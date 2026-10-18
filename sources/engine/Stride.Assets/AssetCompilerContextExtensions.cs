@@ -48,7 +48,6 @@ namespace Stride.Assets
                 case PlatformType.UWP:
                     return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
-                case PlatformType.iOS:
                 case PlatformType.Linux:
                 case PlatformType.macOS:
                     return GraphicsPlatform.Vulkan;

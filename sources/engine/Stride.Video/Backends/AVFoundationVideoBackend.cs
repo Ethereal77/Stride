@@ -17,7 +17,7 @@ using Stride.Media;
 namespace Stride.Video.Backends;
 
 /// <summary>
-/// Video backend for iOS and macOS using AVFoundation. AVAssetReader does the demux and dispatches
+/// Video backend for macOS using AVFoundation. AVAssetReader does the demux and dispatches
 /// to VideoToolbox under the hood for hardware decode; we pull <see cref="CMSampleBuffer"/>s on
 /// demand and import the resulting <see cref="CVPixelBuffer"/>'s IOSurface as a Vulkan VkImage
 /// via VK_EXT_metal_objects, then shader-blit to the user's RGBA target. Zero-copy GPU path.

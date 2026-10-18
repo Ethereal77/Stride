@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Stride.Core.Assets;
 using Stride.Core.Assets.Compiler;
 using Stride.Core.BuildEngine;
@@ -128,41 +127,6 @@ namespace Stride.Assets
                         activitySource = Regex.Replace(activitySource, @"(\[Activity(?:.*[\n,\r]*)+?[\n,\r,\s]*ScreenOrientation\s*=\s*)([\w,\d,\.]+)(\s*,)", $"$1{orientationString}$3");
 
                         File.WriteAllText(activityFile, activitySource);
-                    }
-                    break;
-                case PlatformType.iOS:
-                    {
-                        var exeProjectLocation = project.FullPath;
-                        if (exeProjectLocation == null) return;
-
-                        var plistFile = UPath.Combine(exeProjectLocation.GetFullDirectory(), new UFile("Info.plist"));
-                        if (!File.Exists(plistFile)) return;
-
-                        var xmlDoc = XDocument.Load(plistFile);
-                        var orientationKey = xmlDoc.Descendants("key").FirstOrDefault(x => x.Value == "UISupportedInterfaceOrientations");
-                        var orientationElement = ((XElement)orientationKey?.NextNode)?.Descendants("string").FirstOrDefault();
-                        if (orientationElement != null)
-                        {
-                            switch (orientation)
-                            {
-                                case RequiredDisplayOrientation.Default:
-                                    orientationElement.Value = "UIInterfaceOrientationLandscapeRight";
-                                    break;
-                                case RequiredDisplayOrientation.LandscapeLeft:
-                                    orientationElement.Value = "UIInterfaceOrientationLandscapeLeft";
-                                    break;
-                                case RequiredDisplayOrientation.LandscapeRight:
-                                    orientationElement.Value = "UIInterfaceOrientationLandscapeRight";
-                                    break;
-                                case RequiredDisplayOrientation.Portrait:
-                                    orientationElement.Value = "UIInterfaceOrientationPortrait";
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                        }
-
-                        xmlDoc.Save(plistFile);
                     }
                     break;
             }

@@ -7,7 +7,6 @@ using System.Linq;
 using Stride.Core.Assets;
 using Stride.Core;
 using Stride.Core.CodeEditorSupport.VisualStudio;
-using Stride.Core.Solutions;
 
 namespace Stride.Assets
 {
@@ -28,12 +27,6 @@ namespace Stride.Assets
 
         private static readonly Version VS2015Version = new Version(14, 0);
         private static readonly Version VSAnyVersion = new Version(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
-
-        internal static readonly Dictionary<Version, string> DotNetForiOSComponents = new Dictionary<Version, string>
-        {
-            { VSAnyVersion, @"Microsoft.VisualStudio.Workload.NetCrossPlat" },
-            { VS2015Version, @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets" }
-        };
 
         internal static readonly Dictionary<Version, string> DotNetForAndroidComponents = new Dictionary<Version, string>
         {
@@ -106,67 +99,6 @@ namespace Stride.Assets
             androidPlatform.Configurations["Testing"].Properties.AddRange(androidPlatform.Configurations["Release"].Properties);
             androidPlatform.Configurations["AppStore"].Properties.AddRange(androidPlatform.Configurations["Release"].Properties);
             solutionPlatforms.Add(androidPlatform);
-
-            // iOS: iPhone
-            var iphonePlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.iOS.ToString(),
-                SolutionName = "iPhone", // For iOS, we need to use iPhone as a solution name
-                Type = PlatformType.iOS,
-                TargetFramework = "net10.0-ios",
-                IsAvailable = IsVSComponentAvailableAnyVersion(DotNetForiOSComponents)
-            };
-            iphonePlatform.PlatformsPart.Add(new SolutionPlatformPart("iPhoneSimulator"));
-            iphonePlatform.DefineConstants.Add("STRIDE_PLATFORM_MONO_MOBILE");
-            iphonePlatform.DefineConstants.Add("STRIDE_PLATFORM_IOS");
-            iphonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
-            iphonePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-            var iPhoneCommonProperties = new List<string>
-                {
-                    "<ConsolePause>false</ConsolePause>",
-                    "<MtouchUseSGen>True</MtouchUseSGen>",
-                    "<MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>"
-                };
-
-            iphonePlatform.Configurations["Debug"].Properties.AddRange(iPhoneCommonProperties);
-            iphonePlatform.Configurations["Debug"].Properties.AddRange(new []
-                {
-                    "<MtouchDebug>True</MtouchDebug>",
-                    "<CodesignKey>iPhone Developer</CodesignKey>",
-                    "<MtouchUseSGen>True</MtouchUseSGen>",
-                });
-            iphonePlatform.Configurations["Release"].Properties.AddRange(iPhoneCommonProperties);
-            iphonePlatform.Configurations["Release"].Properties.AddRange(new[]
-                {
-                    "<CodesignKey>iPhone Developer</CodesignKey>",
-                });
-            iphonePlatform.Configurations["Testing"].Properties.AddRange(iPhoneCommonProperties);
-            iphonePlatform.Configurations["Testing"].Properties.AddRange(new[]
-                {
-                    "<MtouchDebug>True</MtouchDebug>",
-                    "<CodesignKey>iPhone Distribution</CodesignKey>",
-                    "<BuildIpa>True</BuildIpa>",
-                });
-            iphonePlatform.Configurations["AppStore"].Properties.AddRange(iPhoneCommonProperties);
-            iphonePlatform.Configurations["AppStore"].Properties.AddRange(new[]
-                {
-                    "<CodesignKey>iPhone Distribution</CodesignKey>",
-                });
-            solutionPlatforms.Add(iphonePlatform);
-
-            // iOS: iPhoneSimulator
-            var iPhoneSimulatorPlatform = iphonePlatform.PlatformsPart["iPhoneSimulator"];
-            iPhoneSimulatorPlatform.Configurations["Debug"].Properties.AddRange(new[]
-                {
-                    "<MtouchDebug>True</MtouchDebug>",
-                    "<MtouchLink>None</MtouchLink>",
-                    "<MtouchArch>i386, x86_64</MtouchArch>"
-                });
-            iPhoneSimulatorPlatform.Configurations["Release"].Properties.AddRange(new[]
-                {
-                    "<MtouchLink>None</MtouchLink>",
-                    "<MtouchArch>i386, x86_64</MtouchArch>"
-                });
 
             AssetRegistry.RegisterSupportedPlatforms(solutionPlatforms);
         }

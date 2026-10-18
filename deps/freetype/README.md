@@ -39,6 +39,4 @@ Android/
   android-arm64/  Android ARM64
   android-x86/    Android x86
   android-x64/    Android x64
-iOS/
-  libfreetype.a   iOS ARM64 (static library)
 ```

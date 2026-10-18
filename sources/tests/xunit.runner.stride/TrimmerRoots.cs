@@ -7,8 +7,8 @@ using System.Runtime.Versioning;
 
 namespace xunit.runner.stride;
 
-// Xunit.SkippableFact looks up {Un,}SupportedOSPlatformAttribute by string name at runtime and
-// every [SkippableFact] throws when the type is missing; the iOS Mono AOT trimmer drops the
+// Xunit.SkippableFact looks up (Un)SupportedOSPlatformAttribute by string name at runtime and
+// every [SkippableFact] throws when the type is missing; the AOT trimmer drops the
 // Unsupported variant from the BCL because nothing roots it statically. Root both here.
 internal static class TrimmerRoots
 {

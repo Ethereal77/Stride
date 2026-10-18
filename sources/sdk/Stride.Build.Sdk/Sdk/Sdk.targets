@@ -196,11 +196,11 @@
   </PropertyGroup>
   <!-- RuntimeIdentifier* / SelfContained are set on the test app and would otherwise propagate
        to library deps as a cross-RID restore demand they don't need. Strip these only on
-       Android/iOS: a real self-contained publish on another platform may legitimately flow a RID
+       Android: a real self-contained publish on another platform may legitimately flow a RID
        down to its references. -->
   <Target Name="_StrideStripPerRidGlobalsFromProjectReferences"
           BeforeTargets="_SplitProjectReferencesByFileExistence"
-          Condition="'$(StridePlatform)' == 'Android' Or '$(StridePlatform)' == 'iOS'">
+          Condition="'$(StridePlatform)' == 'Android'">
     <ItemGroup>
       <ProjectReference Update="@(ProjectReference)"
                         UndefineProperties="RuntimeIdentifier;RuntimeIdentifiers;SelfContained" />

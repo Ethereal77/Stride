@@ -19,7 +19,6 @@
 			- `Resources` : contains resource files (.jpg, .fbx ... files)
 			- `SimpleAudio.Android` : Android executable
 			- `SimpleAudio.Game` : Common Game code
-			- `SimpleAudio.iOS` : iOS executable
 			- `SimpleAudio.Windows` : Windows Desktop executable
 			- `SimpleAudio.sdpkg` : Package description
 			- `SimpleAudio.sdtpl` : Package Template description

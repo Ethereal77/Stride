@@ -31,11 +31,6 @@ namespace Stride.Input
                     var androidContext = (GameContextAndroid)context;
                     return new InputSourceAndroid(androidContext.Control);
 #endif
-#if STRIDE_PLATFORM_IOS
-                case AppContextType.iOS:
-                    var iosContext = (GameContextiOS)context;
-                    return new InputSourceiOS(iosContext.Control);
-#endif
 #if STRIDE_PLATFORM_UWP
                 case AppContextType.UWPXaml:
                     var uwpXamlContext = (GameContextUWPXaml)context;

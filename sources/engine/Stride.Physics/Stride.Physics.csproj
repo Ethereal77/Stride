@@ -6,8 +6,6 @@
     <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
     <StrideAssemblyProcessorOptions>--serialization --parameter-key</StrideAssemblyProcessorOptions>
     <StrideCodeAnalysis>true</StrideCodeAnalysis>
-    <StrideBulletPlatform></StrideBulletPlatform> <!--Empty by default, only iOS needs special care-->
-    <StrideBulletPlatform Condition="'$(TargetFramework)' == '$(StrideFrameworkiOS)'">iOS</StrideBulletPlatform>
   </PropertyGroup>
   <ItemGroup>
     <StrideNativeLib Include="..\..\..\deps\BulletPhysics\$(StridePlatformDeps)\**\libbulletc.*">

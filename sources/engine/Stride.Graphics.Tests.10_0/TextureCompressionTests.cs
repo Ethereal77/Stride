@@ -13,7 +13,7 @@ namespace Stride.Graphics.Tests
     /// Exercises the asset-pipeline texture compression paths by drawing each compressed variant fullscreen.
     /// On Windows/Linux/macOS (D3D11/12/Vulkan, profile ≥10.0): ColorNone→BC1, ColorExplicit→BC2,
     /// ColorInterpolated→BC3, Grayscale→BC4, NormalMap→BC5.
-    /// On Android/iOS (Vulkan/Metal/GLES, profile ≥10.0): every variant collapses to ASTC_6x6.
+    /// On Android (Vulkan/Metal/GLES, profile ≥10.0): every variant collapses to ASTC_6x6.
     /// Gold images are intentionally per-platform.
     /// </summary>
     // TODO add HDR (BC6H) and HighQuality (BC7) variants when TextureHelper enables those paths.
