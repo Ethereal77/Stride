@@ -15,7 +15,6 @@ internal sealed class RiderLocatorEnvironment : IRiderLocatorEnvironment
 
     public void Info(string message, Exception e = null)
     {
-       
     }
 
     public void Warn(string message, Exception e = null)
@@ -33,5 +32,5 @@ internal sealed class RiderLocatorEnvironment : IRiderLocatorEnvironment
     public OS CurrentOS =>
         OperatingSystem.IsWindows() ? OS.Windows :
         OperatingSystem.IsLinux() ? OS.Linux :
-        OperatingSystem.IsMacOS() ? OS.MacOSX : OS.Other;
+        OS.Other;
 }

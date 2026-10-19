@@ -78,7 +78,7 @@
       <_InnerBuildProjects Include="$(MSBuildProjectFile)">
         <AdditionalProperties Condition="'%(_TargetFrameworkWithStrideGraphicsApi.StrideGraphicsApiDependent)' != 'true'">TargetFramework=%(_TargetFrameworkWithStrideGraphicsApi.TargetFramework)</AdditionalProperties>
         <AdditionalProperties Condition="'%(_TargetFrameworkWithStrideGraphicsApi.StrideGraphicsApiDependent)' == 'true'">TargetFramework=%(_TargetFrameworkWithStrideGraphicsApi.TargetFramework);StrideGraphicsApi=%(_TargetFrameworkWithStrideGraphicsApi.StrideGraphicsApi)</AdditionalProperties>
-        <!-- Single-API TFMs (Android/macOS/UWP): drop any StrideGraphicsApi inherited as a
+        <!-- Single-API TFMs (Android/UWP): drop any StrideGraphicsApi inherited as a
              global from a desktop API-dep consumer's reference, so the inner build resolves its
              own default (Vulkan) instead of compiling D3D sources it has no references for. -->
         <UndefineProperties Condition="'%(_TargetFrameworkWithStrideGraphicsApi.StrideGraphicsApiDependent)' != 'true'">StrideGraphicsApi</UndefineProperties>
@@ -149,11 +149,11 @@
     <!-- TFMs where Stride.Graphics.targets disables per-API dispatch (single inner build,
          no StrideGraphicsApi in cache key). Consumer refs at these TFMs must NOT add
          StrideGraphicsApi, or they'd diverge from the callee's own outer→inner dispatch. -->
-    <_StrideGraphicsApiDependentDisabledAtCurrentTF Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">true</_StrideGraphicsApiDependentDisabledAtCurrentTF>
+    <_StrideGraphicsApiDependentDisabledAtCurrentTF Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)'">true</_StrideGraphicsApiDependentDisabledAtCurrentTF>
   </PropertyGroup>
 
   <!-- Consistency checks on the _StrideGraphicsApiDependentProjectList. Skipped on TFMs where Stride.Graphics.targets
-       overrides StrideGraphicsApiDependent (Android/UWP/macOS) since the flag's in-memory value
+       overrides StrideGraphicsApiDependent (Android/UWP) since the flag's in-memory value
        no longer matches the user's csproj declaration. -->
   <Target Name="_StrideValidateGraphicsApiDependentProjectList" BeforeTargets="Build"
           Condition="'$(_StrideGraphicsApiDependentDisabledAtCurrentTF)' != 'true'">
@@ -178,9 +178,9 @@
       <!-- In-list ref negotiated to a desktop (multi-API) TFM: pass the current API so the consumer
            shares that build's per-API inner cache key instead of a second unset compile that races it.
            A single-API consumer that down-resolves to net10.0 thus pulls its own runtime API
-           (e.g. macOS → Vulkan) rather than the unset default. -->
+           (e.g. Windows → Direct3D11) rather than the unset default. -->
       <_MSBuildProjectReferenceExistent Update="@(_MSBuildProjectReferenceExistent)"
-                                        Condition="$(_StrideGraphicsApiDependentProjectList.Contains(';%(Filename);')) And !('%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkAndroid)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkmacOS)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkUWP)')">
+                                        Condition="$(_StrideGraphicsApiDependentProjectList.Contains(';%(Filename);')) And !('%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkAndroid)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkUWP)')">
         <AdditionalProperties>%(_MSBuildProjectReferenceExistent.AdditionalProperties);StrideGraphicsApi=$(_StrideGraphicsApiCurrent)</AdditionalProperties>
       </_MSBuildProjectReferenceExistent>
       <!-- Strip StrideGraphicsApi for (a) non-API-dep refs and (b) in-list refs negotiated to a single-API
@@ -189,7 +189,7 @@
            case otherwise races parallel inner-builds of e.g. Stride.Audio in obj/, crashing the assembly
            processor with FileNotFoundException. -->
       <_MSBuildProjectReferenceExistent Update="@(_MSBuildProjectReferenceExistent)"
-                                        Condition="!$(_StrideGraphicsApiDependentProjectList.Contains(';%(Filename);')) Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkAndroid)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkmacOS)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkUWP)'">
+                                        Condition="!$(_StrideGraphicsApiDependentProjectList.Contains(';%(Filename);')) Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkAndroid)' Or '%(_MSBuildProjectReferenceExistent.NearestTargetFramework)' == '$(StrideFrameworkUWP)'">
         <GlobalPropertiesToRemove>%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove);StrideGraphicsApi</GlobalPropertiesToRemove>
       </_MSBuildProjectReferenceExistent>
     </ItemGroup>

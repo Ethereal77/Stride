@@ -24,16 +24,7 @@ namespace Stride.Graphics
         /// </summary>
         internal static unsafe void InitializeInternal()
         {
-            // On macOS, pass an explicit Vulkan library path to Vortice. Prefer the LunarG loader
-            // when one is installed (e.g. via 'brew install vulkan-loader') because only the loader
-            // chains validation layers — bundled MoltenVK alone is an ICD and ignores VK_LAYER_*.
-            // If no loader is available, fall back to the bundled MoltenVK at runtimes/<rid>/native/.
-            string vkLibraryName = Platform.Type switch
-            {
-                PlatformType.macOS => ResolveMacOSVulkanLibrary(),
-                _ => null
-            };
-            var result = vkInitialize(vkLibraryName);
+            var result = vkInitialize(null);
             result.CheckResult();
 
             // Create the default instance to enumerate physical devices
@@ -88,41 +79,6 @@ namespace Stride.Graphics
             VkPhysicalDeviceType.Cpu => 3,
             _ => 4,
         };
-
-        // Stride ships MoltenVK bundled but loads it as a flat ICD (libvulkan.1.dylib renamed). That
-        // skips the LunarG loader, which means validation layers, layer-injected debug callbacks
-        // and VK_LAYER_* env vars are all ignored. When a real Vulkan loader is installed (brew's
-        // vulkan-loader puts libvulkan.dylib at /opt/homebrew/lib), use it instead so the layer
-        // chain works. The loader finds MoltenVK as an ICD via VK_DRIVER_FILES / VK_ICD_FILENAMES.
-        private static string ResolveMacOSVulkanLibrary()
-        {
-            foreach (var path in new[]
-            {
-                "/opt/homebrew/lib/libvulkan.1.dylib",
-                "/opt/homebrew/lib/libvulkan.dylib",
-                "/usr/local/lib/libvulkan.1.dylib",
-                "/usr/local/lib/libvulkan.dylib",
-            })
-            {
-                if (File.Exists(path))
-                    return path;
-            }
-
-            // Fall back to bundled MoltenVK shipped at runtimes/<rid>/native/. The assembly may sit
-            // in a per-API subfolder (multi-graphics-API hosts) while natives stay at the app base.
-            var ownerDir = Path.GetDirectoryName(typeof(GraphicsAdapterFactory).Assembly.Location) ?? string.Empty;
-            var arch = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "arm64" : "x64";
-            foreach (var dir in new[] { ownerDir, AppContext.BaseDirectory })
-            {
-                var bundled = Path.Combine(dir, "runtimes", $"osx-{arch}", "native", "libvulkan.1.dylib");
-                if (File.Exists(bundled))
-                    return bundled;
-            }
-
-            // Final fallback: bare name (lets dyld resolve), preserving prior behavior on hosts
-            // where neither location applies.
-            return "libvulkan.1.dylib";
-        }
 
         private static void Cleanup()
         {
@@ -229,7 +185,6 @@ namespace Stride.Graphics
                 VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
                 VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
                 VK_KHR_XCB_SURFACE_EXTENSION_NAME,
-                VK_EXT_METAL_SURFACE_EXTENSION_NAME,
                 VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
                 VK_EXT_DEBUG_UTILS_EXTENSION_NAME
             };
@@ -246,13 +201,6 @@ namespace Stride.Graphics
             }
 
             HasXlibSurfaceSupport = desiredExtensionNames.Contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
-
-            // MoltenVK is a non-conformant Vulkan ICD; without VK_KHR_portability_enumeration
-            // and the matching create-info flag, vkCreateInstance skips it on macOS.
-            bool enablePortabilityEnumeration = (Platform.Type == PlatformType.macOS)
-                && availableExtensionNames.Contains(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-            if (enablePortabilityEnumeration)
-                desiredExtensionNames.Add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 
             bool enableDebugUtils = enableValidation && availableExtensionNames.Contains(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             if (enableDebugUtils)
@@ -288,36 +236,8 @@ namespace Stride.Graphics
             if (enableSyncValidation)
                 instanceCreateInfo.pNext = &validationFeatures;
 
-            // Silence MoltenVK's per-instance info dump (153-line extension list, device banner).
-            // Set via env var instead of VkLayerSettingsCreateInfoEXT — the layer-settings struct
-            // requires VK_EXT_layer_settings to be enabled, and MoltenVK acting as ICD without the
-            // LunarG loader doesn't always accept that pNext path.
-            int mvkLogLevel = 2; // 0=off 1=error 2=warning 3=info 4=debug
-            VkResult result;
-            fixed (byte* pMvkLayerName = "MoltenVK"u8)
-            fixed (byte* pMvkLogLevelKey = "MVK_CONFIG_LOG_LEVEL"u8)
-            {
-                var mvkLogLevelSetting = new VkLayerSettingEXT
-                {
-                    pLayerName = pMvkLayerName,
-                    pSettingName = pMvkLogLevelKey,
-                    type = VkLayerSettingTypeEXT.Int32,
-                    valueCount = 1,
-                    pValues = &mvkLogLevel,
-                };
-                var layerSettings = new VkLayerSettingsCreateInfoEXT
-                {
-                    sType = VkStructureType.LayerSettingsCreateInfoEXT,
-                    pNext = instanceCreateInfo.pNext,
-                    settingCount = 1,
-                    pSettings = &mvkLogLevelSetting,
-                };
-                if ((Platform.Type == PlatformType.macOS)
-                    && Environment.GetEnvironmentVariable("MVK_CONFIG_LOG_LEVEL") == null)
-                    instanceCreateInfo.pNext = &layerSettings;
+            VkResult result = vkCreateInstance(&instanceCreateInfo, out NativeInstance);
 
-                result = vkCreateInstance(&instanceCreateInfo, out NativeInstance);
-            }
             if (result != VK_SUCCESS)
                 throw new InvalidOperationException($"Failed to create vulkan instance: {result}");
 
@@ -383,11 +303,6 @@ namespace Stride.Graphics
                     throw new InvalidOperationException("None of the supported surface extensions VK_KHR_xcb_surface or VK_KHR_xlib_surface is available");
                 }
             }
-            else if (Platform.Type == PlatformType.macOS)
-            {
-                if (!availableExtensionNames.Contains(VK_EXT_METAL_SURFACE_EXTENSION_NAME))
-                    throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_EXT_METAL_SURFACE_EXTENSION_NAME)} is not available");
-            }
         }
 
         private static VkUtf8String GetPlatformRelatedSurfaceExtensionName(HashSet<VkUtf8String> availableExtensionNames)
@@ -412,10 +327,6 @@ namespace Stride.Graphics
                 {
                     surfaceExtensionName = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
                 }
-            }
-            else if (Platform.Type == PlatformType.macOS)
-            {
-                surfaceExtensionName = VK_EXT_METAL_SURFACE_EXTENSION_NAME;
             }
 
             return surfaceExtensionName;

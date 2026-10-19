@@ -37,7 +37,6 @@ public class NuGetConsumerTests
         // Build the host-platform executable project directly: it triggers asset compilation
         // and references .Game.
         var platformSuffix = TestEnvironment.HostPlatform == "linux" ? "Linux"
-                           : TestEnvironment.HostPlatform == "macos" ? "macOS"
                            : "Windows";
         var exeProject = Path.Combine(sampleDir, $"{sampleName}.{platformSuffix}", $"{sampleName}.{platformSuffix}.csproj");
         if (!File.Exists(exeProject))

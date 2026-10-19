@@ -18,8 +18,6 @@
 
 #if defined(_WIN32)
 #define STRIDE_HOST_OS "Windows"
-#elif defined(__APPLE__)
-#define STRIDE_HOST_OS "macOS"
 #else
 #define STRIDE_HOST_OS "Linux"
 #endif

@@ -140,7 +140,7 @@ Use `git` to revert the project file changes (all 125 `.csproj` files). The dire
 
 **Step 5 — Re-add `BuildSdk` target to `build/Stride.build`:**
 
-Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildAndroid`, `BuildUWP`, `BuildWindowsVulkan`, `BuildLinux`, `BuildmacOS`, `BuildLauncher`, `RunTestsWindows`, `RunTestsMobile`.
+Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildAndroid`, `BuildUWP`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`, `RunTestsMobile`.
 
 ```xml
 <!--
@@ -209,7 +209,7 @@ dotnet build sources/sdk/Stride.Build.Sdk.slnx
 </Project>
 ```
 
-A test that must run on multiple platforms imports `Stride.Build.Sdk.MultiPlatform.Tests` instead and declares `<TargetFrameworks>$(StrideTestTargetFrameworks)</TargetFrameworks>` (the `…MacOS` variant to also build `net10.0-macos`). That set is computed from `$(StrideTestPlatforms)` — see [Property Evaluation Order](#property-evaluation-order).
+A test that must run on multiple platforms imports `Stride.Build.Sdk.MultiPlatform.Tests` instead and declares `<TargetFrameworks>$(StrideTestTargetFrameworks)</TargetFrameworks>`. That set is computed from `$(StrideTestPlatforms)` — see [Property Evaluation Order](#property-evaluation-order).
 
 ---
 
@@ -342,7 +342,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Property | Purpose | Set by |
 |----------|---------|--------|
-| `StridePlatform` | Current platform (Windows, Linux, macOS, Android) | Auto-detected in Stride.Platform.props |
+| `StridePlatform` | Current platform (Windows, Linux, Android) | Auto-detected in Stride.Platform.props |
 | `StridePlatformOriginal` | Original platform value before TFM-based override | Stride.Platform.props |
 | `StridePlatformFullName` | Platform name + optional `StrideBuildDirExtension` suffix | Stride.Platform.props |
 | `StridePlatforms` | Semicolon-separated list of target platforms | Auto-detected per OS |
@@ -352,7 +352,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Platform | Defines |
 |----------|---------|
-| Windows/Linux/macOS | `STRIDE_PLATFORM_DESKTOP` |
+| Windows/Linux | `STRIDE_PLATFORM_DESKTOP` |
 | Android | `STRIDE_PLATFORM_MONO_MOBILE;STRIDE_PLATFORM_ANDROID` |
 | All .NET | `STRIDE_RUNTIME_CORECLR` |
 
@@ -372,7 +372,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 |----------|---------|-----------|
 | Windows | Direct3D11 | Direct3D11, Direct3D12,Vulkan |
 | Linux | Vulkan | Vulkan |
-| macOS | Vulkan | Vulkan |
 | Android | Vulkan | Vulkan |
 
 **Graphics API defines** (added to `DefineConstants`):
@@ -387,7 +386,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Property | Purpose | Set by |
 |----------|---------|--------|
-| `StrideRuntimeTargetFrameworks` | SDK-computed runtime TFM set; a runtime project sets `<TargetFrameworks>` to this (or the `…Windows`/`…MacOS` variant) | SDK (Stride.Platform.props) |
+| `StrideRuntimeTargetFrameworks` | SDK-computed runtime TFM set; a runtime project sets `<TargetFrameworks>` to this (or the `…Windows` variant) | SDK (Stride.Platform.props) |
 | `StrideAssemblyProcessor` | Enable IL post-processing (serialization, module init) | Project (.csproj) |
 | `StrideAssemblyProcessorOptions` | Processor flags (e.g., `--serialization --auto-module-initializer`) | Project (.csproj) |
 | `StrideCodeAnalysis` | Enable code analysis rules | Project (.csproj) |
@@ -487,7 +486,7 @@ Practical effect:
 | VS Developer Command Prompt | `MSBuild.exe` | MSVC |
 | VS Developer Command Prompt | `dotnet build` / `dotnet msbuild` | Clang |
 | VS IDE | (msbuild.exe) | MSVC |
-| Linux/macOS | `dotnet build` | Clang |
+| Linux | `dotnet build` | Clang |
 
 ---
 
@@ -624,7 +623,7 @@ The property is likely being read in `Sdk.props` (too early). Move the logic to 
 
 ### Multi-targeting not working
 
-Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows`/`…MacOS` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows;Android` (etc.) to target other platforms.
+Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows;Android` (etc.) to target other platforms.
 
 ### Assembly processor not running
 

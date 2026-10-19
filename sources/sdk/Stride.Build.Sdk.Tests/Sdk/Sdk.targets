@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- TFM sets are computed in Sdk.props (StrideTestTargetFrameworks / ...MacOS) so a multi-platform
+  <!-- TFM sets are computed in Sdk.props (StrideTestTargetFrameworks) so a multi-platform
        test declares <TargetFrameworks> in its csproj and Roslyn SDK-style detection works.
        _StrideTestPlatforms (incl. the Game host-shadow) is derived there too and consumed below. -->
 
@@ -46,18 +46,14 @@
     <StrideTargetFramework>$(TargetFramework)</StrideTargetFramework>
     <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkWindows)'))">$(StrideFrameworkWindows)</StrideTargetFramework>
     <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkAndroid)'))">$(StrideFrameworkAndroid)</StrideTargetFramework>
-    <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkmacOS)'))">$(StrideFrameworkmacOS)</StrideTargetFramework>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' ">Android</StridePlatform>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' ">macOS</StridePlatform>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatform>
     <!-- net10.0 + Game in test platforms: tag StridePlatform=Game so the host-loadable
-         library TFM gets its own output folder (bin/Tests/.../Game-Vulkan/) instead of
-         colliding with net10.0-macos on darwin host (which would otherwise both resolve
-         StridePlatform=macOS via Stride.Platform.props's host fallback). Game is suppressed
-         when a runnable host (Linux/macOS/Windows-without-mobile) is also in the list: the
-         runnable's net10.0 .dll is already host-loadable by CompilerApp, so Game would be
+         library TFM gets its own output folder (bin/Tests/.../Game-Vulkan/).
+         Game is suppressed when a runnable host (Linux/Windows-without-mobile) is also in the list:
+         the runnable's net10.0 .dll is already host-loadable by CompilerApp, so Game would be
          redundant and would clobber the runnable's StridePlatform identity. -->
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' And $(_StrideTestPlatforms.Contains(';Game;')) And !$(_StrideTestPlatforms.Contains(';Linux;')) And !$(_StrideTestPlatforms.Contains(';macOS;')) And !($(_StrideTestPlatforms.Contains(';Windows;')) And !($(_StrideTestPlatforms.Contains(';Android;')))) ">Game</StridePlatform>
+    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' And $(_StrideTestPlatforms.Contains(';Game;')) And !$(_StrideTestPlatforms.Contains(';Linux;')) And !($(_StrideTestPlatforms.Contains(';Windows;')) And !($(_StrideTestPlatforms.Contains(';Android;')))) ">Game</StridePlatform>
   </PropertyGroup>
 
   <!-- Game is a host-loadable library shadow with no runner / no entry point. Override the
@@ -86,15 +82,6 @@
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' And '$(RuntimeIdentifiers)' == ''">android-x64</RuntimeIdentifier>
     <SelfContained Condition="'$(RuntimeIdentifier)' != '' And '$(SelfContained)' == ''">false</SelfContained>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(StridePlatform)' == 'macOS' And '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' ">
-    <OutputType>Exe</OutputType>
-    <!-- Pin RID so the macOS SDK's install_name_tool / dylib processing only walks osx-* native libs.
-         Otherwise it tries to rewrite Linux .so / Windows .dll files included by cross-platform
-         NuGet packages (Skia, shaderc) and fails. _StrideFilterAndFlattenRuntimes filters by this. -->
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' And '$(RuntimeIdentifiers)' == ''">osx-arm64</RuntimeIdentifier>
-    <SelfContained Condition="'$(RuntimeIdentifier)' != '' And '$(SelfContained)' == ''">false</SelfContained>
-    <UseInterpreter Condition="'$(UseInterpreter)' == ''">true</UseInterpreter>
-  </PropertyGroup>
 
   <!-- ================================================================ -->
   <!-- Correct graphics API once the platform is known                  -->
@@ -113,8 +100,8 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(StridePlatform)-$(StrideGraphicsApi)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <!-- Game's StridePlatform is set above in this file (after Sdk.props ran), so Sdk.props's
-       IntermediateOutputPath used the host fallback (e.g. obj/macOS-Vulkan/) which collides with
-       the real net10.0-macos TFM. Recompute now that StridePlatform=Game is resolved. -->
+       IntermediateOutputPath used the host fallback (e.g. obj/Windows-Direct3D11/) which collides with
+       the real net10.0-windows TFM. Recompute now that StridePlatform=Game is resolved. -->
   <PropertyGroup Condition=" '$(StridePlatform)' == 'Game' ">
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(StridePlatform)-$(StrideGraphicsApi)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
@@ -159,14 +146,14 @@
   <!-- ================================================================ -->
   <!-- xUnit Startup Configuration -->
   <!-- ================================================================ -->
-  <PropertyGroup Condition="('$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows' Or '$(StridePlatform)' == 'macOS') And '$(IncludeXunitLauncher)' != 'false'">
+  <PropertyGroup Condition="('$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows') And '$(IncludeXunitLauncher)' != 'false'">
     <StartupObject Condition="'$(StartupObject)' == ''">xunit.runner.stride.Program</StartupObject>
   </PropertyGroup>
 
   <!-- ================================================================ -->
   <!-- Include xUnit Launcher Code -->
   <!-- ================================================================ -->
-  <ItemGroup Condition="'$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows' Or '$(StridePlatform)' == 'macOS'">
+  <ItemGroup Condition="'$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows'">
     <!-- Launcher code depends on whether this is a graphics regression test -->
     <Compile Include="$(MSBuildThisFileDirectory)LauncherSimple.Desktop.cs"
              Condition="'$(StrideGraphicsRegression)' != 'true' And '$(IncludeXunitLauncher)' != 'false'">
@@ -239,7 +226,7 @@
   <Target Name="_StrideStripGlobalsOnNonSuiteRefs" BeforeTargets="AssignProjectConfiguration">
     <ItemGroup>
       <ProjectReference Update="@(ProjectReference)" Condition=" '%(ProjectReference.StrideTestSuiteRef)' != 'true' ">
-        <GlobalPropertiesToRemove>$([MSBuild]::ValueOrDefault('%(ProjectReference.GlobalPropertiesToRemove)', ''));IncludeXunitLauncher;OutputType;StrideIsExecutable;StrideTestPlatforms;StrideExplicitMacOSRuntime</GlobalPropertiesToRemove>
+        <GlobalPropertiesToRemove>$([MSBuild]::ValueOrDefault('%(ProjectReference.GlobalPropertiesToRemove)', ''));IncludeXunitLauncher;OutputType;StrideIsExecutable;StrideTestPlatforms</GlobalPropertiesToRemove>
       </ProjectReference>
     </ItemGroup>
   </Target>
@@ -257,11 +244,11 @@
        stays generic — it ships to end users). -->
   <ItemGroup Condition="'$(StrideCompileAssets)' == 'true' And '$(StrideCompilerTargetsEnable)' != 'false'">
     <ProjectReference Update="@(ProjectReference)" Condition="$([System.String]::Copy('%(Filename)').Equals('Stride.AssetCompiler'))">
-      <GlobalPropertiesToRemove>%(GlobalPropertiesToRemove);IncludeXunitLauncher;StrideTestPlatforms;StrideExplicitMacOSRuntime</GlobalPropertiesToRemove>
+      <GlobalPropertiesToRemove>%(GlobalPropertiesToRemove);IncludeXunitLauncher;StrideTestPlatforms</GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
 
-  <!-- Force the Game inner build to finish before any peer TFM (Android/macOS) runs
+  <!-- Force the Game inner build to finish before any peer TFM (Android) runs
        StrideCompileAsset. CompilerApp resolves the project's TargetPath via VSProjectHelper
        which picks TargetFrameworks.First() — that's $(StrideFramework) = Game. Cross-targeting
        dispatches inner builds in parallel by default, so without this barrier a peer TFM's

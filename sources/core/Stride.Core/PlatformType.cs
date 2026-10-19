@@ -50,10 +50,5 @@ public enum PlatformType
     /// <summary>
     ///   The Linux operating system, typically used for servers and desktops.
     /// </summary>
-    Linux,
-
-    /// <summary>
-    ///   The macOS operating system for Apple desktop and laptop computers.
-    /// </summary>
-    macOS
+    Linux
 }

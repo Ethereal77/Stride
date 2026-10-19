@@ -21,11 +21,11 @@ Searching for `OperatingSystem.IsWindows()` in the launcher shows the remaining 
 
 ### Visual Studio integration
 
-`VsixVersionViewModel` relies on `Stride.Core.CodeEditorSupport.VisualStudio.VisualStudioVersions` to find installed VS instances. This uses `vswhere` internally and returns nothing on Linux/macOS, so the VSIX entries are effectively hidden. The code does not branch explicitly — it just finds no targets and the command stays disabled.
+`VsixVersionViewModel` relies on `Stride.Core.CodeEditorSupport.VisualStudio.VisualStudioVersions` to find installed VS instances. This uses `vswhere` internally and returns nothing on Linux, so the VSIX entries are effectively hidden. The code does not branch explicitly — it just finds no targets and the command stays disabled.
 
 ### Installers
 
-Advanced Installer projects ([Prerequisites/](../../sources/launcher/Prerequisites/), [Setup/](../../sources/launcher/Setup/)) are Windows-only by construction. The MSBuild `PackageInstaller` target silently skips when `AdvancedInstaller.com` is not on `PATH`. On Linux/macOS, distribute the launcher via `dotnet publish -r {rid} --self-contained`. See [packaging.md](packaging.md).
+Advanced Installer projects ([Prerequisites/](../../sources/launcher/Prerequisites/), [Setup/](../../sources/launcher/Setup/)) are Windows-only by construction. The MSBuild `PackageInstaller` target silently skips when `AdvancedInstaller.com` is not on `PATH`. On Linux, distribute the launcher via `dotnet publish -r {rid} --self-contained`. See [packaging.md](packaging.md).
 
 ## Telemetry and privacy policy
 
@@ -50,7 +50,6 @@ All config paths go through `EditorPath` (linked file from `Stride.Core.Assets.E
 
 - `%LocalAppData%\Stride\` on Windows
 - `$XDG_DATA_HOME/Stride/` (or `~/.local/share/Stride/`) on Linux
-- `~/Library/Application Support/Stride/` on macOS
 
 The launcher writes `LauncherSettings.conf` and the `launcher.lock` single-instance marker under these paths. No OS-specific branching is needed.
 
@@ -63,7 +62,6 @@ Window icons (`Launcher.ico`) are served through Avalonia's resource system. The
 `RecentProjectViewModel.Explore` reveals the selected recent project in the platform's native file manager:
 
 - **Windows:** `explorer.exe /select,{path}` (unchanged from master).
-- **macOS:** `open -R {path}` — reveals the file in Finder.
 - **Linux:** `dbus-send` invocation of `org.freedesktop.FileManager1.ShowItems` on the session bus (implemented by GNOME Nautilus, KDE Dolphin, Cinnamon Nemo, XFCE Thunar, LXDE PCManFM, and others). Falls back to `xdg-open {parent-dir}` when the DBus call fails — e.g. on minimal WMs without an `org.freedesktop.FileManager1` implementer, or headless environments without a session bus.
 
 All failures are swallowed silently (no dialog, no crash) since they are not actionable from inside the launcher.

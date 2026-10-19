@@ -37,7 +37,6 @@ public static class SampleGenerator
         // Pick the platform variant matching the host OS so the regenerated sample's project
         // layout (and the runner's exe lookup) match what we can actually build/run here.
         var platform = OperatingSystem.IsLinux() ? "linux"
-                     : OperatingSystem.IsMacOS() ? "macos"
                      : "windows";
         var parameters = new SessionTemplateGeneratorParameters { Session = session, Unattended = true };
         DotNetNewTemplateGenerator.SetParameters(parameters, new Dictionary<string, string>

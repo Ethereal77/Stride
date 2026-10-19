@@ -47,7 +47,7 @@ public static partial class Program
             // The UI thread doesn't pump while the boxes are up (see ShowNativeMessageBox)
             try { DisableProcessWindowsGhosting(); } catch { /* cosmetic */ }
 
-            // Native boxes (user32), not WPF. TODO: SDL for Linux/macOS with the Avalonia port
+            // Native boxes (user32), not WPF. TODO: SDL for Linux with the Avalonia port
             // WPF does not say why its render thread failed, but a loss one of our devices saw is almost surely the cause
             var loss = GraphicsDeviceLoss.FirstLoss;
             var message = loss is not null

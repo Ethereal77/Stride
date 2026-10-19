@@ -11,7 +11,7 @@
 #   6. pull tests/local/ (TRX + generated images) back to host
 #   7. exit non-zero if any test failed (parsed from the TRX)
 #
-# Works on Windows, Linux, and macOS via PowerShell Core (pwsh).
+# Works on Windows and Linux via PowerShell Core (pwsh).
 
 [CmdletBinding()]
 param(
@@ -44,10 +44,9 @@ if ($Avd -and -not $Port) { throw "-Avd requires -Port (even, e.g. 5556)." }
 # install + pull sites below.
 $ErrorActionPreference = 'Continue'
 
-# $IsWindows/$IsMacOS/$IsLinux are PS 6+ only; backfill for Windows PowerShell 5.1.
+# $IsWindows/$IsLinux are PS 6+ only; backfill for Windows PowerShell 5.1.
 if ($null -eq $IsWindows) {
     $script:IsWindows = $env:OS -eq 'Windows_NT'
-    $script:IsMacOS = $false
     $script:IsLinux = -not $script:IsWindows
 }
 
@@ -119,8 +118,6 @@ function Resolve-Adb {
             (Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\$exe"),
             (Join-Path ([Environment]::GetEnvironmentVariable('ProgramFiles(x86)')) "Android\android-sdk\platform-tools\$exe"),
             (Join-Path $env:ProgramFiles "Android\android-sdk\platform-tools\$exe"))
-    } elseif ($IsMacOS) {
-        $candidates += "$HOME/Library/Android/sdk/platform-tools/adb"
     } else {
         $candidates += "$HOME/Android/Sdk/platform-tools/adb"
     }

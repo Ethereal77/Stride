@@ -58,8 +58,6 @@
        <TargetFrameworks>$(StrideTestTargetFrameworks)</TargetFrameworks>. Computed here (props)
        from StrideTestPlatforms so the value is known when the csproj body evaluates and the
        literal <TargetFrameworks> element lives in the csproj (keeps SDK-style detection working).
-       Two variants: a test consuming Stride.Runtime libs bound to Microsoft.macOS APIs
-       (AVFoundation/Metal) picks ...MacOS to add net10.0-macos instead of collapsing to the base.
        Order/conditions mirror the per-platform expansion (Game host-shadow, host-windows when a
        mobile platform is present on a Windows host, then mobile). -->
   <PropertyGroup Condition="'$(StrideTestPlatforms)' != ''">
@@ -67,26 +65,20 @@
     <_StrideTestPlatforms>;$(StrideTestPlatforms);</_StrideTestPlatforms>
     <!-- Game = host-loadable library TFM; auto-add for mobile-only lists (a desktop platform
          fills that role when present). Opt out with StrideContainsAssetTypes=false. -->
-    <_StrideTestPlatforms Condition="'$(StrideContainsAssetTypes)' != 'false' And $(_StrideTestPlatforms.Contains(';Android;')) And !$(_StrideTestPlatforms.Contains(';Game;')) And !$(_StrideTestPlatforms.Contains(';Linux;')) And !$(_StrideTestPlatforms.Contains(';macOS;')) And !$(_StrideTestPlatforms.Contains(';Windows;'))">;Game$(_StrideTestPlatforms)</_StrideTestPlatforms>
+    <_StrideTestPlatforms Condition="'$(StrideContainsAssetTypes)' != 'false' And $(_StrideTestPlatforms.Contains(';Android;')) And !$(_StrideTestPlatforms.Contains(';Game;')) And !$(_StrideTestPlatforms.Contains(';Linux;')) And !$(_StrideTestPlatforms.Contains(';Windows;'))">;Game$(_StrideTestPlatforms)</_StrideTestPlatforms>
 
     <!-- shared tail: host-windows (when a mobile platform is present on a Windows host) + mobile -->
     <_StrideTestTargetFrameworksTail></_StrideTestTargetFrameworksTail>
     <_StrideTestTargetFrameworksTail Condition="$(_StrideTestPlatforms.Contains(';Windows;')) And '$([MSBuild]::IsOSPlatform(Windows))' == 'true' And $(_StrideTestPlatforms.Contains(';Android;'))">$(_StrideTestTargetFrameworksTail)$(StrideFrameworkWindows);</_StrideTestTargetFrameworksTail>
     <_StrideTestTargetFrameworksTail Condition="$(_StrideTestPlatforms.Contains(';Android;'))">$(_StrideTestTargetFrameworksTail)$(StrideFrameworkAndroid);</_StrideTestTargetFrameworksTail>
 
-    <!-- desktop base ($(StrideFramework)), excluding macOS -->
+    <!-- desktop base ($(StrideFramework)) -->
     <_StrideTestDesktop Condition="$(_StrideTestPlatforms.Contains(';Linux;')) Or ($(_StrideTestPlatforms.Contains(';Windows;')) And !($(_StrideTestPlatforms.Contains(';Android;')))) Or $(_StrideTestPlatforms.Contains(';Game;'))">$(StrideFramework);</_StrideTestDesktop>
 
-    <!-- base set: macOS (when present) runs on the shared desktop TFM (folded in if no other desktop) -->
+    <!-- base set: the shared desktop TFM (folded in if no other desktop) -->
     <_StrideTestTargetFrameworksBase>$(_StrideTestDesktop)</_StrideTestTargetFrameworksBase>
-    <_StrideTestTargetFrameworksBase Condition="'$(_StrideTestTargetFrameworksBase)' == '' And $(_StrideTestPlatforms.Contains(';macOS;'))">$(StrideFramework);</_StrideTestTargetFrameworksBase>
     <_StrideTestTargetFrameworksBase>$(_StrideTestTargetFrameworksBase)$(_StrideTestTargetFrameworksTail)</_StrideTestTargetFrameworksBase>
     <StrideTestTargetFrameworks>$([MSBuild]::Unescape($(_StrideTestTargetFrameworksBase.TrimEnd(';'))))</StrideTestTargetFrameworks>
-
-    <!-- macOS variant: tests consuming Stride.Runtime macOS-native libs add net10.0-macos (last) -->
-    <_StrideTestTargetFrameworksMac>$(_StrideTestDesktop)$(_StrideTestTargetFrameworksTail)</_StrideTestTargetFrameworksMac>
-    <_StrideTestTargetFrameworksMac Condition="$(_StrideTestPlatforms.Contains(';macOS;'))">$(_StrideTestTargetFrameworksMac)$(StrideFrameworkmacOS);</_StrideTestTargetFrameworksMac>
-    <StrideTestTargetFrameworksMacOS>$([MSBuild]::Unescape($(_StrideTestTargetFrameworksMac.TrimEnd(';'))))</StrideTestTargetFrameworksMacOS>
   </PropertyGroup>
 
   <!-- Single-TFM fallback for tests that set neither TargetFramework nor TargetFrameworks

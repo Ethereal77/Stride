@@ -198,13 +198,6 @@ public sealed class RecentProjectViewModel : DispatcherViewModel
                     UseShellExecute = true,
                 });
             }
-            else if (OperatingSystem.IsMacOS())
-            {
-                Process.Start(new ProcessStartInfo("open", $"-R \"{FullPath}\"")
-                {
-                    UseShellExecute = false,
-                });
-            }
             else // Linux and any other Unix
             {
                 if (!TryRevealFileDBus(FullPath))
@@ -263,7 +256,7 @@ public sealed class RecentProjectViewModel : DispatcherViewModel
         //Remove files that's was deleted or upgraded by stride versions <= 3.0
         if (string.IsNullOrEmpty(StrideVersionName) || string.Compare(StrideVersionName, "3.0", StringComparison.Ordinal) <= 0)
         {
-            //Get all installed versions 
+            //Get all installed versions
             var strideInstalledVersions = Launcher.StrideVersions.Where(x => x.CanDelete)
                 .Select(x => $"{x.Major}.{x.Minor}").ToList();
 

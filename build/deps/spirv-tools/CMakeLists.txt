@@ -52,10 +52,6 @@ if(WIN32)
         /WHOLEARCHIVE:$<TARGET_FILE_NAME:SPIRV-Tools-static>
         /WHOLEARCHIVE:$<TARGET_FILE_NAME:SPIRV-Tools-opt>)
     target_link_libraries(stride_spirv_tools PRIVATE SPIRV-Tools-static SPIRV-Tools-opt)
-elseif(APPLE)
-    target_link_libraries(stride_spirv_tools PRIVATE
-        -Wl,-force_load $<TARGET_FILE:SPIRV-Tools-static>
-        -Wl,-force_load $<TARGET_FILE:SPIRV-Tools-opt>)
 else()
     target_link_libraries(stride_spirv_tools PRIVATE
         -Wl,--whole-archive SPIRV-Tools-static SPIRV-Tools-opt -Wl,--no-whole-archive)

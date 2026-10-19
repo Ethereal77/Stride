@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_MACOS) || !defined(__clang__)
+#if defined(PLATFORM_LINUX) || !defined(__clang__)
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
@@ -339,8 +339,8 @@ extern "C" {
 
 			listener->device->deviceLock.Unlock();
 
-			// Clear the current context so Apple's OpenAL stops rendering it before we free it;
-			// otherwise its audio callback can race the freed source list and abort on macOS shutdown.
+			// Clear the current context so OpenAL stops rendering it before we free it;
+			// otherwise its audio callback can race the freed source list and abort on shutdown.
 			MakeContextCurrent(NULL);
 
 			DestroyContext(listener->context);

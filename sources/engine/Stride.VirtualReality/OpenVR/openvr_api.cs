@@ -2170,7 +2170,7 @@ public class CVRSystem
 		return Marshal.PtrToStringAnsi(result);
 	}
 // This is a terrible hack to workaround the fact that VRControllerState_t and VREvent_t were
-// originally mis-compiled with the wrong packing for Linux and OSX.
+// originally mis-compiled with the wrong packing for Linux.
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	internal delegate bool _PollNextEventPacked(ref VREvent_t_Packed pEvent,uint uncbVREvent);
 	[StructLayout(LayoutKind.Explicit)]
@@ -2184,8 +2184,7 @@ public class CVRSystem
 	public bool PollNextEvent(ref VREvent_t pEvent,uint uncbVREvent)
 	{
 #if !UNITY_METRO
-		if ((System.Environment.OSVersion.Platform == System.PlatformID.MacOSX) ||
-				(System.Environment.OSVersion.Platform == System.PlatformID.Unix))
+		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
 		{
 			PollNextEventUnion u;
 			VREvent_t_Packed event_packed = new VREvent_t_Packed();
@@ -2216,7 +2215,7 @@ public class CVRSystem
 		return result;
 	}
 // This is a terrible hack to workaround the fact that VRControllerState_t and VREvent_t were
-// originally mis-compiled with the wrong packing for Linux and OSX.
+// originally mis-compiled with the wrong packing for Linux.
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	internal delegate bool _GetControllerStatePacked(uint unControllerDeviceIndex,ref VRControllerState_t_Packed pControllerState,uint unControllerStateSize);
 	[StructLayout(LayoutKind.Explicit)]
@@ -2230,8 +2229,7 @@ public class CVRSystem
 	public bool GetControllerState(uint unControllerDeviceIndex,ref VRControllerState_t pControllerState,uint unControllerStateSize)
 	{
 #if !UNITY_METRO
-		if ((System.Environment.OSVersion.Platform == System.PlatformID.MacOSX) ||
-				(System.Environment.OSVersion.Platform == System.PlatformID.Unix))
+		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
 		{
 			GetControllerStateUnion u;
 			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
@@ -2247,7 +2245,7 @@ public class CVRSystem
 		return result;
 	}
 // This is a terrible hack to workaround the fact that VRControllerState_t and VREvent_t were
-// originally mis-compiled with the wrong packing for Linux and OSX.
+// originally mis-compiled with the wrong packing for Linux.
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	internal delegate bool _GetControllerStateWithPosePacked(ETrackingUniverseOrigin eOrigin,uint unControllerDeviceIndex,ref VRControllerState_t_Packed pControllerState,uint unControllerStateSize,ref TrackedDevicePose_t pTrackedDevicePose);
 	[StructLayout(LayoutKind.Explicit)]
@@ -2261,8 +2259,7 @@ public class CVRSystem
 	public bool GetControllerStateWithPose(ETrackingUniverseOrigin eOrigin,uint unControllerDeviceIndex,ref VRControllerState_t pControllerState,uint unControllerStateSize,ref TrackedDevicePose_t pTrackedDevicePose)
 	{
 #if !UNITY_METRO
-		if ((System.Environment.OSVersion.Platform == System.PlatformID.MacOSX) ||
-				(System.Environment.OSVersion.Platform == System.PlatformID.Unix))
+		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
 		{
 			GetControllerStateWithPoseUnion u;
 			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
@@ -3331,7 +3328,7 @@ public class CVROverlay
 		return result;
 	}
 // This is a terrible hack to workaround the fact that VRControllerState_t and VREvent_t were
-// originally mis-compiled with the wrong packing for Linux and OSX.
+// originally mis-compiled with the wrong packing for Linux.
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	internal delegate bool _PollNextOverlayEventPacked(ulong ulOverlayHandle,ref VREvent_t_Packed pEvent,uint uncbVREvent);
 	[StructLayout(LayoutKind.Explicit)]
@@ -3345,8 +3342,7 @@ public class CVROverlay
 	public bool PollNextOverlayEvent(ulong ulOverlayHandle,ref VREvent_t pEvent,uint uncbVREvent)
 	{
 #if !UNITY_METRO
-		if ((System.Environment.OSVersion.Platform == System.PlatformID.MacOSX) ||
-				(System.Environment.OSVersion.Platform == System.PlatformID.Unix))
+		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
 		{
 			PollNextOverlayEventUnion u;
 			VREvent_t_Packed event_packed = new VREvent_t_Packed();
@@ -3735,7 +3731,7 @@ public class CVRRenderModels
 		return result;
 	}
 // This is a terrible hack to workaround the fact that VRControllerState_t and VREvent_t were
-// originally mis-compiled with the wrong packing for Linux and OSX.
+// originally mis-compiled with the wrong packing for Linux.
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	internal delegate bool _GetComponentStatePacked(IntPtr pchRenderModelName,IntPtr pchComponentName,ref VRControllerState_t_Packed pControllerState,ref RenderModel_ControllerMode_State_t pState,ref RenderModel_ComponentState_t pComponentState);
 	[StructLayout(LayoutKind.Explicit)]
@@ -3751,8 +3747,7 @@ public class CVRRenderModels
 		IntPtr pchRenderModelNameUtf8 = Utils.ToUtf8(pchRenderModelName);
 		IntPtr pchComponentNameUtf8 = Utils.ToUtf8(pchComponentName);
 #if !UNITY_METRO
-		if ((System.Environment.OSVersion.Platform == System.PlatformID.MacOSX) ||
-				(System.Environment.OSVersion.Platform == System.PlatformID.Unix))
+		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
 		{
 			GetComponentStateUnion u;
 			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
@@ -4511,10 +4506,8 @@ public enum ETextureType
 	DirectX = 0,
 	OpenGL = 1,
 	Vulkan = 2,
-	IOSurface = 3,
 	DirectX12 = 4,
-	DXGISharedHandle = 5,
-	Metal = 6,
+	DXGISharedHandle = 5
 }
 public enum EColorSpace
 {
@@ -6218,7 +6211,7 @@ public enum EBlockQueueReadType
 	public float eventAgeSeconds;
 	public VREvent_Data_t data;
 }
-// This structure is for backwards binary compatibility on Linux and OSX only
+// This structure is for backwards binary compatibility on Linux only
 [StructLayout(LayoutKind.Sequential, Pack = 4)] public struct VREvent_t_Packed
 {
 	public uint eventType;
@@ -6267,7 +6260,7 @@ public enum EBlockQueueReadType
 	public VRControllerAxis_t rAxis3;
 	public VRControllerAxis_t rAxis4;
 }
-// This structure is for backwards binary compatibility on Linux and OSX only
+// This structure is for backwards binary compatibility on Linux only
 [StructLayout(LayoutKind.Sequential, Pack = 4)] public struct VRControllerState_t_Packed
 {
 	public uint unPacketNum;
@@ -6466,7 +6459,7 @@ public enum EBlockQueueReadType
 	public IntPtr rubTextureMapData; // const uint8_t *
 	public EVRRenderModelTextureFormat format;
 }
-// This structure is for backwards binary compatibility on Linux and OSX only
+// This structure is for backwards binary compatibility on Linux only
 [StructLayout(LayoutKind.Sequential, Pack = 4)] public struct RenderModel_TextureMap_t_Packed
 {
 	public ushort unWidth;
@@ -6496,7 +6489,7 @@ public enum EBlockQueueReadType
 	public uint unTriangleCount;
 	public int diffuseTextureId;
 }
-// This structure is for backwards binary compatibility on Linux and OSX only
+// This structure is for backwards binary compatibility on Linux only
 [StructLayout(LayoutKind.Sequential, Pack = 4)] public struct RenderModel_t_Packed
 {
 	public IntPtr rVertexData; // const struct vr::RenderModel_Vertex_t *

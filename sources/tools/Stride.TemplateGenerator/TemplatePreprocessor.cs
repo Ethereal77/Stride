@@ -601,7 +601,7 @@ internal class TemplatePreprocessor
 
                 // .csproj files conventionally use backslash separators (Windows convention) even
                 // when authored cross-platform. Normalize to the current platform so Path.Combine
-                // resolves them correctly on Linux/macOS.
+                // resolves them correctly on Linux.
                 var normalizedInclude = include.Replace('\\', Path.DirectorySeparatorChar);
                 // Resolve relative to the ORIGINAL csproj location, not the staged one. The
                 // staged copy strips parent dirs, so a sample's "..\..\..\..\Packs\Foo" reference
@@ -663,7 +663,6 @@ internal class TemplatePreprocessor
     {
         { "Windows", "WindowsActive" },
         { "Linux",   "LinuxActive"   },
-        { "macOS",   "MacOSActive"   },
         { "Android", "AndroidActive" }
     };
 
@@ -674,7 +673,6 @@ internal class TemplatePreprocessor
     [
         PlatformType.Windows,
         PlatformType.Linux,
-        PlatformType.macOS,
         PlatformType.Android
     ];
 
@@ -759,7 +757,7 @@ internal class TemplatePreprocessor
     }
 
     /// <summary>
-    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,macOS,Android,Windows}</c>)
+    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,Android,Windows}</c>)
     /// from <see cref="PlatformTemplatePath"/> into the staged output when the sample didn't ship
     /// its own. Verbatim copy — the reference template (NewGame) and samples both use
     /// <c>MyTemplate.Game/</c> as the shared-library dir name, so injected csprojs reference the
@@ -787,7 +785,7 @@ internal class TemplatePreprocessor
         foreach (var srcDir in Directory.EnumerateDirectories(PlatformTemplatePath, "MyTemplate.*", SearchOption.TopDirectoryOnly))
         {
             var dirName = Path.GetFileName(srcDir);
-            // Only inject directories that match a known platform suffix (Linux/macOS/Android/Windows).
+            // Only inject directories that match a known platform suffix (Linux/Android/Windows).
             if (!dirName.StartsWith("MyTemplate.", StringComparison.Ordinal))
                 continue;
             var suffix = dirName["MyTemplate.".Length..];
@@ -902,7 +900,7 @@ internal class TemplatePreprocessor
 
     /// <summary>
     /// Reads the first <c>.sdpkg</c>'s <c>Name:</c> field and strips a trailing <c>.Game</c> /
-    /// <c>.Windows</c> / <c>.Linux</c> / <c>.macOS</c> / <c>.Android</c> suffix.
+    /// <c>.Windows</c> / <c>.Linux</c> / <c>.Android</c> suffix.
     /// Stride convention is <c>SampleName.Game</c> for the library package; the base name is
     /// what gets referenced in code namespaces.
     /// </summary>
@@ -918,7 +916,7 @@ internal class TemplatePreprocessor
             return null;
 
         var name = nameLine.Substring(nameLine.IndexOf(':') + 1).Trim();
-        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux", ".macOS", ".Android" })
+        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux", ".Android" })
         {
             if (name.EndsWith(suffix, StringComparison.Ordinal))
                 return name.Substring(0, name.Length - suffix.Length);
@@ -1358,7 +1356,6 @@ internal class TemplatePreprocessor
                     { "choice": "host",    "description": "Detect host OS automatically" },
                     { "choice": "windows", "description": "Windows x64 desktop" },
                     { "choice": "linux",   "description": "Linux x64 desktop" },
-                    { "choice": "macos",   "description": "macOS arm64/x64" },
                     { "choice": "android", "description": "Android arm64/x64" }
                   ]
                 },
@@ -1377,12 +1374,10 @@ internal class TemplatePreprocessor
                 "envOS":     { "type": "bind", "binding": "env:OS",     "defaultValue": "" },
                 "envOSTYPE": { "type": "bind", "binding": "env:OSTYPE", "defaultValue": "" },
                 "envHOME":   { "type": "bind", "binding": "env:HOME",   "defaultValue": "" },
-                "IsMacOS":   { "type": "computed", "value": "(envOSTYPE == \"darwin\")" },
-                "IsLinux":   { "type": "computed", "value": "(!IsMacOS && envHOME != \"\" && envOS != \"Windows_NT\")" },
-                "IsWindows": { "type": "computed", "value": "(!IsMacOS && !IsLinux)" },
+                "IsLinux":   { "type": "computed", "value": "(envHOME != \"\" && envOS != \"Windows_NT\")" },
+                "IsWindows": { "type": "computed", "value": "(!IsLinux)" },
                 "WindowsActive": { "type": "computed", "value": "(platforms == \"windows\") || ((platforms == \"host\") && IsWindows)" },
                 "LinuxActive":   { "type": "computed", "value": "(platforms == \"linux\")   || ((platforms == \"host\") && IsLinux)"   },
-                "MacOSActive":   { "type": "computed", "value": "(platforms == \"macos\")   || ((platforms == \"host\") && IsMacOS)"   },
                 "AndroidActive": { "type": "computed", "value": "(platforms == \"android\")" },
         """);
     }
@@ -1471,7 +1466,6 @@ internal class TemplatePreprocessor
               "modifiers": [
                 { "condition": "(!WindowsActive)", "exclude": [ "MyTemplate.Windows/**" ] },
                 { "condition": "(!LinuxActive)",   "exclude": [ "MyTemplate.Linux/**"   ] },
-                { "condition": "(!MacOSActive)",   "exclude": [ "MyTemplate.macOS/**"   ] },
                 { "condition": "(!AndroidActive)", "exclude": [ "MyTemplate.Android/**" ] },
                 { "condition": "(updateOnly)",     "exclude": [ "MyTemplate.Game/**", "*.slnx" ] },
                 { "condition": "(skipSolution)",   "exclude": [ "*.slnx" ] },

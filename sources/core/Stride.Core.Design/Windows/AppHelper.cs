@@ -113,10 +113,6 @@ public static class AppHelper
                     }
                 }
             }
-            else if (OperatingSystem.IsMacOS())
-            {
-                return RunCommand("sysctl", "-n machdep.cpu.brand_string");
-            }
         }
         catch (Exception)
         {

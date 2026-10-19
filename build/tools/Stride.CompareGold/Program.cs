@@ -692,7 +692,7 @@ static void CollectPlatforms(string suiteDir, HashSet<string> platforms)
             // Only count a 2-deep dir as a platform if it has test outputs: PNG on fail,
             // *.results.json (sidecar) on pass. Filters out non-test subtrees (e.g.
             // baselines/dpi100) without an OS-prefix allowlist, while still surfacing
-            // passing-only buckets (e.g. a CI run where every macOS test matched gold).
+            // passing-only buckets (e.g. a CI run where every Windows test matched gold).
             if (Directory.EnumerateFiles(dDir, "*.png").Any() ||
                 Directory.EnumerateFiles(dDir, "*.results.json").Any())
                 platforms.Add($"{Path.GetFileName(pDir)}/{Path.GetFileName(dDir)}");
@@ -888,15 +888,6 @@ static bool TryReveal(string path)
             if (winPath == null || exe == null) return false;
             var psi = new ProcessStartInfo(exe);
             psi.ArgumentList.Add("/select," + winPath);
-            Process.Start(psi);
-            return true;
-        }
-
-        if (OperatingSystem.IsMacOS())
-        {
-            var psi = new ProcessStartInfo("open");
-            psi.ArgumentList.Add("-R");
-            psi.ArgumentList.Add(path);
             Process.Start(psi);
             return true;
         }

@@ -49,7 +49,6 @@ namespace Stride.Assets
                     return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.Linux:
-                case PlatformType.macOS:
                     return GraphicsPlatform.Vulkan;
                 default:
                     throw new ArgumentOutOfRangeException();

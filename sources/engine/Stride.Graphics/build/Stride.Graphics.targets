@@ -6,7 +6,6 @@
     <StrideDefaultGraphicsApi Condition="'$(StridePlatform)' == 'UWP'">Direct3D11</StrideDefaultGraphicsApi>
     <StrideDefaultGraphicsApi Condition="'$(StridePlatform)' == 'Android'">Vulkan</StrideDefaultGraphicsApi>
     <StrideDefaultGraphicsApi Condition="'$(StridePlatform)' == 'Linux'">Vulkan</StrideDefaultGraphicsApi>
-    <StrideDefaultGraphicsApi Condition="'$(StridePlatform)' == 'macOS'">Vulkan</StrideDefaultGraphicsApi>
     <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' and '$(StrideDefaultGraphicsApi)' != ''">$(StrideDefaultGraphicsApi)</StrideGraphicsApi>
   </PropertyGroup>
 

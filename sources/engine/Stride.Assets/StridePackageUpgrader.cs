@@ -174,7 +174,7 @@ namespace Stride.Assets
             return tfm.IsGlobalProperty ? null : tfm;
         }
 
-        // 4.1: drop the old Stride ref from Linux/macOS executables (no longer needed for runtime.json),
+        // 4.1: drop the old Stride ref from Linux executables (no longer needed for runtime.json),
         // and bump net4.x/net5/netstandard2.0 to net6.0.
         private static void UpgradeProjectTo41(ProjectUpgradeContext context)
         {
@@ -182,8 +182,8 @@ namespace Stride.Assets
             var solutionProject = context.SolutionProject;
 
             // Remove Stride reference for older executable projects (it was necessary in the past due to runtime.json)
-            if (solutionProject.Type == ProjectType.Executable
-                && (solutionProject.Platform == PlatformType.macOS || solutionProject.Platform == PlatformType.Linux))
+            if (solutionProject.Type == ProjectType.Executable &&
+                solutionProject.Platform == PlatformType.Linux)
             {
                 var strideReference = project.GetItems("PackageReference").FirstOrDefault(x => x.EvaluatedInclude == "Stride");
                 if (strideReference != null)

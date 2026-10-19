@@ -27,13 +27,6 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Platform Defines - macOS -->
-  <!-- ================================================================ -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">
-    <StridePlatformDefines>STRIDE_PLATFORM_MACOS</StridePlatformDefines>
-  </PropertyGroup>
-
-  <!-- ================================================================ -->
   <!-- .NET Runtime Defines -->
   <!-- ================================================================ -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net10'))">

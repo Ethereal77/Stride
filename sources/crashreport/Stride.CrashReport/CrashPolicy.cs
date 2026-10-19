@@ -91,7 +91,9 @@ public static class CrashPolicy
         if (OperatingSystem.IsLinux())
             return string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DISPLAY"))
                 && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
-        return false; // macOS desktop: attended unless SSH, which is handled above
+
+        // Attended unless SSH, which is handled above
+        return false;
     }
 
     private static readonly string[] CiVariables =

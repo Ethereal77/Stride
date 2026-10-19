@@ -142,7 +142,7 @@ namespace Stride.AssetCompiler
         /// <summary>
         /// Adopts the minidumps the runtime's <c>createdump</c> left behind into the crash store, then does what
         /// the build would with them (send on CI, or point the user at <c>stride crash send</c>). This is the
-        /// Linux/macOS native path: there is no in-process vectored handler there, so a native crash kills the
+        /// Linux native path: there is no in-process vectored handler there, so a native crash kills the
         /// process and the runtime writes a raw dump; a fresh <c>crash-adopt</c> invocation after the build turns
         /// each dump into a signed, deduped <see cref="StoredCrash"/>. Returns a process exit code (always success:
         /// the crash already failed the build).
@@ -163,7 +163,7 @@ namespace Stride.AssetCompiler
             {
                 try
                 {
-                    // The native fault frame (module+rva): from the dump's exception stream on Linux/macOS, or
+                    // The native fault frame (module+rva): from the dump's exception stream on Linux, or
                     // recorded live by the vectored handler on Windows (createdump writes no exception stream there).
                     // The recorder also notes what the faulting thread was building (Windows only, see Breadcrumb).
                     var (recordedFrame, breadcrumb) = ReadRecordedFaultingFrame(dumpPath);
@@ -181,7 +181,7 @@ namespace Stride.AssetCompiler
                         ["Asset"] = assetLabel,
                         ["Platform"] = platform,
                         ["GraphicsApi"] = graphicsApi,
-                        ["Configuration"] = configuration,
+                        ["Configuration"] = configuration
                     };
                     if (!string.IsNullOrEmpty(faultingFrame))
                         data["FaultingFrame"] = faultingFrame;
@@ -408,7 +408,7 @@ namespace Stride.AssetCompiler
                 ["Platform"] = platform,
                 ["GraphicsApi"] = graphicsApi,
                 ["Configuration"] = configuration,
-                ["NativeModules"] = DescribeNativeModules(),
+                ["NativeModules"] = DescribeNativeModules()
             };
             var crash = NewStoredCrash(data);
             crash.Signature = signature;

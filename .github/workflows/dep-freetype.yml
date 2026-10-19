@@ -92,49 +92,6 @@ jobs:
           name: freetype-linux-x64
           path: out/linux-x64/
 
-  build-macos:
-    name: Build FreeType (macOS)
-    runs-on: macos-15
-    strategy:
-      matrix:
-        include:
-          - arch: arm64
-            rid: osx-arm64
-          - arch: x86_64
-            rid: osx-x64
-    steps:
-      - name: Checkout FreeType
-        uses: actions/checkout@v7
-        with:
-          repository: freetype/freetype
-          ref: ${{ github.event.inputs.freetype-version }}
-          path: freetype-src
-
-      - name: Build
-        run: |
-          cmake -S freetype-src -B freetype-build \
-            -DBUILD_SHARED_LIBS=ON \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
-            -DFT_DISABLE_BZIP2=ON \
-            -DFT_DISABLE_BROTLI=ON \
-            -DFT_DISABLE_HARFBUZZ=ON \
-            -DFT_DISABLE_PNG=ON \
-            -DFT_DISABLE_ZLIB=ON
-          cmake --build freetype-build -- -j$(sysctl -n hw.ncpu)
-
-      - name: Collect output
-        run: |
-          mkdir -p out/${{ matrix.rid }}
-          # Copy the actual dylib (not symlinks) with a versionless name
-          cp $(readlink -f freetype-build/libfreetype.dylib) out/${{ matrix.rid }}/libfreetype.dylib
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: freetype-${{ matrix.rid }}
-          path: out/${{ matrix.rid }}/
-
   build-android:
     name: Build FreeType (Android)
     runs-on: ubuntu-24.04
@@ -185,7 +142,7 @@ jobs:
 
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-macos, build-android]
+    needs: [build-windows, build-linux, build-android]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout FreeType (for version info)
@@ -206,7 +163,7 @@ jobs:
           OUT=freetype-out
 
           # Desktop → dotnet/{rid}/
-          for rid in win-x64 win-arm64 linux-x64 osx-x64 osx-arm64; do
+          for rid in win-x64 win-arm64 linux-x64; do
             mkdir -p $OUT/dotnet/$rid
             cp artifacts/freetype-$rid/* $OUT/dotnet/$rid/ 2>/dev/null || true
           done

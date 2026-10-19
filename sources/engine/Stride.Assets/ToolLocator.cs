@@ -10,7 +10,7 @@ static class ToolLocator
 {
     /// <summary>
     /// Finds an executable tool by name. Pass <paramref name="ensureExecutable"/>=true for native
-    /// CLI binaries shipped via nupkg — flips the Unix execute bit on Linux/macOS, where pack/restore
+    /// CLI binaries shipped via nupkg — flips the Unix execute bit on Linux, where pack/restore
     /// drops it.
     /// </summary>
     public static UFile LocateTool(string toolName, bool ensureExecutable = false)
@@ -72,9 +72,9 @@ static class ToolLocator
     {
         if (!ensureExecutable)
             return path;
-        // +x normalization only applies to ELF / Mach-O executables. Skip on any other host
+        // +x normalization only applies to ELF executables. Skip on any other host
         // (Windows, future targets) — the file mode concept doesn't apply or is irrelevant.
-        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+        if (!OperatingSystem.IsLinux())
             return path;
         try
         {
@@ -97,7 +97,6 @@ static class ToolLocator
         string os;
         if (OperatingSystem.IsWindows()) os = "win";
         else if (OperatingSystem.IsLinux()) os = "linux";
-        else if (OperatingSystem.IsMacOS()) os = "osx";
         else return null;
 
         var arch = RuntimeInformation.OSArchitecture switch

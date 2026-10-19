@@ -14,7 +14,6 @@
     <file src="buildTransitive/Stride.Dependencies.SpirvCross.targets" target="buildTransitive/" />
     <!-- Add more platforms as needed:
     <file src="linux-x64/libspirv-cross.so" target="runtimes/linux-x64/native/" />
-    <file src="osx-arm64/libspirv-cross.dylib" target="runtimes/osx-arm64/native/" />
     -->
   </files>
 </package>

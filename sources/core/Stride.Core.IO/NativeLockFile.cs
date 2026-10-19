@@ -17,7 +17,7 @@ public static partial class NativeLockFile
     internal const uint LOCKFILE_FAIL_IMMEDIATELY = 0x00000001;
     internal const uint LOCKFILE_EXCLUSIVE_LOCK = 0x00000002;
 
-    // Unix (Linux, macOS, Android)
+    // Unix (Linux, Android)
     [DllImport("libc", EntryPoint = "fcntl", SetLastError = true)]
     private static extern int fcntl(int fd, int cmd, ref Flock lockInfo);
 
@@ -163,7 +163,6 @@ public static partial class NativeLockFile
     /// <summary>
     ///   Lock on Unix: on Linux/Android, tries OFD locks first (per-handle, like Windows LockFileEx),
     ///   falls back to standard fcntl (per-process) if OFD is not supported.
-    ///   On macOS, uses standard fcntl directly (OFD not available on XNU).
     /// </summary>
     private static FileLockResult UnixLock(FileStream fileStream, long offset, long count, bool exclusive)
     {
@@ -204,7 +203,7 @@ public static partial class NativeLockFile
             }
         }
 
-        // Standard fcntl (per-process) — used on macOS, or as fallback on old Linux kernels.
+        // Standard fcntl (per-process) — used as fallback on old Linux kernels.
         // Always non-blocking to avoid hanging.
         if (fcntl(fd, F_SETLK, ref lockInfo) == 0)
             return FileLockResult.Acquired;

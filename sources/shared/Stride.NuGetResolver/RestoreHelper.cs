@@ -1,12 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using NuGet.Commands;
 using NuGet.Common;
@@ -120,7 +114,7 @@ namespace Stride.Core.Assets
 
                     // Resolve MSBuild-style properties. The graphicsApi arg drives the first probe
                     // (Direct3D11 by default on the editor path); fall back to other APIs whose
-                    // dev DLL exists, so a Linux/macOS build using Vulkan/OpenGL still resolves.
+                    // dev DLL exists, so a Linux build using Vulkan/OpenGL still resolves.
                     hintPath = hintPath
                         .Replace("$(StrideDevRoot)", devRoot)
                         .Replace("$(StrideDevConfiguration)", devConfig);

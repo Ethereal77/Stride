@@ -7,13 +7,13 @@
     <AssemblyName>Stride.Tests.Combined</AssemblyName>
     <RootNamespace>Stride.Tests.Combined</RootNamespace>
     <!-- StrideTestPlatforms defaults from StridePlatforms via the MultiPlatform Tests SDK; pass
-         -p:StridePlatforms=<Android|macOS|Windows|Linux> to target a different platform. -->
+         -p:StridePlatforms=<Android|Windows|Linux> to target a different platform. -->
     <StrideCompileAssets>false</StrideCompileAssets>
     <StrideGraphicsRegression>true</StrideGraphicsRegression>
     <!-- Forwarded to each suite ref: drop its launcher/entry point but keep asset compile +
-         native-lib copy active, align suites onto the meta's TFM, keep macOS-opted suites off
-         net10.0-macos. Stride.Build.Sdk.Tests stops these globals propagating past the suite itself. -->
-    <_StrideSuiteRefProperties>IncludeXunitLauncher=false;OutputType=Library;StrideIsExecutable=true;StrideTestPlatforms=$(StrideTestPlatforms);StrideExplicitMacOSRuntime=false</_StrideSuiteRefProperties>
+         native-lib copy active, align suites onto the meta's TFM. Stride.Build.Sdk.Tests
+         stops these globals propagating past the suite itself. -->
+    <_StrideSuiteRefProperties>IncludeXunitLauncher=false;OutputType=Library;StrideIsExecutable=true;StrideTestPlatforms=$(StrideTestPlatforms)</_StrideSuiteRefProperties>
   </PropertyGroup>
   <ItemGroup>
     <!-- xunit.runner.stride is a shared library, not a suite: referenced with clean globals so
@@ -126,18 +126,13 @@
   <Target Name="_StrideEmitCombinedAssetItems"
           AfterTargets="_StrideCollectSuiteBundles"
           BeforeTargets="_CollectBundleResources;_GenerateAndroidAssetsDir"
-          Condition="'$(StridePlatform)' == 'macOS' Or '$(StridePlatform)' == 'Android'">
+          Condition="'$(StridePlatform)' == 'Android'">
     <ItemGroup>
       <_StrideCombinedAssetFile Include="$(OutputPath)data\db\**\*.*" />
     </ItemGroup>
     <AssignTargetPath Files="@(_StrideCombinedAssetFile)" RootFolder="$([System.IO.Path]::GetFullPath('$(OutputPath)'))">
       <Output TaskParameter="AssignedFiles" ItemName="_StrideCombinedAssetTargeted" />
     </AssignTargetPath>
-    <ItemGroup Condition="'$(StridePlatform)' == 'macOS'">
-      <BundleResource Include="@(_StrideCombinedAssetTargeted)">
-        <LogicalName>%(_StrideCombinedAssetTargeted.TargetPath)</LogicalName>
-      </BundleResource>
-    </ItemGroup>
     <ItemGroup Condition="'$(StridePlatform)' == 'Android'">
       <AndroidAsset Include="@(_StrideCombinedAssetTargeted)">
         <Link>%(_StrideCombinedAssetTargeted.TargetPath)</Link>

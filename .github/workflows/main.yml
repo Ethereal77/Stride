@@ -27,10 +27,6 @@ on:
         description: Run Android jobs
         type: boolean
         default: true
-      macos:
-        description: Run macOS jobs
-        type: boolean
-        default: true
 
 permissions:
   checks: write
@@ -224,22 +220,6 @@ jobs:
     with:
       build-type: Debug
 
-  # macOS runners bill ~10× Linux on GitHub-hosted; gate on Linux-Runtime so a broken build
-  # doesn't burn macOS minutes. MoltenVK/Vulkan path is unique to macOS so per-commit coverage
-  # catches regressions per-PR rather than via a stale cron snapshot.
-  macOS-Tests-Game:
-    needs: [changes, Linux-Runtime]
-    if: |
-      !cancelled()
-      && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-      && needs.changes.outputs.runtime == 'true'
-      && needs['Linux-Runtime'].result != 'failure'
-      && needs['Linux-Runtime'].result != 'cancelled'
-      && (github.event_name != 'workflow_dispatch' || inputs.macos)
-    uses: ./.github/workflows/test-macos-game.yml
-    with:
-      build-type: Debug
-
   # Android tests run on Linux + KVM-accelerated x86_64 emulator. Build APKs on the host,
   # boot the emulator inside reactivecircus/android-emulator-runner, run each suite serially.
   Android-Tests-Game:
@@ -277,7 +257,6 @@ jobs:
       - Windows-Tests-Game-Vulkan
       - Linux-Tests-Simple
       - Linux-Tests-Game
-      - macOS-Tests-Game
       - Android-Tests-Game
     if: always()
     runs-on: ubuntu-latest

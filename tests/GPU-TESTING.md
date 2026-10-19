@@ -27,15 +27,11 @@ This sets `STRIDE_TESTS_GPU=1`, which skips software rendering. Note that GPU re
 
 ### Vulkan — Lavapipe
 
-[Lavapipe](https://docs.mesa3d.org/drivers/llvmpipe.html) is Mesa's CPU-based Vulkan driver (the Vulkan front-end of `llvmpipe`). The `Stride.Dependencies.Lavapipe` NuGet package provides the software-Vulkan driver (`vulkan_lvp.dll` and its ICD JSON) for Windows, Linux, and macOS x64, built from Mesa source in `.github/workflows/dep-lavapipe.yml`.
+[Lavapipe](https://docs.mesa3d.org/drivers/llvmpipe.html) is Mesa's CPU-based Vulkan driver (the Vulkan front-end of `llvmpipe`). The `Stride.Dependencies.Lavapipe` NuGet package provides the software-Vulkan driver (`vulkan_lvp.dll` and its ICD JSON) for Windows, Linux x64, built from Mesa source in `.github/workflows/dep-lavapipe.yml`.
 
 Gold images are stored under `tests/<TestProject>/Windows.Vulkan/Lavapipe/` (and `Linux.Vulkan/Lavapipe/`, plus `Android.Vulkan/Lavapipe-LinuxHost/` and `Lavapipe-WindowsHost/` for the emulator).
 
-Lavapipe is included automatically when building with `StrideGraphicsApi=Vulkan`. When software rendering is active (the default), the test framework invokes the package's module initializer, which sets `VK_DRIVER_FILES` so the Vulkan loader picks Lavapipe — no registry or environment setup needed locally. This path is desktop-only (Windows/Linux/macOS); Android gets Vulkan from the emulator/device.
-
-### macOS — MoltenVK
-
-macOS defaults to the **real GPU** via [MoltenVK](https://github.com/KhronosGroup/MoltenVK) (Vulkan-on-Metal), since that's the real-world Apple renderer; its gold lives under `macOS.Vulkan/MoltenVK/` and per-chip buckets like `macOS.Vulkan/Apple M4/`. Set `STRIDE_TESTS_GPU=0` to force macOS onto Lavapipe instead.
+Lavapipe is included automatically when building with `StrideGraphicsApi=Vulkan`. When software rendering is active (the default), the test framework invokes the package's module initializer, which sets `VK_DRIVER_FILES` so the Vulkan loader picks Lavapipe — no registry or environment setup needed locally. This path is desktop-only (Windows/Linux); Android gets Vulkan from the emulator/device.
 
 ### Direct3D — WARP
 
@@ -80,7 +76,7 @@ Important: gold images must be generated with the **same Lavapipe build** used i
 
 ### Generating Gold Across All Platforms (CI)
 
-Locally you can only produce Windows and Linux gold. To generate gold for **every** platform/API at once — including macOS (MoltenVK) and Android (emulator) — dispatch the [`test-gold-gen.yml`](../.github/workflows/test-gold-gen.yml) workflow (Actions tab → "Test Gold Generation" → Run workflow, or via the `gh` CLI). It runs the same reusable per-platform test workflows the PR gate uses, gathers every platform's rendered output into one downloadable `gold-images` artifact, and optionally promotes it.
+Locally you can only produce Windows and Linux gold. To generate gold for **every** platform/API at once — including Android (emulator) — dispatch the [`test-gold-gen.yml`](../.github/workflows/test-gold-gen.yml) workflow (Actions tab → "Test Gold Generation" → Run workflow, or via the `gh` CLI). It runs the same reusable per-platform test workflows the PR gate uses, gathers every platform's rendered output into one downloadable `gold-images` artifact, and optionally promotes it.
 
 ```bash
 # Generate gold for one test across all platforms and commit it to the branch

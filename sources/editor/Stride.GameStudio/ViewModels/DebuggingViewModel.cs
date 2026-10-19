@@ -548,11 +548,6 @@ namespace Stride.GameStudio.ViewModels
                             extraProperties.Add("SolutionPlatform", "Linux");
                             break;
 
-                        case PlatformType.macOS:
-                            platformName = "macOS";
-                            extraProperties.Add("SolutionPlatform", "macOS");
-                            break;
-
                         default:
                             logger.Error(string.Format(Tr._p("Message", "Platform {0} isn't supported for execution."), Session.CurrentProject.Platform));
                             return (false, null);
@@ -639,7 +634,6 @@ namespace Stride.GameStudio.ViewModels
 
                             break;
                         case PlatformType.Linux:
-                        case PlatformType.macOS:
                             {
                                 // Sanity check to verify executable was compiled properly
                                 if (string.Equals(Path.GetExtension(assemblyPath), ".exe", StringComparison.InvariantCultureIgnoreCase))

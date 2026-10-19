@@ -170,8 +170,7 @@ public partial class App : Avalonia.Application
         {
             var name = Path.GetFileName(dir);
             int dash = name.IndexOf('-');
-            if (dash > 0 && (name.StartsWith("Windows-") || name.StartsWith("macOS-")
-                || name.StartsWith("Linux-") || name.StartsWith("Android-")))
+            if (dash > 0 && (name.StartsWith("Windows-") || name.StartsWith("Linux-") || name.StartsWith("Android-")))
                 return name[(dash + 1)..];
             dir = Path.GetDirectoryName(dir);
         }

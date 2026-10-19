@@ -14,7 +14,7 @@ namespace Stride.Core
     {
         private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        // Windows executables carry ".exe"; .NET apphosts on Linux/macOS have no extension.
+        // Windows executables carry ".exe"; .NET apphosts on Linux have no extension.
         private static readonly string ExeExtension = IsWindows ? ".exe" : string.Empty;
 
         internal static string GetExecutable(string assemblyLocation)

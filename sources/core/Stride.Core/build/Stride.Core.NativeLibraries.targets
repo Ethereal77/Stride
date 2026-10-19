@@ -18,11 +18,10 @@
     NuGet consumers source items from @(RuntimeCopyLocalItems);
     engine self-build sources from .ssdeps via @(_StrideDependencyNativeLib).
 
-    macOS / Android stay in Stride.Dependencies.targets (engine
-    self-build only): macOS dylibs auto-resolve via standard NuGet
-    RID assets, and Microsoft.Android.Sdk auto-converts Android
-    runtime assets to AndroidNativeLibrary — the .ssdeps-based glue
-    is only needed for the engine's in-tree non-RID layouts.
+    Android stay in Stride.Dependencies.targets (engine self-build only):
+    Microsoft.Android.Sdk auto-converts Android runtime assets
+    to AndroidNativeLibrary — the .ssdeps-based glue is only needed
+    for the engine's in-tree non-RID layouts.
     ================================================================
   -->
 

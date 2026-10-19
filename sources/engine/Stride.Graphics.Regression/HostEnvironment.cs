@@ -22,15 +22,7 @@ internal static class HostEnvironment
     {
         try
         {
-            if (OperatingSystem.IsMacOS())
-            {
-                // sysctlbyname("machdep.cpu.brand_string") returns e.g. "Apple M4".
-                uint len = 256;
-                var buf = new byte[(int)len];
-                if (sysctlbyname("machdep.cpu.brand_string", buf, ref len, IntPtr.Zero, 0) == 0)
-                    return System.Text.Encoding.ASCII.GetString(buf, 0, (int)len).TrimEnd('\0');
-            }
-            else if (OperatingSystem.IsLinux() || OperatingSystem.IsAndroid())
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsAndroid())
             {
                 foreach (var line in File.ReadAllLines("/proc/cpuinfo"))
                 {

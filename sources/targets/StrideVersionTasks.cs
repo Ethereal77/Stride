@@ -273,10 +273,9 @@ public class ResolveStrideWorktreeVersion : Task
         return File.Exists(ledgerPath) ? File.GetLastWriteTimeUtc(ledgerPath).Ticks.ToString() : "0";
     }
 
-    // Windows file paths are case-insensitive; Linux is case-sensitive; macOS depends on the volume. On macOS the
-    // FS reports paths in their stored casing either way, so Ordinal still matches the same checkout across builds —
-    // and Ordinal correctly distinguishes truly-distinct case-sensitive checkouts on Linux (where OrdinalIgnoreCase
-    // would falsely merge `/work/stride` and `/work/Stride` and silently clobber both).
+    // Windows file paths are case-insensitive; Linux is case-sensitive.
+    // Ordinal correctly distinguishes truly-distinct case-sensitive checkouts on Linux
+    // (where OrdinalIgnoreCase would falsely merge `/work/stride` and `/work/Stride` and silently clobber both).
     private static readonly StringComparison PathComparison =
         Path.DirectorySeparatorChar == '\\' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 

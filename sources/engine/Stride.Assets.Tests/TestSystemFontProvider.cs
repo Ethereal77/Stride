@@ -1,7 +1,5 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System.IO;
-using System.Linq;
 using Stride.Assets.SpriteFont;
 using Xunit;
 
@@ -20,7 +18,7 @@ namespace Stride.Assets.Tests
             Assert.True(File.Exists(path));
         }
 
-        // Core families resolve on every platform: present natively on Windows/macOS, and via the
+        // Core families resolve on every platform: present natively on Windows, and via the
         // metric-compatible Liberation (or DejaVu) fallback on Linux. Includes a Windows-only font
         // (Segoe UI), a Linux font (Liberation Sans) and a non-Windows font (Helvetica) to exercise
         // the fallback in both directions.

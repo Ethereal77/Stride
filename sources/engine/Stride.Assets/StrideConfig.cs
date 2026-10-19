@@ -63,17 +63,6 @@ namespace Stride.Assets
             };
             solutionPlatforms.Add(linuxPlatform);
 
-            // macOS
-            var macOSPlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.macOS.ToString(),
-                IsAvailable = true,
-                TargetFramework = "net10.0",
-                RuntimeIdentifier = "osx-x64",
-                Type = PlatformType.macOS,
-            };
-            solutionPlatforms.Add(macOSPlatform);
-
             // Android
             var androidPlatform = new SolutionPlatform()
             {

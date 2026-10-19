@@ -19,7 +19,6 @@ set ARGUMENTS=%NATIVE_PATH_DIR%\np-build.lua %CELT_DIR%\celt -I%CELT_DIR%\includ
 pushd ..\NativePath
 call %LUA%\luajit %ARGUMENTS% -pwindows
 call %LUA%\luajit %ARGUMENTS% -pandroid
-call %LUA%\luajit %ARGUMENTS% -pmacos
 call %LUA%\luajit %ARGUMENTS% -plinux
 popd
 

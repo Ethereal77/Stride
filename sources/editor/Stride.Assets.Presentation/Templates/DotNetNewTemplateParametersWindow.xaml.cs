@@ -286,12 +286,11 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
         if (!string.Equals(paramName, "platforms", StringComparison.Ordinal))
             return label;
         // dotnet new's lowercase choice keys vs PlatformType PascalCase enum names — explicit
-        // map both because Enum.TryParse(ignoreCase) can't reconcile "macos" → "macOS".
+        // map both because Enum.TryParse(ignoreCase) can't reconcile "windows" → "Windows".
         PlatformType? platform = choiceKey switch
         {
             "windows" => PlatformType.Windows,
             "linux"   => PlatformType.Linux,
-            "macos"   => PlatformType.macOS,
             "android" => PlatformType.Android,
             _         => null
         };
@@ -355,13 +354,12 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
 
     /// <summary>
     /// Maps the OS the editor is running on to the matching <c>platforms</c> choice value
-    /// (windows / linux / macos). Used to substitute for "host" when the dialog hides it.
+    /// (windows / linux). Used to substitute for "host" when the dialog hides it.
     /// </summary>
     private static string CurrentHostPlatformChoice()
     {
         if (System.OperatingSystem.IsWindows()) return "windows";
         if (System.OperatingSystem.IsLinux())   return "linux";
-        if (System.OperatingSystem.IsMacOS())   return "macos";
         return "windows"; // last-resort fallback for GameStudio, which today is Windows-only
     }
 

@@ -11,7 +11,6 @@ name: "Dep: Build astcenc"
 # ISA variant per RID:
 #   * win-x64 / linux-x64 -> SSE4.1  (covers all x64 hardware since 2008)
 #   * win-arm64           -> NEON    (Windows on ARM)
-#   * osx-arm64           -> NEON    (Apple Silicon)
 # Only ONE ISA is built per binary; astcenc does not runtime-dispatch.
 
 on:
@@ -112,44 +111,9 @@ jobs:
           name: astcenc-linux-x64
           path: out/linux-x64/
 
-  build-macos:
-    name: Build astcenc (macOS arm64)
-    runs-on: macos-15
-    steps:
-      - name: Checkout astc-encoder
-        uses: actions/checkout@v7
-        with:
-          repository: ARM-software/astc-encoder
-          ref: ${{ github.event.inputs.astcenc-version }}
-          path: astcenc-src
-
-      - name: Build
-        run: |
-          cmake -S astcenc-src -B astcenc-build \
-            -DASTCENC_ISA_NEON=ON \
-            -DASTCENC_SHAREDLIB=ON \
-            -DASTCENC_CLI=OFF \
-            -DASTCENC_UNITTEST=OFF \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64
-          cmake --build astcenc-build -- -j$(sysctl -n hw.ncpu)
-
-      - name: Collect output
-        run: |
-          mkdir -p out/osx-arm64
-          dylib=$(find astcenc-build -name "libastcenc-neon-shared.dylib" -o -name "libastcenc-shared.dylib" | head -n1)
-          if [ -z "$dylib" ]; then echo "astcenc shared library not found"; find astcenc-build -name '*.dylib'; exit 1; fi
-          cp "$(readlink -f "$dylib")" out/osx-arm64/libastcenc.dylib
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: astcenc-osx-arm64
-          path: out/osx-arm64/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-macos]
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout astc-encoder (for version metadata + header)
@@ -170,7 +134,7 @@ jobs:
           OUT=astcenc-out
 
           # Desktop -> dotnet/{rid}/  (matches dep-freetype.yml convention)
-          for rid in win-x64 win-arm64 linux-x64 osx-arm64; do
+          for rid in win-x64 win-arm64 linux-x64; do
             mkdir -p $OUT/dotnet/$rid
             cp artifacts/astcenc-$rid/* $OUT/dotnet/$rid/ 2>/dev/null || true
           done

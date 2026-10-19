@@ -33,7 +33,6 @@
   <PropertyGroup Condition="'$(StrideGraphicsApiDependent)' == 'true' And !('$(TargetFrameworks)' != '' and '$(TargetFramework)' == '')">
     <StrideGraphicsApiDependent Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkUWP)'">false</StrideGraphicsApiDependent>
     <StrideGraphicsApiDependent Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)'">false</StrideGraphicsApiDependent>
-    <StrideGraphicsApiDependent Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)'">false</StrideGraphicsApiDependent>
     <StrideGraphicsApi Condition="'$(StrideGraphicsApiDependent)' == 'false'">$(StrideDefaultGraphicsApi)</StrideGraphicsApi>
   </PropertyGroup>
 

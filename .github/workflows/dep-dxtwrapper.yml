@@ -11,9 +11,8 @@ name: "Dep: Build directxtex"
 # Output per OS — one self-contained shared lib per RID:
 #   Windows: stride_directxtex.dll (+ stride_directxtex.pdb)
 #   Linux:   stride_directxtex.so
-#   macOS:   stride_directxtex.dylib
 #
-# RIDs covered: win-x64, win-arm64, linux-x64, osx-arm64.
+# RIDs covered: win-x64, win-arm64, linux-x64.
 
 on:
   workflow_dispatch:
@@ -150,83 +149,9 @@ jobs:
           name: stride_directxtex-linux-x64
           path: out/linux-x64/
 
-  build-macos:
-    name: Build directxtex (macOS arm64)
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          path: stride-src
-          sparse-checkout: sources/tools/Stride.TextureConverter.Wrappers/DxtWrapper
-
-      - name: Checkout DirectXTex
-        uses: actions/checkout@v7
-        with:
-          repository: microsoft/DirectXTex
-          ref: ${{ github.event.inputs.directxtex-version }}
-          path: directxtex-src
-
-      - name: Checkout DirectX-Headers
-        uses: actions/checkout@v7
-        with:
-          repository: microsoft/DirectX-Headers
-          ref: ${{ github.event.inputs.directx-headers-version }}
-          path: directx-headers-src
-
-      - name: Checkout DirectXMath
-        uses: actions/checkout@v7
-        with:
-          repository: microsoft/DirectXMath
-          ref: ${{ github.event.inputs.directxmath-version }}
-          path: directxmath-src
-
-      - name: Build & install DirectXMath
-        run: |
-          cmake -S directxmath-src -B _dxm-build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
-            -DCMAKE_INSTALL_PREFIX=$PWD/_install
-          cmake --build _dxm-build
-          cmake --install _dxm-build
-          # See Linux job for rationale: ship sal.h next to DirectXMath.h.
-          curl -sSL https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h -o _install/include/sal.h
-
-      - name: Build & install DirectX-Headers
-        run: |
-          cmake -S directx-headers-src -B _dxh-build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
-            -DCMAKE_INSTALL_PREFIX=$PWD/_install \
-            -DDXHEADERS_BUILD_TEST=OFF \
-            -DDXHEADERS_BUILD_GOOGLE_TEST=OFF
-          cmake --build _dxh-build
-          cmake --install _dxh-build
-
-      - name: Configure & build
-        run: |
-          cmake -S stride-src/sources/tools/Stride.TextureConverter.Wrappers/DxtWrapper -B _build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
-            -DCMAKE_PREFIX_PATH=$PWD/_install \
-            -DDIRECTXTEX_SRC=$PWD/directxtex-src
-          cmake --build _build
-
-      - name: Collect output
-        run: |
-          mkdir -p out/osx-arm64
-          cp _build/stride_directxtex.dylib out/osx-arm64/
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: stride_directxtex-osx-arm64
-          path: out/osx-arm64/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-macos]
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout DirectXTex (for commit hash)
@@ -245,7 +170,7 @@ jobs:
       - name: Organize into Release/ layout
         run: |
           OUT=stride_directxtex-out
-          for rid in win-x64 win-arm64 linux-x64 osx-arm64; do
+          for rid in win-x64 win-arm64 linux-x64; do
             mkdir -p $OUT/Release/$rid
             cp artifacts/stride_directxtex-$rid/* $OUT/Release/$rid/ 2>/dev/null || true
           done

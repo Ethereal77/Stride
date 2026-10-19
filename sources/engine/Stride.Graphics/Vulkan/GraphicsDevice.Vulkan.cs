@@ -185,11 +185,6 @@ namespace Stride.Graphics
         internal bool HasAndroidHardwareBufferSupport { get; private set; }
 #endif
 
-#if STRIDE_PLATFORM_MACOS
-        // True when VK_EXT_metal_objects was enabled — lets us import CVPixelBuffer IOSurfaces as VkImage.
-        internal bool HasMetalObjectsSupport { get; private set; }
-#endif
-
         /// <summary>
         /// Whether <c>scalarBlockLayout</c> is enabled: needed by shaders whose structured buffers use Direct3D's tight layout
         /// (the shader compiler marks them, see <see cref="TightStructuredBuffers"/>).
@@ -485,10 +480,7 @@ namespace Stride.Graphics
             {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME,
                 VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
-#if STRIDE_PLATFORM_MACOS
-                // IOSurface-backed VkImage import (zero-copy CVPixelBuffer upload on Apple platforms).
-                VK_EXT_METAL_OBJECTS_EXTENSION_NAME,
-#endif
+
 #if STRIDE_PLATFORM_ANDROID
                 // AHardwareBuffer import (zero-copy buffers from camera / MediaCodec / etc.).
                 VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME,
@@ -512,20 +504,6 @@ namespace Stride.Graphics
             // Stride uses Vulkan 1.3 core features and entry points
             if (Adapter.NativeApiVersion < VkVersion.Version_1_3)
                 throw new NotSupportedException($"Vulkan: Device supports only Vulkan {Adapter.DriverInfo.ApiVersion}, but Stride requires Vulkan 1.3.");
-
-            // Vulkan portability spec: if VK_KHR_portability_subset is advertised, the app MUST enable it.
-            // MoltenVK is the only ICD that advertises it; conformant drivers do not.
-            bool isPortabilitySubsetDevice = availableExtensionProperties.Contains(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-            if (isPortabilitySubsetDevice)
-                desiredExtensionProperties.Add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-
-#if STRIDE_PLATFORM_MACOS
-            // VK_EXT_metal_objects lets us import IOSurface-backed CVPixelBuffers as VkImages for
-            // zero-copy video upload. MoltenVK 1.2+ supports it; no extra dependency extensions needed.
-            HasMetalObjectsSupport = availableExtensionProperties.Contains(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
-            if (HasMetalObjectsSupport)
-                desiredExtensionProperties.Add(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
-#endif
 
 #if STRIDE_PLATFORM_ANDROID
             // All extensions in the AHardwareBuffer → VkImage chain must be present together.
@@ -571,17 +549,10 @@ namespace Stride.Graphics
                 sType = VkStructureType.PhysicalDeviceVulkan11Features,
                 pNext = &supportedVulkan12Features,
             };
-            // Portability subset features (MoltenVK only) — queried so we can forward the device-reported
-            // capabilities verbatim to vkCreateDevice, which is what the portability spec requires.
-            var portabilitySubsetFeatures = new VkPhysicalDevicePortabilitySubsetFeaturesKHR
-            {
-                sType = VkStructureType.PhysicalDevicePortabilitySubsetFeaturesKHR,
-                pNext = &supportedVulkan11Features,
-            };
             var physicalDeviceFeatures2 = new VkPhysicalDeviceFeatures2
             {
                 sType = VkStructureType.PhysicalDeviceFeatures2,
-                pNext = isPortabilitySubsetDevice ? (void*)&portabilitySubsetFeatures : &supportedVulkan11Features,
+                pNext = &supportedVulkan11Features,
             };
             NativeInstanceApi.vkGetPhysicalDeviceFeatures2(NativePhysicalDevice, &physicalDeviceFeatures2);
 
@@ -620,13 +591,6 @@ namespace Stride.Graphics
             };
 
             void* pNextChainHead = &enabledVulkan11Features;
-            // Re-attach portability subset at the head of the create-info chain so MoltenVK sees the
-            // feature flags it reported. The values were populated by the query above; pass them back as-is.
-            if (isPortabilitySubsetDevice)
-            {
-                portabilitySubsetFeatures.pNext = pNextChainHead;
-                pNextChainHead = &portabilitySubsetFeatures;
-            }
 
             using VkStringArray ppEnabledExtensionNames = new(desiredExtensionProperties);
             var deviceCreateInfo = new VkDeviceCreateInfo

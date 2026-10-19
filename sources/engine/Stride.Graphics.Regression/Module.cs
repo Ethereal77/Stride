@@ -21,11 +21,7 @@ internal static class Module
 
         // Default to software rendering unless STRIDE_TESTS_GPU=1 is set.
         // This ensures Test Explorer and dotnet test match the gold images out of the box.
-        // macOS defaults to GPU (MoltenVK) since that's the real-world Apple renderer;
-        // Lavapipe is still selectable on macOS by setting STRIDE_TESTS_GPU=0 explicitly.
         var gpu = Environment.GetEnvironmentVariable("STRIDE_TESTS_GPU");
-        if (gpu == null && OperatingSystem.IsMacOS())
-            gpu = "1";
         if (gpu != "1")
         {
             Environment.SetEnvironmentVariable("STRIDE_GRAPHICS_SOFTWARE_RENDERING", "1");
@@ -43,8 +39,8 @@ internal static class Module
     // Isolated so the JIT only loads Stride.Dependencies.Lavapipe (whose ModuleInitializer
     // sets VK_DRIVER_FILES) when this method actually runs. Inlining it into Initialize() would
     // resolve the Lavapipe type ref at Initialize's JIT time and load the assembly on the GPU
-    // path too, racing BundledMoltenVK for VK_DRIVER_FILES.
-    // Desktop only: the Lavapipe package ships win/linux/osx software-Vulkan (see csproj) and
+    // path too.
+    // Desktop only: the Lavapipe package ships win/linux software-Vulkan (see csproj) and
     // throws from its ModuleInitializer on mobile; Android provide Vulkan via emulator/device.
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ConfigureLavapipe()

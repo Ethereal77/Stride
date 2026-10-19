@@ -36,10 +36,8 @@
   <PropertyGroup>
     <!-- Default mappings -->
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Windows'">Windows</StridePlatform>
-    <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'macOS'">macOS</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'UAP'">UWP</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Android'">Android</StridePlatform>
-    <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('osx'))">macOS</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('linux'))">Linux</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == ''">Windows</StridePlatform>
   </PropertyGroup>
@@ -143,7 +141,7 @@
        self-build path in Stride.Build.Sdk's Stride.Dependencies.targets share one impl. -->
   <PropertyGroup>
     <_StrideListDepsFilesDependsOn>ResolveAssemblyReferences</_StrideListDepsFilesDependsOn>
-    <_StrideListDepsFilesDependsOn Condition="'$(StridePlatform)' == 'Windows' Or '$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'macOS'">$(_StrideListDepsFilesDependsOn);ResolvePackageAssets</_StrideListDepsFilesDependsOn>
+    <_StrideListDepsFilesDependsOn Condition="'$(StridePlatform)' == 'Windows' Or '$(StridePlatform)' == 'Linux'">$(_StrideListDepsFilesDependsOn);ResolvePackageAssets</_StrideListDepsFilesDependsOn>
   </PropertyGroup>
   <Target Name="_StrideListDepsFiles" DependsOnTargets="$(_StrideListDepsFilesDependsOn)">
     <ItemGroup>

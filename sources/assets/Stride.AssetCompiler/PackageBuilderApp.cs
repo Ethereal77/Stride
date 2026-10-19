@@ -38,7 +38,7 @@ namespace Stride.AssetCompiler
             Pack,
             UpdateGeneratedFiles,
             UpgradeAssets,
-            AdoptCrashes,
+            AdoptCrashes
         }
 
         private static Stopwatch clock;
@@ -254,7 +254,7 @@ namespace Stride.AssetCompiler
 
                 if (mode == BuilderMode.AdoptCrashes)
                 {
-                    // Post-build native-crash adoption (Linux/macOS): read createdump's minidumps, sign and store
+                    // Post-build native-crash adoption (Linux): read createdump's minidumps, sign and store
                     // them, then send on CI or leave for 'stride crash send'. No session/builder needed.
                     return CompilerCrashCapture.AdoptNativeDumps(options);
                 }

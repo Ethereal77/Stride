@@ -12,7 +12,7 @@ namespace Stride.TextureConverter.AstcEncWrapper
     /// </summary>
     internal static class AstcEncNative
     {
-        // On Linux/macOS .NET prepends "lib" and uses the .so/.dylib extension automatically;
+        // On Linux .NET prepends "lib" and uses the .so/.dylib extension automatically;
         // on Windows it loads astcenc.dll. The deps/astcenc/dotnet/<rid>/ binaries are named accordingly.
         public const string LibraryName = "astcenc";
 
@@ -29,7 +29,7 @@ namespace Stride.TextureConverter.AstcEncWrapper
             BadFlags,
             BadContext,
             NotImplemented,
-            BadDecodeMode,
+            BadDecodeMode
         }
 
         public enum AstcEncProfile
@@ -37,20 +37,20 @@ namespace Stride.TextureConverter.AstcEncWrapper
             LdrSrgb = 0,
             Ldr = 1,
             HdrRgbLdrA = 2,
-            Hdr = 3,
+            Hdr = 3
         }
 
         // Underlying type must be int — native astcenc_swz is a plain C enum (int-sized).
         public enum AstcEncSwizzle
         {
-            R = 0, G = 1, B = 2, A = 3, Zero = 4, One = 5, Z = 6,
+            R = 0, G = 1, B = 2, A = 3, Zero = 4, One = 5, Z = 6
         }
 
         public enum AstcEncDataType
         {
             U8 = 0,
             F16 = 1,
-            F32 = 2,
+            F32 = 2
         }
 
         // Quality presets (free-form float 0..100).

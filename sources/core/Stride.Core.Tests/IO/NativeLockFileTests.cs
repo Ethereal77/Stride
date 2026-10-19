@@ -40,8 +40,7 @@ public class NativeLockFileTests : IDisposable
         bool result = NativeLockFile.TryLockFile(testFileStream!, 0, 100, exclusive: false, failImmediately: true);
 
         // On platforms that support locking, this should succeed
-        // On macOS, it returns false (not supported)
-        Assert.True(result || OperatingSystem.IsMacOS());
+        Assert.True(result);
     }
 
     [Fact]
@@ -49,7 +48,7 @@ public class NativeLockFileTests : IDisposable
     {
         bool result = NativeLockFile.TryLockFile(testFileStream!, 0, 100, exclusive: true, failImmediately: true);
 
-        Assert.True(result || OperatingSystem.IsMacOS());
+        Assert.True(result);
     }
 
     [Fact]
@@ -69,7 +68,7 @@ public class NativeLockFileTests : IDisposable
     {
         bool result = NativeLockFile.TryLockFile(testFileStream!, offset: 100, count: 200, exclusive: false, failImmediately: true);
 
-        Assert.True(result || OperatingSystem.IsMacOS());
+        Assert.True(result);
     }
 
     [Fact]
@@ -78,7 +77,7 @@ public class NativeLockFileTests : IDisposable
         // Lock the region first
         bool firstLock = NativeLockFile.TryLockFile(testFileStream!, 0, 100, exclusive: true, failImmediately: true);
 
-        if (firstLock && !OperatingSystem.IsMacOS())
+        if (firstLock)
         {
             // Try to lock the same region with a different stream (would fail immediately)
             // Need to open with FileShare.None to allow concurrent access for lock testing
@@ -90,7 +89,7 @@ public class NativeLockFileTests : IDisposable
             // Try locking the second file (different file, should succeed)
             bool secondLock = NativeLockFile.TryLockFile(secondStream, 0, 100, exclusive: true, failImmediately: true);
 
-            Assert.True(secondLock || OperatingSystem.IsMacOS());
+            Assert.True(secondLock);
 
             // Cleanup
             NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
@@ -111,31 +110,19 @@ public class NativeLockFileTests : IDisposable
         bool lock2 = NativeLockFile.TryLockFile(testFileStream!, 200, 100, exclusive: false, failImmediately: true);
 
         // Both locks should succeed (different regions)
-        if (!OperatingSystem.IsMacOS())
-        {
-            Assert.True(lock1);
-            Assert.True(lock2);
+        Assert.True(lock1);
+        Assert.True(lock2);
 
-            // Cleanup
-            NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
-            NativeLockFile.TryUnlockFile(testFileStream!, 200, 100);
-        }
+        // Cleanup
+        NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
+        NativeLockFile.TryUnlockFile(testFileStream!, 200, 100);
     }
 
     [Fact]
-    public void TryUnlockFile_OnMacOS_DoesNotThrow()
+    public void TryUnlockFile_WithoutLock_DoesNotThrow()
     {
-        // This should not throw even on macOS where locking is not supported
-        if (OperatingSystem.IsMacOS())
-        {
-            NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
-        }
-        else
-        {
-            // On other platforms, unlock without lock might throw or succeed
-            // depending on implementation
-            NativeLockFile.TryLockFile(testFileStream!, 0, 100, exclusive: false, failImmediately: true);
-            NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
-        }
+        // Unlock without lock might throw or succeed depending on platform implementation
+        NativeLockFile.TryLockFile(testFileStream!, 0, 100, exclusive: false, failImmediately: true);
+        NativeLockFile.TryUnlockFile(testFileStream!, 0, 100);
     }
 }

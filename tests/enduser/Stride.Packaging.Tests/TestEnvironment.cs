@@ -41,7 +41,6 @@ internal static class TestEnvironment
 
     /// <summary>The platform variant matching the host OS, as used by the dotnet-new templates.</summary>
     public static string HostPlatform => OperatingSystem.IsLinux() ? "linux"
-                                       : OperatingSystem.IsMacOS() ? "macos"
                                        : "windows";
 
     /// <summary>Committed plugin/consumer fixtures (packed/built as subprocesses).</summary>

@@ -10,7 +10,7 @@ namespace Stride.CrashReport.Tests;
 /// what got captured. The capture depends on runtime internals (corrupted-state fast-fail, vectored handler
 /// ordering, the managed null-check range), so a .NET upgrade can silently change it — these tests turn that
 /// into a red build. Expectations are per-platform: native capture is Windows-only today and the rows flip
-/// as Linux/macOS support lands.
+/// as Linux support lands.
 /// </summary>
 public class CrashCaptureTests
 {
@@ -55,7 +55,7 @@ public class CrashCaptureTests
                 var markerFrame = File.ReadAllLines(markerPath).ElementAtOrDefault(1) ?? "";
                 Assert.Equal(expectExceptionStream, markerFrame.Contains("+0x"));
                 // Post-mortem parse of the dump must recover the same faulting frame the live handler wrote. This is
-                // the Linux/macOS signature path (there createdump leaves only the dump, with no live computation),
+                // the Linux signature path (there createdump leaves only the dump, with no live computation),
                 // validated here on Windows against the vectored handler's live value.
                 if (expectExceptionStream && dumps.Length > 0)
                     Assert.Equal(markerFrame, NativeCrashReporting.FaultingFrameFromDump(dumps[0]));

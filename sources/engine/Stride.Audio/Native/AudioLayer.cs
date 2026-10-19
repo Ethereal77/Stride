@@ -7,7 +7,6 @@ namespace Stride.Audio
     /// <summary>
     /// Cross-platform audio device abstraction. Static method bodies live in platform-specific partials:
     /// AudioLayer.OpenAL.cs (Windows/Linux/Android — DllImport into libstrideaudio),
-    /// AudioLayer.AVFoundation.cs (macOS — managed AVAudioEngine implementation).
     /// </summary>
     public partial class AudioLayer
     {
@@ -34,7 +33,7 @@ namespace Stride.Audio
         public enum DeviceFlags
         {
             None,
-            Hrtf,
+            Hrtf
         }
 
         public enum BufferType
@@ -42,7 +41,7 @@ namespace Stride.Audio
             None,
             BeginOfStream,
             EndOfStream,
-            EndOfLoop,
+            EndOfLoop
         }
     }
 }

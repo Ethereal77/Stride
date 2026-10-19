@@ -155,7 +155,7 @@ namespace Stride.Games
 
         /// <summary>
         /// Gets the number of drawable pixels per window coordinate unit.
-        /// 1 on Windows; can be higher on high-DPI displays (e.g. 2 on macOS Retina).
+        /// 1 on Windows; can be higher on high-DPI displays.
         /// </summary>
         public virtual float ScaleFactor => 1.0f;
 

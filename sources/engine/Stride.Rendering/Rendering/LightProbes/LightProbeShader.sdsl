@@ -14,7 +14,7 @@ namespace Stride.Rendering.LightProbes
         }
         rgroup PerView.LightProbes
         {
-#ifdef STRIDE_MULTISAMPLE_COUNT 
+#ifdef STRIDE_MULTISAMPLE_COUNT
   #if STRIDE_MULTISAMPLE_COUNT > 1
             stage Texture2DMS<uint, STRIDE_MULTISAMPLE_COUNT> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
   #else
@@ -25,7 +25,9 @@ namespace Stride.Rendering.LightProbes
 #endif
             stage Buffer<uint4> LightProbeTetrahedronProbeIndices; // tetrahaedron ID => 4 probe IDs
             stage Buffer<float4> LightProbeTetrahedronMatrices; // tetrahaedron ID => world to tetrahedron space matrix
-            stage Buffer<float4> LightProbeCoefficients; // probe ID => SH coefficients, padded to float4 (no three-float texel buffers on Metal)
+            stage Buffer<float4> LightProbeCoefficients; // probe ID => SH coefficients, padded to float4
+
+            // TODO: LightProbeCoefficients can be float3. It was float4 because of a Metal limitation
         }
 
         void FetchLightProbe(inout float3 sphericalColors[TOrder * TOrder], uint lightprobeIndex, float weight)

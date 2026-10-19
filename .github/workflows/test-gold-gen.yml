@@ -34,10 +34,6 @@ on:
         description: Linux (Vulkan / Lavapipe)
         type: boolean
         default: true
-      macos:
-        description: macOS (Vulkan / MoltenVK)
-        type: boolean
-        default: true
       android:
         description: Android (Vulkan / emulator)
         type: boolean
@@ -104,7 +100,7 @@ jobs:
   # dispatch) via the run summary + a notice annotation: whether the promote job lands it
   # automatically (per update-gold), plus the local promote/review command either way.
   info:
-    if: ${{ inputs.windows || inputs.linux || inputs.macos || inputs.android }}
+    if: ${{ inputs.windows || inputs.linux || inputs.android }}
     runs-on: ubuntu-latest
     steps:
       - name: Show gold landing info
@@ -169,20 +165,6 @@ jobs:
       # the run stays green and doesn't email. Build failures still fail (the Build step isn't gated).
       tolerate-test-failures: true
 
-  macos:
-    if: ${{ inputs.macos }}
-    uses: ./.github/workflows/test-macos-game.yml
-    secrets: inherit
-    with:
-      build-type: ${{ inputs.build-type }}
-      test-filter: ${{ inputs.test-filter }}
-      projects: ${{ inputs.projects }}
-      upload-binlog: ${{ inputs.upload-binlog }}
-      commit-sha: ${{ inputs.commit-sha }}
-      # Generating new gold makes tests "fail" (missing/changed reference) — expected; tolerate it so
-      # the run stays green and doesn't email. Build failures still fail (the Build step isn't gated).
-      tolerate-test-failures: true
-
   android:
     if: ${{ inputs.android }}
     uses: ./.github/workflows/test-android-game.yml
@@ -200,8 +182,8 @@ jobs:
   # Merge every platform's tests/local/ output into one downloadable zip. Review + promotion
   # happen in CompareGold (per-pixel compare, visual diff, dedup-aware promote), not here.
   gather:
-    needs: [windows, linux, macos, android]
-    if: ${{ always() && (inputs.windows || inputs.linux || inputs.macos || inputs.android) }}
+    needs: [windows, linux, android]
+    if: ${{ always() && (inputs.windows || inputs.linux || inputs.android) }}
     runs-on: ubuntu-latest
     steps:
       - name: Download generated images

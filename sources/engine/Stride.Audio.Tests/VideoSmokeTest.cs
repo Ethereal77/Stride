@@ -1,7 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-#if STRIDE_VIDEO_FFMPEG || STRIDE_VIDEO_MEDIACODEC || STRIDE_VIDEO_AVFOUNDATION
+#if STRIDE_VIDEO_FFMPEG || STRIDE_VIDEO_MEDIACODEC
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -83,7 +83,7 @@ namespace Stride.Audio.Tests
             // Play-based timing only deterministic on synchronous backends — those that decode
             // inline on the game thread inside Update. MediaCodec/MediaEngine decode async on a
             // worker thread, so the captured frame at tick N depends on decoder/surface latency.
-            Skip.IfNot(backend == "FFmpeg" || backend == "AVFoundation",
+            Skip.IfNot(backend == "FFmpeg",
                 $"Playback timing test only runs on synchronous backends (current: {backend}).");
             VideoSmokeTestPlayback.Run(backend, forceSoftware);
         }

@@ -1,7 +1,7 @@
 # astcenc
 
 [ARM astc-encoder](https://github.com/ARM-software/astc-encoder) — ASTC texture
-compression used by the asset compiler for mobile (Android / iOS) targets.
+compression used by the asset compiler for mobile (Android) targets.
 Licensed under Apache-2.0 (see `license.txt` after the first workflow run).
 
 Mobile devices decode ASTC natively, so this library only ships for the desktop
@@ -11,10 +11,9 @@ host RIDs that the asset compiler runs on:
 | ----------- | ----------------------- | ----- |
 | `win-x64`   | `astcenc.dll`           | SSE4.1 |
 | `linux-x64` | `libastcenc.so`         | SSE4.1 |
-| `osx-arm64` | `libastcenc.dylib`      | NEON  |
 
 Each binary embeds a single ISA variant (astcenc does not runtime-dispatch).
-SSE4.1 covers all x64 hardware shipped since 2008; NEON covers all Apple Silicon.
+SSE4.1 covers all x64 hardware shipped since 2008.
 
 ## Layout
 
@@ -23,7 +22,6 @@ deps/astcenc/
 ├─ Include/astcenc.h           # Public C API header (reference; bindings derive from this)
 ├─ dotnet/win-x64/astcenc.dll
 ├─ dotnet/linux-x64/libastcenc.so
-├─ dotnet/osx-arm64/libastcenc.dylib
 ├─ license.txt                 # Apache-2.0 from upstream
 ├─ VERSION.txt                 # Built version + commit + workflow run link
 └─ README.md                   # This file

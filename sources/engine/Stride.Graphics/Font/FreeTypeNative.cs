@@ -7,7 +7,7 @@ namespace Stride.Graphics.Font
 {
     // Minimal FreeType bindings using CLong for correct cross-platform ABI.
     // C FreeType defines FT_Long/FT_Pos/FT_Fixed/FT_F26Dot6 as C `long`, which is
-    // 4 bytes on Windows (LLP64) and 8 bytes on Linux/macOS (LP64).
+    // 4 bytes on Windows (LLP64) and 8 bytes on Linux (LP64).
     // .NET's CLong matches this exactly.
 
     internal enum FreeTypePixelMode : byte
@@ -19,7 +19,7 @@ namespace Stride.Graphics.Font
         Gray4 = 4,
         Lcd = 5,
         LcdV = 6,
-        Bgra = 7,
+        Bgra = 7
     }
 
     internal enum FreeTypeRenderMode
@@ -28,7 +28,7 @@ namespace Stride.Graphics.Font
         Light = 1,
         Mono = 2,
         Lcd = 3,
-        LcdV = 4,
+        LcdV = 4
     }
 
     [Flags]
@@ -48,7 +48,7 @@ namespace Stride.Graphics.Font
         Monochrome = 0x1000,
         LinearDesign = 0x2000,
         NoAutohint = 0x8000,
-        Color = 0x100000,
+        Color = 0x100000
     }
 
     internal enum FreeTypeLoadTarget
@@ -57,7 +57,7 @@ namespace Stride.Graphics.Font
         Light = 0x10000,
         Mono = 0x20000,
         Lcd = 0x30000,
-        LcdV = 0x40000,
+        LcdV = 0x40000
     }
 
     [StructLayout(LayoutKind.Sequential)]

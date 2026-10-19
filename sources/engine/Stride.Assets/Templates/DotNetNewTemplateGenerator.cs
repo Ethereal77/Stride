@@ -335,7 +335,6 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
     {
         (".Windows", PlatformType.Windows),
         (".Linux",   PlatformType.Linux),
-        (".macOS",   PlatformType.macOS),
         (".Android", PlatformType.Android)
     };
 
@@ -396,7 +395,6 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
     {
         if (OperatingSystem.IsWindows()) return PlatformType.Windows;
         if (OperatingSystem.IsLinux())   return PlatformType.Linux;
-        if (OperatingSystem.IsMacOS())   return PlatformType.macOS;
         return PlatformType.Windows;
     }
 

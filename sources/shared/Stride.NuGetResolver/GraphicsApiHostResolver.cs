@@ -1,11 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 
@@ -118,8 +113,6 @@ public static class GraphicsApiHostResolver
         // Probe the API subfolder for the native module under the common OS name variants.
         if (OperatingSystem.IsWindows())
             return [Path.Combine(apiDir, libraryName + ".dll"), Path.Combine(apiDir, libraryName)];
-        if (OperatingSystem.IsMacOS())
-            return [Path.Combine(apiDir, "lib" + libraryName + ".dylib"), Path.Combine(apiDir, libraryName)];
         return [Path.Combine(apiDir, "lib" + libraryName + ".so"), Path.Combine(apiDir, libraryName)];
     }
 }

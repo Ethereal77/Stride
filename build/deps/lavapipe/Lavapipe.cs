@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -40,7 +37,7 @@ public static class Lavapipe
         if (manifestPath is null)
             return false;
         Environment.SetEnvironmentVariable("VK_DRIVER_FILES", manifestPath);
-        // On Linux/macOS, Environment.SetEnvironmentVariable only updates .NET's internal table —
+        // On Linux, Environment.SetEnvironmentVariable only updates .NET's internal table —
         // it does NOT call POSIX setenv, so libc getenv (used by the Vulkan loader) still sees
         // the old value. Mirror the value into the libc env so the native loader picks it up.
         // (Windows' Environment.SetEnvironmentVariable already updates the process env block
@@ -101,8 +98,7 @@ public static class Lavapipe
             return RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "win-arm64" : "win-x64";
         if (OperatingSystem.IsLinux())
             return "linux-x64";
-        if (OperatingSystem.IsMacOS())
-            return RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "osx-arm64" : "osx-x64";
+
         throw new PlatformNotSupportedException();
     }
 }

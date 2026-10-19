@@ -57,9 +57,9 @@
        no separate publish step is needed.
 
        SkiaSharp ships native libs for ~17 RIDs (musl, bionic, loongarch, riscv, arm32, x86, arm64...), ~100 MB
-       a desktop crash dialog never uses. Keep only the mainstream desktop targets — win-x64, linux-x64, and the
-       universal osx build — and drop the rest. (Add win-arm64 / linux-arm64 here if ARM desktop support is
-       wanted; the alternative to a single fat package is per-RID packages, ~25 MB each.) -->
+       a desktop crash dialog never uses. Keep only the mainstream desktop targets — win-x64, linux-x64 — and drop
+       the rest. (Add win-arm64 / linux-arm64 here if ARM desktop support is wanted; the alternative to a single fat
+       package is per-RID packages, ~25 MB each.) -->
   <Target Name="_PackReporterClosureInTools">
     <ItemGroup>
       <_ReporterClosureFile Include="$(OutputPath)**\*"

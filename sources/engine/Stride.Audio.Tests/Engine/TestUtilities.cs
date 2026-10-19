@@ -30,9 +30,8 @@ namespace Stride.Audio.Tests.Engine
                 game.BeforeDrawing += onBeforeDraw;
                 game.AfterDrawing += onAfterDraw;
 
-                // DesktopSDL doesn't work for xunit on macOS (AppKit main-thread requirement),
-                // Android (SDL can't init its window without an Activity).
-                var context = OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()
+                // DesktopSDL doesn't work for xunit on Android (SDL can't init its window without an Activity)
+                var context = OperatingSystem.IsAndroid()
                     ? GameContextFactory.NewGameContext(AppContextType.Headless)
                     : null;
                 game.Run(context);
@@ -94,8 +93,8 @@ namespace Stride.Audio.Tests.Engine
         }
 
         /// <summary>
-        /// Create a game instance and run it. 
-        /// At each update call, the provided <paramref name="oneLoopTurnActionBfrUpdate"/> and <paramref name="oneLoopTurnActionAftUpdate"/> 
+        /// Create a game instance and run it.
+        /// At each update call, the provided <paramref name="oneLoopTurnActionBfrUpdate"/> and <paramref name="oneLoopTurnActionAftUpdate"/>
         /// functions will be given as parameters respectly the <see cref="Game"/> instance, the loopCount counter and the loopCount sum.
         /// </summary>
         /// <param name="onLoading">The callback that will be called in the <see cref="Game.LoadContent"/> method.</param>
@@ -108,8 +107,8 @@ namespace Stride.Audio.Tests.Engine
         }
 
         /// <summary>
-        /// Create a game instance and run it. 
-        /// At each draw call, the provided <paramref name="oneLoopTurnActionBfrUpdate"/> and <paramref name="oneLoopTurnActionAftUpdate"/> 
+        /// Create a game instance and run it.
+        /// At each draw call, the provided <paramref name="oneLoopTurnActionBfrUpdate"/> and <paramref name="oneLoopTurnActionAftUpdate"/>
         /// functions will be given as parameters respectly the <see cref="Game"/> instance, the loopCount counter and the loopCount sum.
         /// </summary>
         /// <param name="onLoading">The callback that will be called in the <see cref="Game.LoadContent"/> method.</param>

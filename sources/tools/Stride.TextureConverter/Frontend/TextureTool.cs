@@ -41,14 +41,13 @@ namespace Stride.TextureConverter
             if (IsAstcEncAvailable())
                 NativeLibraryHelper.PreloadLibrary("astcenc", type);
 
-            // Currently shipped RIDs: win-x64, linux-x64, osx-arm64. Skip on others
+            // Currently shipped RIDs: win-x64, linux-x64. Skip on others
             // until binaries for them are added under deps/astcenc/dotnet/<rid>/.
             static bool IsAstcEncAvailable()
             {
                 var arch = RuntimeInformation.ProcessArchitecture;
                 if (OperatingSystem.IsWindows()) return arch == Architecture.X64;
                 if (OperatingSystem.IsLinux())   return arch == Architecture.X64;
-                if (OperatingSystem.IsMacOS())   return arch == Architecture.Arm64;
                 return false;
             }
         }

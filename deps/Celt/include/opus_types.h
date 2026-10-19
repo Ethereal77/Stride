@@ -67,22 +67,6 @@
      typedef unsigned __int16 opus_uint16;
 #  endif
 
-#elif defined(__MACOS__)
-
-#  include <sys/types.h>
-   typedef SInt16 opus_int16;
-   typedef UInt16 opus_uint16;
-   typedef SInt32 opus_int32;
-   typedef UInt32 opus_uint32;
-
-#elif (defined(__APPLE__) && defined(__MACH__)) /* MacOS X Framework build */
-
-#  include <sys/types.h>
-   typedef int16_t opus_int16;
-   typedef u_int16_t opus_uint16;
-   typedef int32_t opus_int32;
-   typedef u_int32_t opus_uint32;
-
 #elif defined(__BEOS__)
 
    /* Be */

@@ -1,6 +1,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; font-size: 13px; display: flex; flex-direction: column; overflow: hidden; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; font-size: 13px; display: flex; flex-direction: column; overflow: hidden; }
 
 header { background: #16213e; padding: 12px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #333; flex-shrink: 0; z-index: 100; }
 header h1 { font-size: 18px; color: #4fc3f7; }

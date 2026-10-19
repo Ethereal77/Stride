@@ -980,7 +980,6 @@ namespace Stride.Graphics.Regression
             {
                 PlatformType.Windows => "Windows",
                 PlatformType.Linux => "Linux",
-                PlatformType.macOS => "macOS",
                 PlatformType.Android => "Android",
                 _ => throw new NotImplementedException($"Platform {Platform.Type} is not supported for image regression tests")
             };
@@ -1014,16 +1013,6 @@ namespace Stride.Graphics.Regression
             else if (driverId == "GoogleSwiftShader" && desc.StartsWith("SwiftShader", StringComparison.OrdinalIgnoreCase))
                 deviceName = "SwiftShader";
             else if (adapter.VendorId == 0x1414) deviceName = "WARP"; // Microsoft Basic / WARP
-            // Virtualized macOS (e.g. GitHub's macos-15 runner) reports the GPU as
-            // "Apple Paravirtual device". On Apple Silicon the GPU is on the same chip as
-            // the CPU, so the CPU brand string (minus the "(Virtual)" suffix) is a stable
-            // proxy for the chip family — "Apple M1" rather than "Apple Paravirtual device".
-            else if (desc.Contains("Paravirtual", StringComparison.OrdinalIgnoreCase)
-                && HostEnvironment.CpuName is { } cpu && cpu.StartsWith("Apple ", StringComparison.OrdinalIgnoreCase))
-            {
-                var idx = cpu.IndexOf(" (", StringComparison.Ordinal);
-                deviceName = idx > 0 ? cpu[..idx] : cpu;
-            }
             else deviceName = desc;
 
             // Bucket by the layer-reported host; on Android with no stamp the layer wasn't active,

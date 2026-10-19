@@ -30,10 +30,6 @@
     #define OVR_OS_WIN32
 #endif
 
-#if !defined(OVR_OS_MAC) && defined(__APPLE__)
-    #define OVR_OS_MAC
-#endif
-
 #if !defined(OVR_OS_LINUX) && defined(__linux__)
     #define OVR_OS_LINUX
 #endif

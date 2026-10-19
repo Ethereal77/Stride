@@ -23,7 +23,6 @@ public static class Platform
     public static readonly PlatformType Type
         = OperatingSystem.IsWindows() ? PlatformType.Windows
         : OperatingSystem.IsLinux()  ? PlatformType.Linux
-        : OperatingSystem.IsMacOS() ? PlatformType.macOS
         : OperatingSystem.IsAndroid() ? PlatformType.Android
         : PlatformType.Windows; // For now we use Windows as fallback, but it might be better to throw an exception?
 #endif

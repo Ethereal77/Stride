@@ -192,7 +192,7 @@ static string FilterSolution(string slnf, List<string> needed, string combined)
 }
 
 // A suite is named by its csproj path or by its bare name. Solution filters and user input write
-// paths with backslashes, which Linux and macOS do not take as separators, and names contain dots
+// paths with backslashes, which Linux does not take as separators, and names contain dots
 // (Stride.Graphics.Tests.10_0), so only a .csproj extension is stripped.
 static string SuiteName(string project)
 {

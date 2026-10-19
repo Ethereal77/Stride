@@ -4,7 +4,7 @@
 //
 // Format:
 //   image    - image filename (required, or omit for suite-wide default); supports '*' and '?' wildcards
-//   platform - "Windows", "Linux", "macOS" (optional, omit = any)
+//   platform - "Windows", "Linux" (optional, omit = any)
 //   api      - "Vulkan", "Direct3D11", "Direct3D12" (optional, omit = any)
 //   device   - "SwiftShader", "WARP", GPU name (optional, omit = any)
 //   allow    - max allowed pixel counts per diff range (e.g. "1-2": 500, "16+": 2)
@@ -12,8 +12,8 @@
   {
     // Knight model edges flicker a few pixels between runs due to sub-pixel
     // rasterization plus CPU float divergence in skinning; observed across
-    // software renderers (Lavapipe/WARP) and on Apple Silicon. Tolerated on
-    // every platform and every frame of the animation.
+    // software renderers (Lavapipe/WARP).
+    // Tolerated on every platform and every frame of the animation.
     "image": "AnimatedModelTests*.png",
     "allow": { "3-5": 10, "6-15": 6, "16+": 3 }
   },

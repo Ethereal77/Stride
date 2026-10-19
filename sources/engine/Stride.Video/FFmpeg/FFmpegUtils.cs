@@ -25,7 +25,6 @@ namespace Stride.Video.FFmpeg
         {
             return Platform.Type == PlatformType.Windows
                 || Platform.Type == PlatformType.Linux
-                || Platform.Type == PlatformType.macOS
                 || Platform.Type == PlatformType.Android;
         }
 
@@ -101,7 +100,7 @@ namespace Stride.Video.FFmpeg
             DynamicallyLoadedBindings.FunctionResolver = StrideFunctionResolver.Instance;
 
             // Load in dependency order so each library's imports bind to the already-loaded modules.
-            // Windows files carry the version in the name (avutil-59.dll); Linux/macOS use the SONAME,
+            // Windows files carry the version in the name (avutil-59.dll); Linux use the SONAME,
             // which NativeLibraryHelper matches from the base name.
             var type = typeof(FFmpegUtils);
             foreach (var library in Libraries)

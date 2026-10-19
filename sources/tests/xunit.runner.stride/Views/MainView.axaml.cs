@@ -491,8 +491,8 @@ public partial class MainView : UserControl
         if ((sender as Control)?.Tag is not string path || string.IsNullOrEmpty(path) || !File.Exists(path)) return;
         try
         {
-            // UseShellExecute lets the OS pick the default app for the extension (image viewer
-            // for .png on Windows, Preview on macOS, xdg-open on Linux).
+            // UseShellExecute lets the OS pick the default app for the extension
+            // (image viewer for .png on Windows, xdg-open on Linux).
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
         }
         catch (System.Exception ex)
@@ -523,10 +523,6 @@ public partial class MainView : UserControl
                     System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{path}\"");
                 else if (Directory.Exists(Path.GetDirectoryName(path)))
                     System.Diagnostics.Process.Start("explorer.exe", $"\"{Path.GetDirectoryName(path)}\"");
-            }
-            else if (OperatingSystem.IsMacOS())
-            {
-                System.Diagnostics.Process.Start("open", File.Exists(path) ? $"-R \"{path}\"" : $"\"{Path.GetDirectoryName(path)}\"");
             }
             else
             {

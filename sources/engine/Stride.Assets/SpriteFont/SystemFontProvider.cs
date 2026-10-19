@@ -55,18 +55,13 @@ namespace Stride.Assets.SpriteFont
                 searchDirs = [Environment.GetFolderPath(Environment.SpecialFolder.Fonts)];
             else if (OperatingSystem.IsLinux())
                 searchDirs = ["/usr/share/fonts", "/usr/local/share/fonts", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/fonts")];
-            else if (OperatingSystem.IsMacOS())
-                // Modern macOS (Catalina+) keeps most system fonts under /System/Library/Fonts, with the
-                // bundled "extras" like Arial under the Supplemental subfolder. /Library/Fonts is largely
-                // empty on stock installs; ~/Library/Fonts holds user-installed fonts.
-                searchDirs = [Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library/Fonts"), "/Library/Fonts", "/System/Library/Fonts"];
             else
                 searchDirs = [];
 
             // Try the requested font, then its metric-compatible equivalents. The Liberation family
             // ships metric-identical to the Microsoft core fonts (Arial/Times New Roman/Courier New),
             // so substituting whichever member a platform actually has keeps text layout — and the
-            // screenshot goldens that depend on it — consistent across Windows/Linux/macOS.
+            // screenshot goldens that depend on it — consistent across Windows/Linux.
             foreach (var candidate in GetFontNameCandidates(FontName))
             {
                 var fontPath = ResolveFont(candidate, searchDirs);
@@ -190,7 +185,6 @@ namespace Stride.Assets.SpriteFont
 
         private static string GetDefaultFontName()
         {
-            //Note : Both macOS and Windows contains Arial
             return OperatingSystem.IsLinux() ? "Liberation Sans" : "Arial";
         }
     }

@@ -43,7 +43,7 @@ public class ObjectDatabase : IDisposable
         ContentIndexMap = new ObjectDatabaseContentIndexMap();
 
         // Try to open file backends
-        bool isDesktop = Platform.Type is PlatformType.Windows or PlatformType.Linux or PlatformType.macOS;
+        bool isDesktop = Platform.Type is PlatformType.Windows or PlatformType.Linux;
         var backend = new FileOdbBackend(vfsMainUrl, indexName, !isDesktop);
 
         ContentIndexMap.Merge(backend.ContentIndexMap);

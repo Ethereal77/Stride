@@ -346,27 +346,6 @@
     </ItemGroup>
   </Target>
 
-  <!-- macOS: emit BundleResource items for the compiled assets right before the macOS SDK
-       collects bundle resources. Must run AFTER StrideCompileAsset (the files have to exist on
-       disk. A top-level ItemGroup glob would race on Rebuild: evaluation happens before Clean,
-       so the items reference now-deleted files. -->
-  <Target Name="_StrideDeployAssetsAsBundleResource"
-          BeforeTargets="_CollectBundleResources"
-          DependsOnTargets="ResolveProjectReferences;StrideCompileAsset"
-          Condition="'$(StrideIsExecutable)' == 'true' And '$(StridePlatform)' == 'macOS'">
-    <ItemGroup>
-      <_StrideCompiledAsset Include="$(StrideCompileAssetOutputPath)/**/*.*" />
-    </ItemGroup>
-    <AssignTargetPath Files="@(_StrideCompiledAsset)" RootFolder="$(StrideCompileAssetOutputPath)">
-      <Output TaskParameter="AssignedFiles" ItemName="_StrideCompiledAssetTargeted" />
-    </AssignTargetPath>
-    <ItemGroup>
-      <BundleResource Include="@(_StrideCompiledAssetTargeted)">
-        <LogicalName>data/%(_StrideCompiledAssetTargeted.TargetPath)</LogicalName>
-      </BundleResource>
-    </ItemGroup>
-  </Target>
-
   <!-- Publish: always deploy files as content -->
   <Target Name="_StrideDeployAssetsPublish" DependsOnTargets="StrideCompileAsset" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>

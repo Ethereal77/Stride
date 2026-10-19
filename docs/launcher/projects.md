@@ -77,4 +77,4 @@ Pulled in via `Directory.Packages.props`:
 - **A new command-line action** → add to `LauncherArguments.ActionType`, wire it through `Launcher.ProcessAction` / `AppMainAsync`. See [lifecycle.md](lifecycle.md#command-line-arguments).
 - **A new user preference** → new `SettingsKey<T>` in [LauncherSettings.cs](../../sources/launcher/Stride.Launcher/Services/LauncherSettings.cs). See [settings.md](settings.md).
 - **A new localized string** → add to `Strings.resx` and every locale sibling (`Strings.ja-JP.resx`, …). See [localization.md](localization.md).
-- **A Windows-only code path** → wrap in `OperatingSystem.IsWindows()` and, for new features, open a FIXME noting the Linux/macOS equivalent. See [cross-platform.md](cross-platform.md).
+- **A Windows-only code path** → wrap in `OperatingSystem.IsWindows()` and, for new features, open a FIXME noting the Linux equivalent. See [cross-platform.md](cross-platform.md).

@@ -14,9 +14,7 @@
          produced assembly and copies natives into the output's runtimes/<rid>/native/ tree.
 
     Platform-specific consumption:
-    - Desktop (Windows/Linux/macOS): natives copied to output runtime asset path.
-    - macOS (-macos TFM): emitted as NativeReference Kind=Dynamic so dylibs end up in
-      Contents/MonoBundle/ of the .app bundle alongside NuGet RID assets.
+    - Desktop (Windows/Linux): natives copied to output runtime asset path.
     - Android: emitted as AndroidNativeLibrary with the RID→ABI name mapping; engine
       self-build only — NuGet PackageReference consumers get this for free via
       Microsoft.Android.Sdk auto-conversion of runtimes/android-*/native/*.so.
@@ -45,7 +43,7 @@
       <_StrideDepsFile Include="@(ReferenceDependencyPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(ReferenceDependencyPaths.CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
     </ItemGroup>
     <ItemGroup Condition="'$(StrideGraphicsApi)' != ''">
-      <!-- Path-separator check normalized to '/' so Linux/macOS hosts filter correctly. -->
+      <!-- Path-separator check normalized to '/' so Linux hosts filter correctly. -->
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D11/')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D12/')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Vulkan/')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
@@ -92,9 +90,8 @@
   <Target Name="_StrideSetupNativeLibraries" DependsOnTargets="_StrideBuildDependencies;GetCopyToOutputDirectoryItems"
           BeforeTargets="_CopyOutOfDateSourceItemsToOutputDirectory;_CopyOutOfDateSourceItemsToOutputDirectoryAlways;_CopyFilesMarkedCopyLocal"
           Condition="'$(StrideDependenciesCopy)' != 'false'">
-    <!-- net10.0-macos also copies to the output dir: the .app gets dylibs via NativeReference
-         below, but test hosts (vstest) run the bare output dir and dlopen from there. -->
-    <ItemGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' ">
+
+    <ItemGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">
       <!-- When RuntimeIdentifier is set, drop runtimes/<rid'>/native/X items whose <rid'> isn't ours
            and flatten the kept ones to the output root (matching .NET's RID-aware NuGet flattening).
            NativeLibraryHelper probes both the runtimes/<rid>/native/ subdir and the bare root, so
@@ -109,26 +106,11 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </_SourceItemsToCopyToOutputDirectory>
     </ItemGroup>
-
-    <!-- macOS: emit NativeReference Kind=Dynamic so dylibs land in Contents/MonoBundle alongside the NuGet runtime assets. -->
-    <ItemGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' ">
-      <_StrideMacOSNativeRef Include="@(_StrideDependencyNativeLib)"
-          Condition="'%(_StrideDependencyNativeLib.Extension)' == '.dylib' And ('$(RuntimeIdentifier)' == '' Or $([System.String]::Copy('%(_StrideDependencyNativeLib.Link)').Contains('/$(RuntimeIdentifier)/')))" />
-    </ItemGroup>
-    <_StrideDistinctByFilename Items="@(_StrideMacOSNativeRef)" Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' And '@(_StrideMacOSNativeRef)' != '' ">
-      <Output TaskParameter="Distinct" ItemName="_StrideMacOSNativeRefUnique" />
-    </_StrideDistinctByFilename>
-    <ItemGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkmacOS)' ">
-      <NativeReference Include="@(_StrideMacOSNativeRefUnique)">
-        <Kind>Dynamic</Kind>
-        <SmartLink>False</SmartLink>
-      </NativeReference>
-    </ItemGroup>
   </Target>
 
   <!-- StrideToolingHost (AssetCompiler, GameStudio): drop runtimes/<rid>/ assets that this desktop
        host can't use from its no-RID output — mobile (android, ~250 MB) on net10.0, plus
-       linux/osx on the Windows-only net10.0-windows. Covers NuGet assets (ReferenceCopyLocalPaths),
+       linux on the Windows-only net10.0-windows. Covers NuGet assets (ReferenceCopyLocalPaths),
        .ssdeps natives and Content copies (_SourceItemsToCopyToOutputDirectory[Always]); items outside
        runtimes/ are untouched. Normalize '\'→'/' — Replace('/','\\') yields a double backslash here,
        so 'runtimes/win-x64' would fail StartsWith('runtimes\win') and drop the win natives. -->
@@ -141,20 +123,17 @@
           Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/win'))
                      And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/linux'))
-                              And !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/osx'))))" />
+                          Or (!$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)"
           Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
                      And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))
-                              And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/osx'))))" />
+                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
       <_SourceItemsToCopyToOutputDirectoryAlways Remove="@(_SourceItemsToCopyToOutputDirectoryAlways)"
           Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
                      And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))
-                              And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/osx'))))" />
+                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
     </ItemGroup>
   </Target>
 
@@ -231,7 +210,7 @@
 
     <!-- Normalize TargetPath to forward slashes for .ssdeps emission. AssignTargetPath
          uses the host's directory separator, so a Windows-built NuGet would otherwise ship .ssdeps
-         entries with '\' that don't match a macOS/Linux consumer's substring checks. Pinning one
+         entries with '\' that don't match a Linux consumer's substring checks. Pinning one
          separator at write time lets every reader assume '/' without normalization. -->
     <ItemGroup>
       <_StrideDependencyToCopy>
@@ -270,7 +249,7 @@
     <ItemGroup Condition="'@(_StrideDependencyToCopy)' != ''">
       <!-- Native dependencies go to the runtimes/RID/native folder. PackagePath is the target directory
            (trailing slash required): NuGet reads an extensionless PackagePath as a folder and would nest
-           extensionless natives such as the linux/osx ffmpeg one level too deep. -->
+           extensionless natives such as the linux ffmpeg one level too deep. -->
       <TfmSpecificPackageFile Include="@(_StrideDependencyToCopy)" Condition="'%(_StrideDependencyToCopy.Pack)' != 'false'"
                               PackagePath="$([System.IO.Path]::GetDirectoryName('%(_StrideDependencyToCopy.TargetPath)'))/" />
     </ItemGroup>

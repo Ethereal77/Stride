@@ -98,7 +98,7 @@ namespace Stride.Graphics
         }
 
         // The mapping goes with the buffer's memory: once the buffer is destroyed there is nothing to unmap
-        // (and trying is a null dereference on Direct3D 12, a crash on MoltenVK)
+        // (and trying is a null dereference on Direct3D 12)
         private void OnBufferDestroyed(object sender, EventArgs e)
         {
             mappedConstantBuffer = new MappedResource();

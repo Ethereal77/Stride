@@ -232,7 +232,6 @@ internal sealed class CrashReporterViewModel : ObservableObject
         try
         {
             var start = OperatingSystem.IsWindows() ? new ProcessStartInfo("explorer.exe", $"\"{directory}\"")
-                : OperatingSystem.IsMacOS() ? new ProcessStartInfo("open", $"\"{directory}\"")
                 : new ProcessStartInfo("xdg-open", directory);
             start.UseShellExecute = true;
             Process.Start(start);

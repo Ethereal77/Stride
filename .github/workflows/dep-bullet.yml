@@ -13,10 +13,9 @@ name: "Dep: Build Bullet"
 # Output per OS — one shared lib per RID + one managed dll:
 #   Windows: libbulletc.dll (+ libbulletc.pdb)
 #   Linux:   libbulletc.so
-#   macOS:   libbulletc.dylib
 #   Managed: BulletSharp.dll (built once, no RID)
 #
-# RIDs covered: win-x64, win-arm64, linux-x64, osx-arm64.
+# RIDs covered: win-x64, win-arm64, linux-x64.
 
 on:
   workflow_dispatch:
@@ -127,48 +126,13 @@ jobs:
           name: libbulletc-linux-x64
           path: out/linux-x64/
 
-  build-macos:
-    name: Build libbulletc (macOS arm64)
-    runs-on: macos-15
-    steps:
-      - name: Checkout BulletSharpPInvoke (+ bullet submodule)
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ github.event.inputs.bulletsharp-repo }}
-          ref: ${{ github.event.inputs.bulletsharp-ref }}
-          submodules: recursive
-          path: BulletSharpPInvoke
-
-      - name: Strip BulletRobotics from Extras
-        # Bullet 2.89 lists every Extras subdir on ONE line, so drop just the word.
-        run: sed -i '' 's/BulletRobotics//g' BulletSharpPInvoke/bullet/Extras/CMakeLists.txt
-
-      - name: Configure & build libbulletc
-        run: |
-          cmake -S BulletSharpPInvoke/libbulletc -B _build -G Ninja \
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0
-          cmake --build _build
-
-      - name: Collect output
-        run: |
-          mkdir -p out/osx-arm64
-          cp _build/liblibbulletc.dylib out/osx-arm64/libbulletc.dylib
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: libbulletc-osx-arm64
-          path: out/osx-arm64/
-
   # Managed BulletSharp.dll is built locally as part of Stride.Physics — the
   # stride3d fork's .csproj has a PackageReference to Stride.Core.Mathematics
   # not available in this CI. Native libbulletc is what this workflow ships.
 
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-macos]
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout BulletSharpPInvoke (+ bullet submodule for hash)
@@ -188,7 +152,7 @@ jobs:
       - name: Organize into Release/ layout
         run: |
           OUT=libbulletc-out
-          for rid in win-x64 win-arm64 linux-x64 osx-arm64; do
+          for rid in win-x64 win-arm64 linux-x64; do
             mkdir -p $OUT/Release/$rid
             cp artifacts/libbulletc-$rid/* $OUT/Release/$rid/ 2>/dev/null || true
           done

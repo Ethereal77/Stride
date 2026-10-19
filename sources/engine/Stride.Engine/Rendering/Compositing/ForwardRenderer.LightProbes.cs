@@ -237,8 +237,8 @@ namespace Stride.Rendering.Compositing
                 // Draw shape
                 tetrahedronMatrices = PushScopedResource(Context.Allocator.GetTemporaryBuffer(new BufferDescription(tetraResult.Count * 3 * sizeof(Vector4), BufferFlags.ShaderResource, GraphicsResourceUsage.Default), PixelFormat.R32G32B32A32_Float));
                 tetrahedronProbeIndices = PushScopedResource(Context.Allocator.GetTemporaryBuffer(new BufferDescription(tetraResult.Count * 4 * sizeof(int), BufferFlags.ShaderResource, GraphicsResourceUsage.Default), PixelFormat.R32G32B32A32_UInt));
-                // Padded to four floats: a three-float texel buffer has no Metal equivalent, and Vulkan only
-                // optionally supports one
+                // Padded to four floats: a three-float texel buffer Vulkan only optionally supports one
+                // TODO: LightProbeCoefficients can be Vector3. It was Vector4 because of a Metal limitation
                 var coefficientCount = lightProbesData.Coefficients.Length;
                 if (paddedLightProbeCoefficients == null || paddedLightProbeCoefficients.Length < coefficientCount)
                     paddedLightProbeCoefficients = new Vector4[coefficientCount];
