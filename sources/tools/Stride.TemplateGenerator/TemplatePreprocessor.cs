@@ -233,8 +233,8 @@ internal class TemplatePreprocessor
         // "MyTemplate" which the template engine substitutes via sourceName.
         InjectCameraScript(logger);
 
-        // Rewrite the Android activity ScreenOrientation and the engine GameSettings
-        // DisplayOrientation into placeholders consumed by the orientation template.json symbols.
+        // Rewrite the engine GameSettings DisplayOrientation into placeholders consumed
+        // by the orientation template.json symbols.
         // Only when the template opts into the orientation parameter.
         if (Sdtpl?.HasParameter("orientation") == true)
             InjectOrientationPlaceholders(logger);
@@ -662,18 +662,16 @@ internal class TemplatePreprocessor
     private static readonly Dictionary<string, string> PlatformActiveSymbol = new(StringComparer.Ordinal)
     {
         { "Windows", "WindowsActive" },
-        { "Linux",   "LinuxActive"   },
-        { "Android", "AndroidActive" }
+        { "Linux",   "LinuxActive"   }
     };
 
-    // Default-startup priority: desktop platforms first, then mobile. The highest-priority platform the
+    // Default-startup priority: desktop platforms. The highest-priority platform the
     // user keeps gets the .slnx DefaultStartup. PlatformType (not strings) so the names stay
     // compile-checked; covers every PlatformActiveSymbol platform.
     private static readonly PlatformType[] StartupPlatformPriority =
     [
         PlatformType.Windows,
-        PlatformType.Linux,
-        PlatformType.Android
+        PlatformType.Linux
     ];
 
     /// <summary>
@@ -757,7 +755,7 @@ internal class TemplatePreprocessor
     }
 
     /// <summary>
-    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,Android,Windows}</c>)
+    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,Windows}</c>)
     /// from <see cref="PlatformTemplatePath"/> into the staged output when the sample didn't ship
     /// its own. Verbatim copy — the reference template (NewGame) and samples both use
     /// <c>MyTemplate.Game/</c> as the shared-library dir name, so injected csprojs reference the
@@ -785,7 +783,7 @@ internal class TemplatePreprocessor
         foreach (var srcDir in Directory.EnumerateDirectories(PlatformTemplatePath, "MyTemplate.*", SearchOption.TopDirectoryOnly))
         {
             var dirName = Path.GetFileName(srcDir);
-            // Only inject directories that match a known platform suffix (Linux/Android/Windows).
+            // Only inject directories that match a known platform suffix (Linux/Windows).
             if (!dirName.StartsWith("MyTemplate.", StringComparison.Ordinal))
                 continue;
             var suffix = dirName["MyTemplate.".Length..];
@@ -848,7 +846,6 @@ internal class TemplatePreprocessor
         // Word-boundary regex with optional Stride exec-project suffix lookahead. Matches:
         //   - SampleName             (followed by non-word — covered by \b in lookahead)
         //   - SampleNameApp          (App suffix preserved)
-        //   - SampleNameActivity     (Android pattern)
         // The lookahead means only "SampleName" is consumed; the suffix stays intact, so
         // CSharpBeginnerApp.cs → MyTemplateApp.cs (then sourceName substitutes at instantiation).
         // CSharpBeginnerExtraFoo stays untouched because no boundary follows "SampleName" there.
@@ -900,7 +897,7 @@ internal class TemplatePreprocessor
 
     /// <summary>
     /// Reads the first <c>.sdpkg</c>'s <c>Name:</c> field and strips a trailing <c>.Game</c> /
-    /// <c>.Windows</c> / <c>.Linux</c> / <c>.Android</c> suffix.
+    /// <c>.Windows</c> / <c>.Linux</c> suffix.
     /// Stride convention is <c>SampleName.Game</c> for the library package; the base name is
     /// what gets referenced in code namespaces.
     /// </summary>
@@ -916,7 +913,7 @@ internal class TemplatePreprocessor
             return null;
 
         var name = nameLine.Substring(nameLine.IndexOf(':') + 1).Trim();
-        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux", ".Android" })
+        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux" })
         {
             if (name.EndsWith(suffix, StringComparison.Ordinal))
                 return name.Substring(0, name.Length - suffix.Length);
@@ -1165,8 +1162,7 @@ internal class TemplatePreprocessor
     /// <summary>
     /// Rewrites orientation values in the staged tree into placeholders the orientation
     /// template.json symbols replace at instantiation: the engine-wide <c>DisplayOrientation</c>
-    /// in every GameSettings variant (→ <c>STRIDE_ORIENTATION</c>), the Android activity's
-    /// <c>ScreenOrientation</c> (→ <c>STRIDE_ANDROID_ORIENTATION</c>).
+    /// in every GameSettings variant (→ <c>STRIDE_ORIENTATION</c>).
     /// The source scaffold keeps real, buildable values; only the staged copy is tokenized.
     /// </summary>
     private void InjectOrientationPlaceholders(ILogger logger)
@@ -1180,16 +1176,6 @@ internal class TemplatePreprocessor
                 File.WriteAllText(settingsPath, rewritten);
                 logger.Info($"Injected DisplayOrientation placeholder into {Path.GetFileName(settingsPath)}");
             }
-        }
-
-        // ScreenOrientation is an Android-only type, so only the Android activity carries it.
-        foreach (var csPath in Directory.EnumerateFiles(OutputDirectory!, "*.cs", SearchOption.AllDirectories))
-        {
-            var content = File.ReadAllText(csPath);
-            if (!content.Contains("ScreenOrientation.Landscape", StringComparison.Ordinal))
-                continue;
-            File.WriteAllText(csPath, content.Replace("ScreenOrientation.Landscape", "ScreenOrientation.STRIDE_ANDROID_ORIENTATION"));
-            logger.Info($"Injected ScreenOrientation placeholder into {Path.GetFileName(csPath)}");
         }
     }
 
@@ -1355,8 +1341,7 @@ internal class TemplatePreprocessor
                   "choices": [
                     { "choice": "host",    "description": "Detect host OS automatically" },
                     { "choice": "windows", "description": "Windows x64 desktop" },
-                    { "choice": "linux",   "description": "Linux x64 desktop" },
-                    { "choice": "android", "description": "Android arm64/x64" }
+                    { "choice": "linux",   "description": "Linux x64 desktop" }
                   ]
                 },
                 "updateOnly": {
@@ -1378,7 +1363,6 @@ internal class TemplatePreprocessor
                 "IsWindows": { "type": "computed", "value": "(!IsLinux)" },
                 "WindowsActive": { "type": "computed", "value": "(platforms == \"windows\") || ((platforms == \"host\") && IsWindows)" },
                 "LinuxActive":   { "type": "computed", "value": "(platforms == \"linux\")   || ((platforms == \"host\") && IsLinux)"   },
-                "AndroidActive": { "type": "computed", "value": "(platforms == \"android\")" },
         """);
     }
 
@@ -1408,17 +1392,15 @@ internal class TemplatePreprocessor
     """);
 
     /// <summary>
-    /// Per-template opt-in mobile display Orientation choice. The choice values match the engine's
+    /// Per-template opt-in display Orientation choice. The choice values match the engine's
     /// <c>RequiredDisplayOrientation</c> enum names, so the parameter replaces the GameSettings
-    /// placeholder verbatim. Android use platform-native enums (<c>ScreenOrientation</c> /
-    /// <c>UIInterfaceOrientation*</c>), so a switch symbol maps the choice onto each:
-    /// Android — Default/LandscapeRight → Landscape, LandscapeLeft → ReverseLandscape, Portrait → Portrait;
+    /// placeholder verbatim.
     /// </summary>
     private static void EmitOrientationSymbol(StringBuilder sb) => sb.AppendLine("""
                 "orientation": {
                   "type": "parameter",
                   "datatype": "choice",
-                  "description": "Display orientation (mobile)",
+                  "description": "Display orientation",
                   "defaultValue": "Default",
                   "replaces": "STRIDE_ORIENTATION",
                   "choices": [
@@ -1427,20 +1409,6 @@ internal class TemplatePreprocessor
                     { "choice": "LandscapeRight" },
                     { "choice": "Portrait"       }
                   ]
-                },
-                "androidScreenOrientation": {
-                  "type": "generated",
-                  "generator": "switch",
-                  "replaces": "STRIDE_ANDROID_ORIENTATION",
-                  "parameters": {
-                    "evaluator": "C++",
-                    "datatype": "string",
-                    "cases": [
-                      { "condition": "(orientation == \"LandscapeLeft\")", "value": "ReverseLandscape" },
-                      { "condition": "(orientation == \"Portrait\")",      "value": "Portrait" },
-                      { "condition": "",                                   "value": "Landscape" }
-                    ]
-                  }
                 },
     """);
 
@@ -1466,7 +1434,6 @@ internal class TemplatePreprocessor
               "modifiers": [
                 { "condition": "(!WindowsActive)", "exclude": [ "MyTemplate.Windows/**" ] },
                 { "condition": "(!LinuxActive)",   "exclude": [ "MyTemplate.Linux/**"   ] },
-                { "condition": "(!AndroidActive)", "exclude": [ "MyTemplate.Android/**" ] },
                 { "condition": "(updateOnly)",     "exclude": [ "MyTemplate.Game/**", "*.slnx" ] },
                 { "condition": "(skipSolution)",   "exclude": [ "*.slnx" ] },
                 { "exclude": [ ".sdtpl/**" ] }

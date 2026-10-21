@@ -76,11 +76,7 @@ namespace Stride.Graphics.SDL
 #if STRIDE_GRAPHICS_API_VULKAN
             flags |= WindowFlags.Vulkan;
 #endif
-#if STRIDE_PLATFORM_ANDROID
-            flags |= WindowFlags.Borderless | WindowFlags.Fullscreen | WindowFlags.Shown;
-#else
             flags |= WindowFlags.Hidden | WindowFlags.Resizable;
-#endif
 
             // If there is a parent hwnd
             if (parent != IntPtr.Zero)
@@ -116,11 +112,6 @@ namespace Stride.Graphics.SDL
             {
                 Handle = (IntPtr)info.Info.X11.Window;
                 Display = (IntPtr)info.Info.X11.Display;
-            }
-            else if (Core.Platform.Type == Core.PlatformType.Android)
-            {
-                Handle = (IntPtr)info.Info.Android.Window;
-                Surface = (IntPtr)info.Info.Android.Surface;
             }
             Application.RegisterWindow(this);
             Application.ProcessEvents();
@@ -657,7 +648,7 @@ namespace Stride.Graphics.SDL
         public IntPtr Display { get; private set; }
 
         /// <summary>
-        /// Surface of current Window (valid only for Android).
+        /// Surface of current Window.
         /// </summary>
         public IntPtr Surface { get; private set; }
 

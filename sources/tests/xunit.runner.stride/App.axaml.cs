@@ -15,26 +15,18 @@ public partial class App : Avalonia.Application
     internal readonly CancellationTokenSource cts = new();
 
     // Callbacks are process-wide (each runner instance toggles the same per-platform GameTestBase
-    // state). Static so desktop Main and Android MainActivity assign them the same way — no need
+    // state). Static so desktop Main assigns them the same way — no need
     // for per-instance injection at App.Configure time.
     public static Action<bool>? SetInteractiveMode;
     public static Action<bool>? SetForceSaveImage;
     public static Action<string?>? SetRenderDocMode;
     public static Action<Action<ImageCompareResult>>? SubscribeImageComparison;
 
-    // Android has no entry assembly; the per-project MainActivity (injected by the Tests SDK
-    // into each test assembly) sets this so test discovery knows where to look. Public because
-    // the setter lives in the test assembly, not in xunit.runner.stride.
-    public static System.Reflection.Assembly? TestAssembly;
-
-    // When set (by Android MainActivity reading the launch Intent), Avalonia still loads its
-    // single-view UI for hosting the Stride game surfaces, but RunAll fires immediately and
-    // the process exits with the failed-test count when complete. Driven by:
-    //   adb shell am start --es xunit_command run --ez xunit_exit_on_complete true
+    // When set, Avalonia still loads its single-view UI for hosting the Stride game surfaces,
+    // but RunAll fires immediately and the process exits with the failed-test count when complete.
     public static bool HeadlessMode;
 
-    // Optional vstest --filter expression for headless runs (Android launcher reads it from
-    // the launch Intent: --es xunit_filter "<expr>"). Null/empty runs the whole suite.
+    // Optional vstest --filter expression for headless runs. Null/empty runs the whole suite.
     public static string? HeadlessFilter;
 
     // Optional --repeat N: run the filtered set up to N times, stop on first failed iteration.
@@ -46,8 +38,7 @@ public partial class App : Avalonia.Application
     // MainActivity.OnCreate gets a chance to read the launch Intent).
     private static MainViewModel? singleViewVm;
 
-    // Set by MainView on attach. Android MainActivity invokes this on back gesture so narrow-mode
-    // detail view backs to the list instead of closing the app. Returns true when handled.
+    // Set by MainView on attach. Returns true when handled.
     public static Func<bool>? HandleBackRequest;
 
     public override void Initialize()
@@ -90,9 +81,7 @@ public partial class App : Avalonia.Application
             // don't remove; also used by visual designer.
             singleViewPlatform.MainView = new MainView { DataContext = vm };
             singleViewVm = vm;
-            // HeadlessMode may already be set by Android Application init (process-restart with
-            // intent extras still in the launch state); MainActivity also calls this after reading
-            // a fresh Intent, so we handle both ordering paths.
+
             TryStartHeadlessRun();
         }
 
@@ -128,13 +117,7 @@ public partial class App : Avalonia.Application
 
     private static void ExitHeadlessRun(int exitCode)
     {
-#if ANDROID
-        // libc exit() runs the emulator GL driver's static destructors, which abort on a destroyed
-        // mutex and leave a tombstone every run. The host reads results from the TRX, not the exit code.
-        Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
-#else
         System.Environment.Exit(exitCode);
-#endif
     }
 
     // Build a window title that identifies what this runner instance is testing:
@@ -170,7 +153,7 @@ public partial class App : Avalonia.Application
         {
             var name = Path.GetFileName(dir);
             int dash = name.IndexOf('-');
-            if (dash > 0 && (name.StartsWith("Windows-") || name.StartsWith("Linux-") || name.StartsWith("Android-")))
+            if (dash > 0 && (name.StartsWith("Windows-") || name.StartsWith("Linux-")))
                 return name[(dash + 1)..];
             dir = Path.GetDirectoryName(dir);
         }

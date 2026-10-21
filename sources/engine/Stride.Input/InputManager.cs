@@ -37,7 +37,7 @@ namespace Stride.Input
             }
         }
 
-        //this is used in some mobile platform for accelerometer stuff
+        //this is used in some platforms for accelerometer stuff
         internal const float G = 9.81f;
         internal const float DesiredSensorUpdateRate = 60;
 
@@ -696,10 +696,6 @@ namespace Stride.Input
             {
 #if STRIDE_UI_SDL
                 case AppContextType.DesktopSDL:
-                    break;
-#endif
-#if STRIDE_PLATFORM_ANDROID
-                case AppContextType.Android:
                     break;
 #endif
 #if STRIDE_PLATFORM_UWP

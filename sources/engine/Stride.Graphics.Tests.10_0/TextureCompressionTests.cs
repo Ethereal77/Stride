@@ -13,11 +13,9 @@ namespace Stride.Graphics.Tests
     /// Exercises the asset-pipeline texture compression paths by drawing each compressed variant fullscreen.
     /// On Windows/Linux (D3D11/12/Vulkan, profile ≥10.0): ColorNone→BC1, ColorExplicit→BC2,
     /// ColorInterpolated→BC3, Grayscale→BC4, NormalMap→BC5.
-    /// On Android (Vulkan/GLES, profile ≥10.0): every variant collapses to ASTC_6x6.
     /// Gold images are intentionally per-platform.
     /// </summary>
     // TODO add HDR (BC6H) and HighQuality (BC7) variants when TextureHelper enables those paths.
-    // TODO additional ASTC block sizes (4x4/5x5/8x8) coverage when TextureHelper varies block size by hint.
     public class TextureCompressionTests : GameTestBase
     {
         private string textureUrl;

@@ -50,10 +50,6 @@ namespace Stride.Graphics.Regression
     #elif STRIDE_GRAPHICS_API_VULKAN
             result.DeviceName = "Vulkan";
     #endif
-#elif STRIDE_PLATFORM_ANDROID
-            result.Platform = "Android";
-            result.DeviceName = Android.OS.Build.Manufacturer + " " + Android.OS.Build.Model;
-            result.Serial = Android.OS.Build.Serial ?? "Unknown";
 #elif STRIDE_PLATFORM_UWP
             result.Platform = "UWP";
             var deviceInfo = new EasClientDeviceInformation();
@@ -82,8 +78,6 @@ namespace Stride.Graphics.Regression
             {
                 case TestPlatform.WindowsDx:
                     return "Windows_Direct3D11";
-                case TestPlatform.Android:
-                    return "Android";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -91,9 +85,7 @@ namespace Stride.Graphics.Regression
 
         public static TestPlatform GetPlatform()
         {
-#if STRIDE_PLATFORM_ANDROID
-            return TestPlatform.Android;
-#elif STRIDE_GRAPHICS_API_NULL
+#if STRIDE_GRAPHICS_API_NULL
             return TestPlatform.None;
 #elif STRIDE_GRAPHICS_API_DIRECT3D
             return TestPlatform.WindowsDx;
@@ -156,7 +148,6 @@ namespace Stride.Graphics.Regression
     {
         None,
         WindowsDx,
-        WindowsVulkan,
-        Android
+        WindowsVulkan
     }
 }

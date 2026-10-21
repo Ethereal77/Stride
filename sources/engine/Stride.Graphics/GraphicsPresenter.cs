@@ -133,7 +133,7 @@ public abstract class GraphicsPresenter : ComponentBase
 
     /// <summary>
     ///   Surface orientation applied by the presentation engine. Renderer folds this into the
-    ///   projection so the engine can skip its rotation compose pass (Android Vulkan).
+    ///   projection so the engine can skip its rotation compose pass.
     /// </summary>
     internal SurfaceRotation SurfaceRotation { get; set; }
 

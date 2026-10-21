@@ -2,7 +2,6 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 // Stub for platforms with no real audio extractor; suppressed when MediaCodec is set
-#if !STRIDE_VIDEO_MEDIACODEC
 
 using System;
 
@@ -16,5 +15,3 @@ namespace Stride.Audio
         }
     }
 }
-
-#endif

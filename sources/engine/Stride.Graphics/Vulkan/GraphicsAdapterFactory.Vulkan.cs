@@ -182,7 +182,6 @@ namespace Stride.Graphics
             {
                 VK_KHR_SURFACE_EXTENSION_NAME,
                 VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-                VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
                 VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
                 VK_KHR_XCB_SURFACE_EXTENSION_NAME,
                 VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
@@ -290,11 +289,6 @@ namespace Stride.Graphics
                 if (!availableExtensionNames.Contains(VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
                     throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_KHR_WIN32_SURFACE_EXTENSION_NAME)} is not available");
             }
-            else if (Platform.Type == PlatformType.Android)
-            {
-                if (!availableExtensionNames.Contains(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME))
-                    throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME)} is not available");
-            }
             else if (Platform.Type == PlatformType.Linux)
             {
                 if (!availableExtensionNames.Contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME)
@@ -312,10 +306,6 @@ namespace Stride.Graphics
             if (Platform.Type == PlatformType.Windows)
             {
                 surfaceExtensionName = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-            }
-            else if (Platform.Type == PlatformType.Android)
-            {
-                surfaceExtensionName = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
             }
             else if (Platform.Type == PlatformType.Linux)
             {

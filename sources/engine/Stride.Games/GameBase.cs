@@ -432,8 +432,6 @@ namespace Stride.Games
                 AppContextType c;
                 if (OperatingSystem.IsWindows() && GameContextFactory.WinFormsBackendEnabled)
                     c = AppContextType.DesktopWinForms;
-                else if (OperatingSystem.IsAndroid())
-                    c = AppContextType.Android;
                 else
                     c = AppContextType.DesktopSDL;
                 gameContext = GameContextFactory.NewGameContext(c);

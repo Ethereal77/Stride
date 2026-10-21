@@ -40,17 +40,15 @@ public class TestsViewModel : ViewModelBase
     private StrideTestController? Controller { get; }
     private readonly Assembly? testAssembly;
 
-    // Discovery runs in the background — it triggers Mono assembly load + reflection for the
-    // whole test assembly graph, which on Android is heavy enough (30-60s) to ANR the main
-    // thread if done synchronously in the ctor. Headless mode awaits DiscoveryTask before
+    // Discovery runs in the background — it triggers assembly load + reflection for the
+    // whole test assembly graph. Headless mode awaits DiscoveryTask before
     // RunTestsAsync; UI mode shows whatever is in TestCases at bind time and refreshes later.
     public Task DiscoveryTask { get; }
 
     public TestsViewModel()
     {
-        // Desktop launches via Main (entry assembly == test assembly); Android launches via the
-        // per-project MainActivity, which sets App.TestAssembly.
-        testAssembly = App.TestAssembly ?? Assembly.GetEntryAssembly();
+        // Desktop launches via Main (entry assembly == test assembly)
+        testAssembly = Assembly.GetEntryAssembly();
         if (testAssembly is null)
         {
             TestCases.Add(new TestGroupViewModel(this, "No tests were found"));
@@ -109,14 +107,12 @@ public class TestsViewModel : ViewModelBase
 
     public void RunTests(TestNodeViewModel testNodeViewModel) => RunTests(testNodeViewModel, interactive: false);
 
-    // Task-returning variant for headless dispatch (Android MainActivity awaits this and reads
-    // FailedCount for the process exit code). The async void RunTests overloads are for UI
+    // Task-returning variant for headless dispatch. The async void RunTests overloads are for UI
     // bindings that can't await.
     public Task RunTestsAsync(TestNodeViewModel testNodeViewModel)
         => RunTestCases(testNodeViewModel.EnumerateTestCases().ToList(), interactive: false);
 
-    // Headless run narrowed by a vstest --filter predicate (Android launcher passes the
-    // expression as a launch parameter). Mirrors the desktop StrideXunitRunner.RunHeadless filter.
+    // Headless run narrowed by a vstest --filter predicate. Mirrors the desktop StrideXunitRunner.RunHeadless filter.
     public Task RunFilteredAsync(Func<ITestCase, bool> predicate)
         => RunTestCases(EnumerateAllTestCases().Where(c => predicate(c.TestCase)).ToList(), interactive: false);
 
@@ -299,7 +295,7 @@ public class TestsViewModel : ViewModelBase
                         }
                     },
                 };
-                // Headless mode (Android launcher + desktop STRIDE_TESTS_INTERACTIVE!=1)
+                // Headless mode (desktop STRIDE_TESTS_INTERACTIVE!=1)
                 // needs a TRX for the host driver to parse. Compose alongside the UI sink so
                 // both observe the same test stream.
                 using var trxSink = App.HeadlessMode ? new TrxWriter() : null;
@@ -609,7 +605,7 @@ public class TestsViewModel : ViewModelBase
     // ticker and the OnImageComparison callback's vm-attach logic.
     TestCaseViewModel? currentlyRunningCase;
 
-    // === Mobile / narrow-viewport state ===
+    // === Narrow-viewport state ===
 
     /// <summary>True when the main split is in stacked (phone/portrait) mode. Drives the
     /// drill-down nav (tap-to-detail / back) and hides per-row run buttons.</summary>

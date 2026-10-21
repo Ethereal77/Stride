@@ -37,9 +37,6 @@ namespace Stride.Games
             GameContext res = null;
             switch (type)
             {
-                case AppContextType.Android:
-                    res = NewGameContextAndroid();
-                    break;
                 case AppContextType.DesktopWinForms:
                     if (WinFormsBackendEnabled)
                         res = NewGameContextDesktop(requestedWidth, requestedHeight, isUserManagingRun);
@@ -68,15 +65,6 @@ namespace Stride.Games
             }
 
             return res;
-        }
-
-        public static GameContext NewGameContextAndroid()
-        {
-#if STRIDE_PLATFORM_ANDROID
-            return new GameContextAndroid(null, null);
-#else
-            return null;
-#endif
         }
 
         public static GameContext NewGameContextDesktop(int requestedWidth = 0, int requestedHeight = 0, bool isUserManagingRun = false)

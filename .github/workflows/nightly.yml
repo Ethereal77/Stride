@@ -106,7 +106,7 @@ jobs:
             -t:Package `
             --no-restore `
             -m -nr:false `
-            -p:StridePlatforms=Windows%3BLinux%3BAndroid `
+            -p:StridePlatforms=Windows%3BLinux `
             -p:StrideGraphicsApiDependentBuildAll=true `
             -p:StrideSign=false `
             -p:StrideBuildPrerequisitesInstaller=false `

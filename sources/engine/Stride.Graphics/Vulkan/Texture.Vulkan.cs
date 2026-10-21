@@ -97,7 +97,7 @@ namespace Stride.Graphics
             NativeColorAttachmentView = attachmentView;
         }
 
-        // Platform-partial hook for externally-provided images (AHardwareBuffer on Android).
+        // Platform-partial hook for externally-provided images.
         // Implementation sets importedImageHandled=true and populates Native* fields itself.
         private bool importedImageHandled;
         partial void TryInitializeImportedImage();

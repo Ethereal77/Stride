@@ -1,6 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-#if STRIDE_PLATFORM_ANDROID
+#if FALSE // TODO: Reimplement on top of .NET's Zip file support
 using System;
 using System.Collections.Generic;
 using System.IO;

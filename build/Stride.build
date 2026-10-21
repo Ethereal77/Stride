@@ -49,7 +49,7 @@ Example: dotnet build build/Stride.build -t:Package
   </Target>
 
   <Target Name="Help">
-    <Message Importance="high" Text="Stride build targets (run: dotnet build build/Stride.build -t:&lt;Target&gt;)%0a%0a  Build         - build the full Stride solution (Windows)%0a  BuildWindows / BuildWindowsDirect3D11 / BuildWindowsDirect3D12 / BuildWindowsVulkan%0a  BuildLinux / BuildAndroid - build a platform's runtime%0a  BuildRuntime  - build the runtime slnf (with tests/packing)%0a  Package       - build + pack + sign NuGet packages (BuildPackages = build only, no signing)%0a  VSIXPlugin    - build + pack the Visual Studio extension%0a  FullBuildLauncher - build the launcher + installer%0a  PackageCli    - build + pack + sign the Stride CLI dotnet tool (Stride.Cli)%0a  Publish / PublishVSIX / PublishLauncher - push packages to the NuGet store%0a  Clean         - delete the Bin output folder%0a%0aCommon properties: -p:StrideSign=false  -p:StrideGraphicsApiDependentBuildAll=true" />
+    <Message Importance="high" Text="Stride build targets (run: dotnet build build/Stride.build -t:&lt;Target&gt;)%0a%0a  Build         - build the full Stride solution (Windows)%0a  BuildWindows / BuildWindowsDirect3D11 / BuildWindowsDirect3D12 / BuildWindowsVulkan%0a  BuildLinux - build a platform's runtime%0a  BuildRuntime  - build the runtime slnf (with tests/packing)%0a  Package       - build + pack + sign NuGet packages (BuildPackages = build only, no signing)%0a  VSIXPlugin    - build + pack the Visual Studio extension%0a  FullBuildLauncher - build the launcher + installer%0a  PackageCli    - build + pack + sign the Stride CLI dotnet tool (Stride.Cli)%0a  Publish / PublishVSIX / PublishLauncher - push packages to the NuGet store%0a  Clean         - delete the Bin output folder%0a%0aCommon properties: -p:StrideSign=false  -p:StrideGraphicsApiDependentBuildAll=true" />
   </Target>
 
   <!--
@@ -128,7 +128,7 @@ Example: dotnet build build/Stride.build -t:Package
   </Target>
 
   <!--
-  Build Stride: Windows, Android, Windows 10 (UWP)
+  Build Stride: Windows, Windows 10 (UWP)
   -->
   <Target Name="Clean">
     <RemoveDir Directories="$(StrideRoot)Bin"/>
@@ -248,10 +248,6 @@ Example: dotnet build build/Stride.build -t:Package
 
   <Target Name="BuildWindowsVulkan">
     <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_BuildPlatform" Properties="StrideTargetSolution=$(StrideRoot)build\Stride.Runtime.slnf;StrideGraphicsApis=Vulkan" />
-  </Target>
-
-  <Target Name="BuildAndroid">
-    <MSBuild Projects="$(MSBuildThisFileFullPath)" Targets="_BuildPlatform" Properties="StrideTargetSolution=$(StrideRoot)build\Stride.Android.slnf;StridePlatforms=Android" />
   </Target>
 
   <Target Name="BuildLinux">

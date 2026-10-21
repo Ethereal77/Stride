@@ -26,11 +26,6 @@ namespace Stride.Input
                         return new InputSourceSDL(((GameContextSDL)context).Control);
                     goto default;
 #endif
-#if STRIDE_PLATFORM_ANDROID
-                case AppContextType.Android:
-                    var androidContext = (GameContextAndroid)context;
-                    return new InputSourceAndroid(androidContext.Control);
-#endif
 #if STRIDE_PLATFORM_UWP
                 case AppContextType.UWPXaml:
                     var uwpXamlContext = (GameContextUWPXaml)context;

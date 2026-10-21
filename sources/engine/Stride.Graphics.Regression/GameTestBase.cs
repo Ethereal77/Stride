@@ -170,7 +170,7 @@ namespace Stride.Graphics.Regression
             FrameGameSystem = new FrameGameSystem(Services);
             GameSystems.Add(FrameGameSystem);
 
-            // by default we want the same size for the back buffer on mobiles and windows.
+            // by default we want the same size for the back buffer on any platform
             BackBufferSizeMode = BackBufferSizeMode.FitToDesiredValues;
 
             // Only make window visible in interactive mode,
@@ -740,7 +740,7 @@ namespace Stride.Graphics.Regression
                     }
                 }
             }
-            catch { /* git unavailable / not a repo (e.g. Android) — leave gh to deduce */ }
+            catch { /* git unavailable / not a repo — leave gh to deduce */ }
 
             return (repo ?? "", branch ?? "");
         }
@@ -774,20 +774,12 @@ namespace Stride.Graphics.Regression
         /// </summary>
         /// <remarks>
         ///   On desktop this is the Stride solution root, located by traversing upward for <c>build/Stride.slnx</c>.
-        ///   On Android it is the app's internal files directory (Context.FilesDir): targetSdk 30+ scoped
-        ///   storage blocks the app's own writes through the FUSE-bound external-files path. The host
-        ///   script pushes gold + pulls generated images via <c>adb shell run-as &lt;pkg&gt;</c>.
         /// </remarks>
         private static string GetTestsRootDirectory()
         {
-#if STRIDE_PLATFORM_ANDROID
-            return Android.App.Application.Context.FilesDir!.AbsolutePath;
-#else
             return FindStrideSolutionRootDirectory();
-#endif
         }
 
-#if !STRIDE_PLATFORM_ANDROID
         /// <summary>
         ///   Searches for the root folder of the Stride solution by traversing upward from the test's binary directory.
         /// </summary>
@@ -815,7 +807,6 @@ namespace Stride.Graphics.Regression
             ImageTester.DiagLog($"FindRoot: FAILED from {startDir}");
             throw new InvalidOperationException($"Could not locate the Stride solution root directory (started from {startDir})");
         }
-#endif
 
         /// <summary>
         ///   Compares the test result image against the gold reference and saves a local copy
@@ -980,7 +971,6 @@ namespace Stride.Graphics.Regression
             {
                 PlatformType.Windows => "Windows",
                 PlatformType.Linux => "Linux",
-                PlatformType.Android => "Android",
                 _ => throw new NotImplementedException($"Platform {Platform.Type} is not supported for image regression tests")
             };
 
@@ -988,10 +978,7 @@ namespace Stride.Graphics.Regression
         }
 
         // Stable, vendor-independent bucket name. Avoids Lavapipe's "llvmpipe (LLVM x.y.z, N bits)"
-        // description from leaking into the gold path and breaking on every Mesa rebuild. The
-        // Android emulator-host Vulkan layer stamps the host OS into the device name (e.g.
-        // "...StrideHost=Linux") so Android gold buckets by host, whose Lavapipe build renders
-        // slightly differently → "Lavapipe-LinuxHost".
+        // description from leaking into the gold path and breaking on every Mesa rebuild.
         private static string NormalizeDeviceBucket(GraphicsAdapter adapter)
         {
             var desc = adapter.Description.Split('\0')[0].TrimEnd(' ');
@@ -1015,13 +1002,9 @@ namespace Stride.Graphics.Regression
             else if (adapter.VendorId == 0x1414) deviceName = "WARP"; // Microsoft Basic / WARP
             else deviceName = desc;
 
-            // Bucket by the layer-reported host; on Android with no stamp the layer wasn't active,
-            // so we genuinely don't know which host's Lavapipe rendered this — fall into a distinct
-            // "UnknownHost" bucket rather than silently aliasing onto a real host's gold.
-            string bucketSuffix =
-                !string.IsNullOrEmpty(hostTag) ? $"{hostTag}Host" :
-                Platform.Type == PlatformType.Android ? "UnknownHost" :
-                null;
+            // Bucket by the layer-reported host; fall into a distinct "UnknownHost"
+            // bucket rather than silently aliasing onto a real host's gold.
+            string bucketSuffix = !string.IsNullOrEmpty(hostTag) ? $"{hostTag}Host" : null;
             if (!string.IsNullOrEmpty(bucketSuffix))
                 deviceName += $"-{bucketSuffix}";
             return deviceName;

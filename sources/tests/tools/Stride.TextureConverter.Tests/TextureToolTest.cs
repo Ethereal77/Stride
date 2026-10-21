@@ -83,7 +83,6 @@ namespace Stride.TextureConverter.Tests
         [Theory(Skip = "Need check")]
         [InlineData("stones.png", Orientation.Horizontal)]
         [InlineData("TextureArray_WMipMaps_BC3.dds", Orientation.Horizontal)]
-        [InlineData("TextureCube_WMipMaps_PVRTC2_4bpp.pvr", Orientation.Vertical)]
         public void FlipTest(string file, Orientation orientation)
         {
             TexImage image = texTool.Load(Module.PathToInputImages + file);
@@ -260,9 +259,8 @@ namespace Stride.TextureConverter.Tests
 
 
         [Theory(Skip = "Need check")]
-        [InlineData("TextureArray_WMipMaps_BGRA8888.dds", ".pvr", PixelFormat.None, 16)]
-        [InlineData("TextureArray_WMipMaps_BC3.dds", ".pvr", PixelFormat.ETC2_RGBA, 0)]
-        [InlineData("TextureArray_WMipMaps_BC3.dds", ".pvr", PixelFormat.None, 0)]
+        [InlineData("TextureArray_WMipMaps_BGRA8888.dds", ".png", PixelFormat.None, 16)]
+        [InlineData("TextureArray_WMipMaps_BC3.dds", ".png", PixelFormat.None, 0)]
         public void SaveTest(string input, string extension, PixelFormat compressionFormat, int minimumMipmapSize)
         {
             TexImage image = texTool.Load(Module.PathToInputImages + input);
@@ -291,10 +289,8 @@ namespace Stride.TextureConverter.Tests
         }
 
         [Theory(Skip = "Need check")]
-        [InlineData("TextureCube_WMipMaps_BC3.dds", ".pvr", Filter.Rescaling.CatmullRom, PixelFormat.ETC2_RGBA)]
-        [InlineData("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", ".dds", Filter.Rescaling.Nearest, PixelFormat.BC3_UNorm)]
-        [InlineData("TextureCube_WMipMaps_ATC_RGBA_Explicit.sd", ".dds", Filter.Rescaling.Lanczos3, PixelFormat.BC3_UNorm)]
-        [InlineData("duck.jpg", ".dds", Filter.Rescaling.Box, PixelFormat.BC3_UNorm)]
+        [InlineData("TextureCube_WMipMaps_BC3.sd", ".png", Filter.Rescaling.Lanczos3, PixelFormat.BC3_UNorm)]
+        [InlineData("duck.jpg", ".png", Filter.Rescaling.Box, PixelFormat.BC3_UNorm)]
         public void ProcessingTest(string source, string extension, Filter.Rescaling rescaleFiler, PixelFormat format)
         {
             var image = texTool.Load(Module.PathToInputImages + source);

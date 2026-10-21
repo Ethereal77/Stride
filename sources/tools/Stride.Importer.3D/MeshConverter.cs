@@ -48,8 +48,8 @@ namespace Stride.Importer.ThreeD
             if (Platform.Type == PlatformType.Windows)
                 return Assimp.GetApi();
 
-            // Silk.NET's Assimp binding still requests the legacy Assimp 5 SONAME (libassimp.so.5 /
-            // libassimp.5.dylib) even though its managed types match Assimp 6. Ultz.Native.Assimp 6.x
+            // Silk.NET's Assimp binding still requests the legacy Assimp 5 SONAME (libassimp.so.5)
+            // even though its managed types match Assimp 6. Ultz.Native.Assimp 6.x
             // ships both the old (.so.5) and new (.so.6) binaries, so the default loader binds the
             // stale Assimp 5 lib on Linux and corrupts animation keys. Resolve the highest-version
             // native library ourselves and build the API from it.

@@ -24,8 +24,7 @@ namespace Stride.Video.FFmpeg
         public static bool CheckPlatformSupport()
         {
             return Platform.Type == PlatformType.Windows
-                || Platform.Type == PlatformType.Linux
-                || Platform.Type == PlatformType.Android;
+                || Platform.Type == PlatformType.Linux;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,7 +61,7 @@ namespace Stride.Video.FFmpeg
             ("avformat", "avformat-61"),
             ("swscale", "swscale-8"),
             ("avfilter", "avfilter-10"),
-            ("avdevice", "avdevice-61"),
+            ("avdevice", "avdevice-61")
         ];
 
         private static readonly Dictionary<string, nint> libraryHandles = new();
@@ -78,20 +77,6 @@ namespace Stride.Video.FFmpeg
             if (!CheckPlatformSupport() || librariesPreloaded)
                 return;
             librariesPreloaded = true;
-
-            // Android ships the libs on the loader's default search path, so FFmpeg.AutoGen's own
-            // resolver finds them; force-load via a no-op call so dlopen happens here (clearer stacks).
-            if (Platform.Type == PlatformType.Android)
-            {
-                _ = ffmpeg.avutil_version();
-                _ = ffmpeg.swresample_version();
-                _ = ffmpeg.avcodec_version();
-                _ = ffmpeg.avformat_version();
-                _ = ffmpeg.swscale_version();
-                _ = ffmpeg.avfilter_version();
-                _ = ffmpeg.avdevice_version();
-                return;
-            }
 
             // Desktop: resolve FFmpeg's natives through NativeLibraryHelper (so libraries registered from
             // the NuGet cache are found) rather than its own RootPath probing. Must be set before any

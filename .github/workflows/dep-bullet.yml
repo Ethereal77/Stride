@@ -1,6 +1,6 @@
 name: "Dep: Build Bullet"
 
-# Builds libbulletc.{dll,so,dylib} per RID (the native C wrapper around bullet)
+# Builds libbulletc.{dll,so} per RID (the native C wrapper around bullet)
 # plus the managed BulletSharp.dll (RID-agnostic). Replaces the binaries that
 # used to ship in deps/BulletPhysics/ and were built off-tree.
 #

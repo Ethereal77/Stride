@@ -1,5 +1,5 @@
 # Built and packaged by .github/workflows/dep-dxtwrapper.yml.
-# Static-links DirectXTex into a single stride_directxtex.{dll,so,dylib} per RID.
+# Static-links DirectXTex into a single stride_directxtex.{dll,so} per RID.
 #
 # Workflow passes:
 #   -DDIRECTXTEX_SRC = cloned microsoft/DirectXTex

@@ -22,11 +22,6 @@ on:
     # many workflows on label change); a `ci-run-on-draft` label takes effect on the next push.
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
-    inputs:
-      android:
-        description: Run Android jobs
-        type: boolean
-        default: true
 
 permissions:
   checks: write
@@ -73,13 +68,6 @@ jobs:
       build-type: Debug   # Release has a bug and cannot build
 
   ### Runtimes ###
-  Android-Runtime:
-    needs: changes
-    if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.runtime == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
-    uses: ./.github/workflows/build-android.yml
-    with:
-      build-type: Release
-
   Linux-Runtime:
     needs: changes
     if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.runtime == 'true'
@@ -220,21 +208,6 @@ jobs:
     with:
       build-type: Debug
 
-  # Android tests run on Linux + KVM-accelerated x86_64 emulator. Build APKs on the host,
-  # boot the emulator inside reactivecircus/android-emulator-runner, run each suite serially.
-  Android-Tests-Game:
-    needs: [changes, Linux-Runtime]
-    if: |
-      !cancelled()
-      && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-      && needs.changes.outputs.android == 'true'
-      && needs['Linux-Runtime'].result != 'failure'
-      && needs['Linux-Runtime'].result != 'cancelled'
-      && (github.event_name != 'workflow_dispatch' || inputs.android)
-    uses: ./.github/workflows/test-android-game.yml
-    with:
-      build-type: Debug
-
   # Aggregate result for branch protection: mark only "Gate" as required.
   # Skipped jobs (path filters, draft PRs) are fine; failure/cancellation is not.
   # always() on purpose (unlike the !cancelled() test jobs): a cancelled run must
@@ -244,7 +217,6 @@ jobs:
       - changes
       - Assembly-Processor
       - VS-Package
-      - Android-Runtime
       - Linux-Runtime
       - Windows-Runtime-D3D11
       - Windows-Runtime-D3D12
@@ -257,7 +229,6 @@ jobs:
       - Windows-Tests-Game-Vulkan
       - Linux-Tests-Simple
       - Linux-Tests-Game
-      - Android-Tests-Game
     if: always()
     runs-on: ubuntu-latest
     steps:

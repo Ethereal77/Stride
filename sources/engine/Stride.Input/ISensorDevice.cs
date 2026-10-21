@@ -12,7 +12,7 @@ namespace Stride.Input
         /// Gets or sets if this sensor is enabled
         /// </summary>
         /// <remarks>Sensors are disabled by default</remarks>
-        /// <remarks>Disabling unused sensors will save battery power on mobile devices</remarks>
+        /// <remarks>Disabling unused sensors will save battery power</remarks>
         bool IsEnabled { get; set; }
     }
 }

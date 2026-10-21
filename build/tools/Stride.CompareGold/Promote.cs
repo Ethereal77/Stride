@@ -29,7 +29,7 @@ internal static class HeadlessPromote
               fallback covers it). Repo-wide unless --source (dir or CI run, as for promote) scopes
               it to those suites.
 
-          Priority: Windows.Direct3D12 > Windows.Vulkan > Linux.Vulkan > Android.Vulkan > Windows.Direct3D11.
+          Priority: Windows.Direct3D12 > Windows.Vulkan > Linux.Vulkan > Windows.Direct3D11.
           --tests defaults to the tests/ dir of the enclosing Stride checkout.
         """;
 
@@ -40,7 +40,7 @@ internal static class HeadlessPromote
     private static readonly string[] PlatformApiPriority =
     [
         "Windows.Direct3D12", "Windows.Vulkan",
-        "Linux.Vulkan", "Android.Vulkan",
+        "Linux.Vulkan",
         "Windows.Direct3D11"   // slated for removal — kept lowest so nothing falls back to it
     ];
 

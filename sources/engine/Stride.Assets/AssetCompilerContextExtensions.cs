@@ -47,7 +47,6 @@ namespace Stride.Assets
                 case PlatformType.Windows:
                 case PlatformType.UWP:
                     return GraphicsPlatform.Direct3D11;
-                case PlatformType.Android:
                 case PlatformType.Linux:
                     return GraphicsPlatform.Vulkan;
                 default:

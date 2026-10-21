@@ -1,6 +1,6 @@
 name: "Dep: Build VHACD"
 
-# Builds stride_vhacd.{dll,so,dylib} per RID: a single self-contained shared lib
+# Builds stride_vhacd.{dll,so} per RID: a single self-contained shared lib
 # that wraps kmammou/v-hacd v4 (header-only). Used by Stride.Assets to compute
 # convex hull decompositions during physics collider asset compilation.
 #

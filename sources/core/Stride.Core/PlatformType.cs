@@ -38,11 +38,6 @@ public enum PlatformType
     Windows,
 
     /// <summary>
-    ///   The Android operating system for mobile devices and tablets.
-    /// </summary>
-    Android,
-
-    /// <summary>
     ///   The Universal Windows Platform (UWP) for applications that run on Windows 10 and later devices, and XBox gaming consoles.
     /// </summary>
     UWP,

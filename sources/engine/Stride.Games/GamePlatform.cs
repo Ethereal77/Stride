@@ -44,8 +44,8 @@ namespace Stride.Games
 
         protected GameWindow gameWindow;
 
-        // Shared mobile (Android) app-lifecycle marshalling. The OS delivers lifecycle
-        // callbacks on the UI/main thread, but window activation, the Suspend event and the
+        // Shared app-lifecycle marshalling. The OS delivers lifecycle callbacks
+        // on the UI/main thread, but window activation, the Suspend event and the
         // pre-suspend GPU drain must run on the game thread. Platform layers call the Notify*
         // methods; the work is applied from OnRunCallback via ProcessPendingAppLifecycle.
         private readonly object lifecycleLock = new object();
@@ -65,8 +65,6 @@ namespace Stride.Games
         {
 #if STRIDE_PLATFORM_UWP
             return new GamePlatformUWP(game);
-#elif STRIDE_PLATFORM_ANDROID
-            return new GamePlatformAndroid(game);
 #else
             // Here we cover all Desktop variants: OpenTK, SDL, Winforms,...
             return new GamePlatformDesktop(game);
@@ -242,7 +240,7 @@ namespace Stride.Games
             Suspend?.Invoke(this, e);
         }
 
-        // --- Shared mobile app-lifecycle entry points (called by Android platform layers) ---
+        // --- Shared app-lifecycle entry points ---
 
         /// <summary>The app window gained focus / became active. Marshalled to the game thread.</summary>
         protected void NotifyAppActivated() => QueueAppLifecycle(activate: true);

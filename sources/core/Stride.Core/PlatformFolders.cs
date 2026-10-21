@@ -79,11 +79,7 @@ public static class PlatformFolders
 
     private static string GetApplicationLocalDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "local");
-        Directory.CreateDirectory(directory);
-        return directory;
-#elif STRIDE_PLATFORM_UWP
+#if STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
 #else
         // TODO: Should we add "local" ?
@@ -95,11 +91,7 @@ public static class PlatformFolders
 
     private static string GetApplicationRoamingDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "roaming");
-        Directory.CreateDirectory(directory);
-        return directory;
-#elif STRIDE_PLATFORM_UWP
+#if STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
 #else
         // TODO: Should we add "local" ?
@@ -111,9 +103,7 @@ public static class PlatformFolders
 
     private static string GetApplicationCacheDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "cache");
-#elif STRIDE_PLATFORM_UWP
+#if STRIDE_PLATFORM_UWP
         var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
 #else
         // TODO: Should we add "local" ?
@@ -126,9 +116,7 @@ public static class PlatformFolders
     [UnconditionalSuppressMessage("SingleFile", "IL3000", Justification = "Falls back to Environment.ProcessPath when Location is empty.")]
     private static string? GetApplicationExecutablePath()
     {
-#if STRIDE_PLATFORM_ANDROID
-        return PlatformAndroid.Context.PackageCodePath;
-#elif STRIDE_PLATFORM_DESKTOP || STRIDE_PLATFORM_MONO_MOBILE
+#if STRIDE_PLATFORM_DESKTOP
         var appPath = Assembly.GetEntryAssembly()?.Location;
         if (string.IsNullOrEmpty(appPath))
         {
@@ -147,9 +135,7 @@ public static class PlatformFolders
 
     private static string GetApplicationTemporaryDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        return PlatformAndroid.Context.CacheDir.AbsolutePath;
-#elif STRIDE_PLATFORM_UWP
+#if STRIDE_PLATFORM_UWP
         return Windows.Storage.ApplicationData.Current.TemporaryFolder.Path;
 #else
         return Path.GetTempPath();
@@ -158,9 +144,7 @@ public static class PlatformFolders
 
     private static string GetApplicationBinaryDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        return GetApplicationExecutableDirectory();
-#elif STRIDE_PLATFORM_DESKTOP
+#if STRIDE_PLATFORM_DESKTOP
         return Path.GetDirectoryName(AppContext.BaseDirectory)!;
 #else
         return Path.GetDirectoryName(typeof(PlatformFolders).Assembly.Location);
@@ -169,7 +153,7 @@ public static class PlatformFolders
 
     private static string GetApplicationExecutableDirectory()
     {
-#if STRIDE_PLATFORM_DESKTOP || STRIDE_PLATFORM_MONO_MOBILE
+#if STRIDE_PLATFORM_DESKTOP
         var executableName = GetApplicationExecutablePath();
         if (!string.IsNullOrEmpty(executableName))
         {
@@ -189,9 +173,7 @@ public static class PlatformFolders
 
     private static string GetApplicationDataDirectory()
     {
-#if STRIDE_PLATFORM_ANDROID
-        return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/Android/data/" + PlatformAndroid.Context.PackageName + "/data";
-#elif STRIDE_PLATFORM_UWP
+#if STRIDE_PLATFORM_UWP
         return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
 #else
         return Path.Combine(GetApplicationBinaryDirectory(), "data");

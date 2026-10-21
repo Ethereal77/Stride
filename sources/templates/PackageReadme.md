@@ -23,10 +23,10 @@ cd MyGame && dotnet run --project MyGame.Windows
 | Parameter | Values | Meaning |
 |---|---|---|
 | `-n` / `--name` | string | Project name; substituted everywhere `MyTemplate` would appear |
-| `--platforms` | `host` / `windows` / `linux` / `android` (repeat for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
+| `--platforms` | `host` / `windows` / `linux` (repeat for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
 | `--HDR` | `true` / `false` | HDR rendering pipeline (requires `--graphicsProfile >= 10.0`) |
 | `--graphicsProfile` | `9.0` / `10.0` / `11.0` | Shader feature level |
-| `--orientation` | `Default` / `LandscapeLeft` / `LandscapeRight` / `Portrait` | Mobile display orientation |
+| `--orientation` | `Default` / `LandscapeLeft` / `LandscapeRight` / `Portrait` | Display orientation |
 
 Per-template parameter list: `dotnet new <template> --help`.
 

@@ -8,7 +8,7 @@ namespace Stride.Dependencies.Lavapipe;
 /// </summary>
 /// <remarks>
 /// The packaged <c>lvp_icd.json</c> uses a relative <c>library_path</c>, so the Vulkan
-/// loader resolves <c>vulkan_lvp.dll</c>/<c>libvulkan_lvp.so</c>/<c>libvulkan_lvp.dylib</c>
+/// loader resolves <c>vulkan_lvp.dll</c>/<c>libvulkan_lvp.so</c>
 /// against the manifest's own directory — no runtime rewriting needed.
 ///
 /// Resolution order:

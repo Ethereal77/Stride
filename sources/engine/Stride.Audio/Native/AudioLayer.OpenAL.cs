@@ -9,7 +9,7 @@ using Stride.Core.Mathematics;
 namespace Stride.Audio
 {
     /// <summary>
-    /// libstrideaudio (OpenAL on desktop / OpenSL ES on Android / XAudio2 on Windows) backend.
+    /// libstrideaudio (OpenAL on desktop / XAudio2 on Windows) backend.
     /// </summary>
     public partial class AudioLayer
     {

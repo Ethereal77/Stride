@@ -33,8 +33,7 @@ namespace Stride.Graphics.Tests
         {
             // FontManager builds its own ContentManager off the provider we return here, so we
             // must point it at this suite's bundle directly — the Init() mount is for other code
-            // paths, not this one. /data/db is read-only on mobile (APK / .app); FileOdbBackend's
-            // ctor handles that and writes go to /local/db (vfsAdditionalUrl).
+            // paths, not this one.
             return new DatabaseFileProviderService(new DatabaseFileProvider(ObjectDatabase.CreateDefaultDatabase(SuiteBundleName)));
         }
 
@@ -95,7 +94,7 @@ namespace Stride.Graphics.Tests
             WaitAndCheck(characterA);
             Assert.Equal(3, characterA.Bitmap.Width);
             Assert.Equal(3, characterA.Bitmap.Rows);
-            
+
             // test that rendering an already existing character to a new size works
             var characterA2 = new CharacterSpecification('a', "Risaltyp_024", 10f * Vector2.One, FontStyle.Regular, FontAntiAliasMode.Default);
             fontManager.GenerateBitmap(characterA2, false);
@@ -118,7 +117,7 @@ namespace Stride.Graphics.Tests
             fontManager.GenerateBitmap(characterD, false);
             WaitAndCheck(characterD);
             Assert.Null(characterC.Bitmap);
-            
+
             fontManager.Dispose();
         }
 

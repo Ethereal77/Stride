@@ -65,7 +65,6 @@ public static class VSProjectHelper
         return outputType.Equals("winexe", StringComparison.InvariantCultureIgnoreCase)
             || outputType.Equals("exe", StringComparison.InvariantCultureIgnoreCase)
             || outputType.Equals("appcontainerexe", StringComparison.InvariantCultureIgnoreCase) // UWP
-            || project.GetPropertyValue("AndroidApplication").Equals("true", StringComparison.InvariantCultureIgnoreCase) // Android
             ? ProjectType.Executable
             : ProjectType.Library;
     }

@@ -56,10 +56,10 @@ Common parameters (template-dependent):
 | Parameter | Values | Meaning |
 |---|---|---|
 | `-n` / `--name` | string | Project name; substitutes `MyTemplate` literal throughout |
-| `--platforms` | `host` / `windows` / `linux` / `android` (pipe-joined for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
+| `--platforms` | `host` / `windows` / `linux` (pipe-joined for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
 | `--HDR` | `true` / `false` | HDR rendering pipeline (requires `graphicsProfile >= 10.0`) |
 | `--graphicsProfile` | `9.0` / `10.0` / `11.0` | Shader feature level |
-| `--orientation` | `Default` / `LandscapeLeft` / `LandscapeRight` / `Portrait` | Mobile display orientation |
+| `--orientation` | `Default` / `LandscapeLeft` / `LandscapeRight` / `Portrait` | Display orientation |
 
 `dotnet new <template> --help` lists the parameters each template accepts.
 

@@ -6,6 +6,5 @@
 
   <ItemGroup>
     <StrideNativePathLibsLinux Include="libCelt.a;libCompilerRt.a" />
-    <StrideNativePathLibsAndroid Include="libCelt.a;libCompilerRt.a" />
   </ItemGroup>
 </Project>

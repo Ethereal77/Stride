@@ -13,7 +13,7 @@ namespace Stride.Shaders.Parsers.Tests;
 /// <summary>
 /// Headless Vulkan renderer consuming the mixer's SPIR-V directly (no SPIRV-Cross translation).
 /// No window or swapchain: renders into an offscreen image and reads it back, so it also works
-/// on display-less CI and mobile. Requires bytecode compiled with the unified binding scheme
+/// on display-less CI. Requires bytecode compiled with the unified binding scheme
 /// (ShaderMixer.Options.ResourcesRegisterSeparate = false).
 /// Uses Vortice.Vulkan, like the engine's own Vulkan backend.
 /// </summary>

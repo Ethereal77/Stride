@@ -25,8 +25,6 @@ namespace Stride.TextureConverter.Tests
 
 
         [Theory(Skip = "Need check")]
-        [InlineData("Texture3D_WMipMaps_ATC_RGBA_Explicit.sd")]
-        [InlineData("TextureArray_WMipMaps_ATC_RGBA_Explicit.sd")]
         [InlineData("TextureCube_WMipMaps_RGBA8888.sd")]
         public void StartLibraryTest(string file)
         {
@@ -41,19 +39,17 @@ namespace Stride.TextureConverter.Tests
         [Fact(Skip = "Need check")]
         public void CanHandleRequestTest()
         {
-            TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_ATC_RGBA_Explicit.sd");
-            Assert.False(library.CanHandleRequest(image, new DecompressingRequest(false)));
-            Assert.False(library.CanHandleRequest(image, new TexImageLoadingRequest(new TexImage(), false)));
-            Assert.True(library.CanHandleRequest(image, new FileLoadingRequest("TextureArray_WMipMaps_BC3.dds", false)));
-            Assert.True(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.sd", 0)));
+            TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_BC3.sd");
+            Assert.False(library.CanHandleRequest(image, new DecompressingRequest(isSRgb: false)));
+            Assert.False(library.CanHandleRequest(image, new TexImageLoadingRequest(new TexImage(), loadAsSRgb: false)));
+            Assert.True(library.CanHandleRequest(image, new FileLoadingRequest("TextureArray_WMipMaps_BC3.dds", loadAsSRgb: false)));
+            Assert.True(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.sd", minimumMipMapSize: 0)));
             Assert.True(library.CanHandleRequest(image, new ExportToStrideRequest()));
             image.Dispose();
         }
 
 
         [Theory(Skip = "Need check")]
-        [InlineData("Texture3D_WMipMaps_ATC_RGBA_Explicit.sd")]
-        [InlineData("TextureArray_WMipMaps_ATC_RGBA_Explicit.sd")]
         [InlineData("TextureCube_WMipMaps_RGBA8888.sd")]
         public void ExportTest(string file)
         {
@@ -65,8 +61,6 @@ namespace Stride.TextureConverter.Tests
         }
 
         [Theory(Skip = "Need check")]
-        [InlineData("Texture3D_WMipMaps_ATC_RGBA_Explicit.sd", 4)]
-        [InlineData("TextureArray_WMipMaps_ATC_RGBA_Explicit.sd", 512)]
         [InlineData("TextureCube_WMipMaps_RGBA8888.sd", 16)]
         public void ExportTestMinMipmap(string file, int minMipMapSize)
         {
@@ -78,8 +72,6 @@ namespace Stride.TextureConverter.Tests
         }
 
         [Theory(Skip = "Need check")]
-        [InlineData("Texture3D_WMipMaps_ATC_RGBA_Explicit.sd")]
-        [InlineData("TextureArray_WMipMaps_ATC_RGBA_Explicit.sd")]
         [InlineData("TextureCube_WMipMaps_RGBA8888.sd")]
         public void ExportToStrideTest(string file)
         {

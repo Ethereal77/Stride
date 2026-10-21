@@ -92,57 +92,9 @@ jobs:
           name: freetype-linux-x64
           path: out/linux-x64/
 
-  build-android:
-    name: Build FreeType (Android)
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        include:
-          - abi: armeabi-v7a
-            rid: android-arm
-          - abi: arm64-v8a
-            rid: android-arm64
-          - abi: x86
-            rid: android-x86
-          - abi: x86_64
-            rid: android-x64
-    steps:
-      - name: Checkout FreeType
-        uses: actions/checkout@v7
-        with:
-          repository: freetype/freetype
-          ref: ${{ github.event.inputs.freetype-version }}
-          path: freetype-src
-
-      - name: Build
-        run: |
-          cmake -S freetype-src -B freetype-build \
-            -DBUILD_SHARED_LIBS=ON \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=${{ matrix.abi }} \
-            -DANDROID_PLATFORM=android-21 \
-            -DFT_DISABLE_BZIP2=ON \
-            -DFT_DISABLE_BROTLI=ON \
-            -DFT_DISABLE_HARFBUZZ=ON \
-            -DFT_DISABLE_PNG=ON \
-            -DFT_DISABLE_ZLIB=ON
-          cmake --build freetype-build -- -j$(nproc)
-
-      - name: Collect output
-        run: |
-          mkdir -p out/${{ matrix.rid }}
-          cp freetype-build/libfreetype.so out/${{ matrix.rid }}/
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: freetype-${{ matrix.rid }}
-          path: out/${{ matrix.rid }}/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux, build-android]
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout FreeType (for version info)
@@ -166,12 +118,6 @@ jobs:
           for rid in win-x64 win-arm64 linux-x64; do
             mkdir -p $OUT/dotnet/$rid
             cp artifacts/freetype-$rid/* $OUT/dotnet/$rid/ 2>/dev/null || true
-          done
-
-          # Android → Android/{rid}/
-          for rid in android-arm android-arm64 android-x86 android-x64; do
-            mkdir -p $OUT/Android/$rid
-            cp artifacts/freetype-$rid/* $OUT/Android/$rid/ 2>/dev/null || true
           done
 
           # Version info

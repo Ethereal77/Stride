@@ -93,43 +93,6 @@ namespace Stride.Assets
 
         public static void SetPlatformOrientation(SolutionProject project, RequiredDisplayOrientation orientation)
         {
-            switch (project.Platform)
-            {
-                case PlatformType.Android:
-                    {
-                        if (project.FullPath == null) return;
-
-                        var activityFileName = project.Name + "Activity.cs";
-                        var activityFile = UPath.Combine(project.FullPath.GetFullDirectory(), new UFile(activityFileName));
-                        if (!File.Exists(activityFile)) return;
-
-                        var activitySource = File.ReadAllText(activityFile);
-
-                        string orientationString;
-                        switch (orientation)
-                        {
-                            case RequiredDisplayOrientation.Default:
-                                orientationString = "Android.Content.PM.ScreenOrientation.Landscape";
-                                break;
-                            case RequiredDisplayOrientation.LandscapeLeft:
-                                orientationString = "Android.Content.PM.ScreenOrientation.Landscape";
-                                break;
-                            case RequiredDisplayOrientation.LandscapeRight:
-                                orientationString = "Android.Content.PM.ScreenOrientation.ReverseLandscape";
-                                break;
-                            case RequiredDisplayOrientation.Portrait:
-                                orientationString = "Android.Content.PM.ScreenOrientation.Portrait";
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-
-                        activitySource = Regex.Replace(activitySource, @"(\[Activity(?:.*[\n,\r]*)+?[\n,\r,\s]*ScreenOrientation\s*=\s*)([\w,\d,\.]+)(\s*,)", $"$1{orientationString}$3");
-
-                        File.WriteAllText(activityFile, activitySource);
-                    }
-                    break;
-            }
         }
     }
 }

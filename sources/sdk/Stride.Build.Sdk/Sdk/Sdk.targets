@@ -53,7 +53,7 @@
   <!-- ================================================================ -->
   <!-- Stride.Build.Sdk.Tests sets StrideCompilerTargetsEnable=false on StridePackageBuild /
        StrideSkipUnitTests. Disable compilation by pointing LanguageTargets at a no-op so test
-       projects don't compile (and don't build APKs/AOT) when producing packages.
+       projects don't compile when producing packages.
        MUST run before the Microsoft.NET.Sdk import below: the SDK assigns LanguageTargets
        (Microsoft.CSharp.targets) under a '$(LanguageTargets)' == '' guard, so the override only
        wins if it's already set when that import runs. Gated on IsTestProject so the dormant
@@ -67,26 +67,6 @@
   <!-- ================================================================ -->
   <!-- This gives us all standard .NET SDK functionality -->
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
-  <!-- ================================================================ -->
-  <!-- Workaround: _CreateAar runs twice under parallel builds (XARLP7024) -->
-  <!-- ================================================================ -->
-  <!-- The Android SDK wires _CreateAar into _UpdateAndroidResourcesDependsOn AND, via NuGet's
-       per-TFM dispatch through _GetFrameworkAssemblyReferences, it runs a second time — racing
-       on shared .aar files (e.g. Stride.Games.aar) under -m:N. That forces the Android test
-       build to -m:1. Relocate _CreateAar to the NuGet-package dependency chain (where it only
-       needs to run), matching dotnet/android#11527:
-       https://github.com/dotnet/android/pull/11527
-
-       Self-gating: only rewrites while _CreateAar is still in the resources chain, so once the
-       upstream fix ships in any SDK version this whole block becomes a no-op automatically.
-       Must come after the Microsoft.NET.Sdk import so the Android SDK properties exist. -->
-  <PropertyGroup Condition="'$(StridePlatform)' == 'Android' And $(_UpdateAndroidResourcesDependsOn.Contains('_CreateAar'))">
-    <!-- Unescape: the .Replace() property function escapes the ';' list separators (to %3B),
-         which would make DependsOnTargets treat the whole string as one target name (MSB4057). -->
-    <_UpdateAndroidResourcesDependsOn>$([MSBuild]::Unescape($(_UpdateAndroidResourcesDependsOn.Replace('_CreateAar;', '').Replace('_CreateAar', ''))))</_UpdateAndroidResourcesDependsOn>
-    <_IncludeAarInNuGetPackageDependsOn>$(_IncludeAarInNuGetPackageDependsOn);_CreateAar</_IncludeAarInNuGetPackageDependsOn>
-  </PropertyGroup>
 
   <!-- ================================================================ -->
   <!-- Graphics API inner build dispatching (multi-API builds) -->
@@ -182,30 +162,6 @@
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
-
-  <!-- ================================================================ -->
-  <!-- Strip per-RID compute globals from ProjectReference dispatches    -->
-  <!-- ================================================================ -->
-  <!-- The Android per-RID publish self-dispatch (Microsoft.Android.Sdk _ResolveAssemblies) sets these
-       globals on every transitive ProjectReference, giving each shared dep a second build-cache key:
-       it builds twice to the same output and races on obj/ under parallel builds. It likewise injects a
-       re-resolved _AndroidNdkDirectory (highest installed NDK, which can differ from the build traversal's
-       value) — safe to strip since each project re-resolves it locally when absent. -->
-  <PropertyGroup>
-    <_GlobalPropertiesToRemoveFromProjectReferences>$(_GlobalPropertiesToRemoveFromProjectReferences);_ComputeFilesToPublishForRuntimeIdentifiers;_OuterIntermediateAssembly;_OuterIntermediateOutputPath;_OuterCustomViewMapFile;_OuterIntermediateSatelliteAssembliesWithTargetPath;_OuterOutputPath;AppendRuntimeIdentifierToOutputPath;DesignTimeBuild;ResolveAssemblyReferencesFindRelatedSatellites;SkipCompilerExecution;_AndroidNdkDirectory</_GlobalPropertiesToRemoveFromProjectReferences>
-  </PropertyGroup>
-  <!-- RuntimeIdentifier* / SelfContained are set on the test app and would otherwise propagate
-       to library deps as a cross-RID restore demand they don't need. Strip these only on
-       Android: a real self-contained publish on another platform may legitimately flow a RID
-       down to its references. -->
-  <Target Name="_StrideStripPerRidGlobalsFromProjectReferences"
-          BeforeTargets="_SplitProjectReferencesByFileExistence"
-          Condition="'$(StridePlatform)' == 'Android'">
-    <ItemGroup>
-      <ProjectReference Update="@(ProjectReference)"
-                        UndefineProperties="RuntimeIdentifier;RuntimeIdentifiers;SelfContained" />
-    </ItemGroup>
-  </Target>
 
   <!-- ================================================================ -->
   <!-- StridePublicApi - User Documentation (.usrdoc) Support -->

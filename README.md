@@ -68,7 +68,7 @@ Our [Roadmap](https://doc.stride3d.net/latest/en/contributors/roadmap.html) comm
    - **.NET desktop development** (bundles the .NET 10 SDK)
    - **Desktop development with C++**
 
-> See [docs/build/README.md](docs/build/README.md) for detailed prerequisites (specific MSVC toolset versions, optional Android/ARM64/VSIX components, command-line builds without VS, and troubleshooting).
+> See [docs/build/README.md](docs/build/README.md) for detailed prerequisites (specific MSVC toolset versions, optional ARM64/VSIX components, command-line builds without VS, and troubleshooting).
 
 ### Build Stride
 

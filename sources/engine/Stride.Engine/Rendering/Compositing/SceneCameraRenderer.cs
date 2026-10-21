@@ -20,7 +20,7 @@ namespace Stride.Rendering.Compositing
     {
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
-        
+
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
@@ -121,7 +121,7 @@ namespace Stride.Rendering.Compositing
             if (camera == null)
                 return;
 
-            // Presenter rotation (Android Vulkan pre-rotation): fold into projection, flip aspect.
+            // Presenter rotation: fold into projection, flip aspect.
             // Gated by IsPresenterPass so mirror/VR/sub-scene SCRs are unaffected.
             var surfaceRotation = context.Tags.Get(GraphicsCompositor.IsPresenterPass)
                 ? context.GraphicsDevice?.Presenter?.SurfaceRotation ?? SurfaceRotation.Identity

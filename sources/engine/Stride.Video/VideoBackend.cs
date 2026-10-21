@@ -7,7 +7,7 @@ namespace Stride.Video;
 
 /// <summary>
 /// Per-<see cref="VideoInstance"/> playback backend. Concrete subclasses wrap a specific decoding
-/// implementation (FFmpeg, Windows Media Foundation, Android MediaCodec, ...). Instances are
+/// implementation (FFmpeg, Windows Media Foundation, ...). Instances are
 /// produced by <see cref="VideoBackendFactory.CreateBackend"/> at media-initialization time.
 /// </summary>
 public abstract class VideoBackend : IDisposable

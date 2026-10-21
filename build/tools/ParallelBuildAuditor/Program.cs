@@ -156,20 +156,6 @@ src.AnyEventRaised += (_, e) =>
         return;
     }
 
-    // Android per-RID publish outer→inner self-dispatch (Microsoft.Android.Sdk.AssemblyResolution
-    // _ResolveAssemblies): the outer build re-invokes itself with
-    // _ComputeFilesToPublishForRuntimeIdentifiers=true plus a per-RID _Outer*/RID bag, targeting
-    // _ComputeFilesToPublishForRuntimeIdentifiers, to gather publish files per RID. Each RID writes
-    // to its own AppendRuntimeIdentifierToOutputPath output, so this is the intended publish
-    // mechanism, not a parallel-duplicate symptom — same rationale as the multi-TFM case above.
-    if (string.Equals(parent, ps.ProjectFile, StringComparison.OrdinalIgnoreCase)
-        && (ps.TargetNames ?? "")
-            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Contains("_ComputeFilesToPublishForRuntimeIdentifiers", StringComparer.OrdinalIgnoreCase))
-    {
-        return;
-    }
-
     if (!groups.TryGetValue(key, out var list))
     {
         list = new List<(string, IReadOnlyDictionary<string, string>, string, string)>();

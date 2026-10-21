@@ -22,7 +22,7 @@
 //        private AudioEngine defaultEngine;
 //
 //        private SoundGenerator generator = new SoundGenerator();
-//        
+//
 //        [TestFixtureSetUp]
 //        public void Initialize()
 //        {
@@ -162,10 +162,6 @@
 //
 //            var sizeOfOneSubBuffer = 44100 * 200 / 1000;
 //
-//#if STRIDE_PLATFORM_ANDROID
-//            sizeOfOneSubBuffer = mono8Bits.SubBufferSize;
-//#endif
-//
 //            ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 1. Check that BufferNeeded is thrown when the user call plays with insufficient number of audio data
 //            mono8Bits.Play();
@@ -173,7 +169,7 @@
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called when the user played without any buffers");
 //            bufferNeededHasBeenCalled = false;
 //            mono8Bits.Stop();
-//            
+//
 //            mono8Bits.SubmitBuffer(generator.Generate(44100, new[] { 0f }, 1, 1000));
 //            Thread.Sleep(50);
 //            bufferNeededHasBeenCalled = false;
@@ -182,7 +178,7 @@
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called when the user played wit one buffers");
 //            bufferNeededHasBeenCalled = false;
 //            mono8Bits.Stop();
-//            
+//
 //            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 2. Check that BufferNeeded is thrown when the user call SubmitBuffer with insufficient number of audio data
 //            mono8Bits.SubmitBuffer(generator.Generate(44100, new[] { 0f }, 1, sizeOfOneSubBuffer));
@@ -195,7 +191,7 @@
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called when the user submit the second buffer");
 //            bufferNeededHasBeenCalled = false;
 //            mono8Bits.Stop();
-//            
+//
 //            ////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 3. Check that BufferNeeded is thrown when the number of buffers falls from 3 to 2, 2 to 1, 1 to 0
 //            mono8Bits.SubmitBuffer(generator.Generate(44100, new[] { 0f }, 1, sizeOfOneSubBuffer));
@@ -286,19 +282,19 @@
 //            Assert.DoesNotThrow(()=>mono8Bits.SubmitBuffer(generator.Generate(44100, new[] { 40000f }, 1, 88200 )), "SubmitBuffer on mono8Bits crached.");
 //            mono8Bits.Play();
 //            Thread.Sleep(2500);
-//            
+//
 //            /////////////////////////////////////////////////////////////////////////////////////////
 //            // 10. Check that submitting mono-16bits signals does not crash and has the good behaviour
 //            Assert.DoesNotThrow(() => mono16Bits.SubmitBuffer(generator.Generate(44100, new[] { 40000f }, 2, 176400)), "SubmitBuffer on mono16Bits crached.");
 //            mono16Bits.Play();
 //            Thread.Sleep(2500);
-//            
+//
 //            ///////////////////////////////////////////////////////////////////////////////////////////
 //            // 11. Check that submitting stereo-8bits signals does not crash and has the good behaviour
 //            Assert.DoesNotThrow(() => stereo8Bits.SubmitBuffer(generator.Generate(44100, new[] { 40000f, 20000f }, 1, 176400)), "SubmitBuffer on stereo8Bits crached.");
 //            stereo8Bits.Play();
 //            Thread.Sleep(2500);
-//            
+//
 //            ///////////////////////////////////////////////////////////////////////////////////////////
 //            // 12 Check that submitting stereo-16bits signals does not crash and has the good behaviour
 //            Assert.DoesNotThrow(() => stereo16Bits.SubmitBuffer(generator.Generate(44100, new[] { 40000f, 10000f }, 2, 352800)), "SubmitBuffer on stereo16Bits crached.");
@@ -421,7 +417,7 @@
 //            }
 //            dynSEInstance.Pan = 0;
 //            Thread.Sleep(2000);
-//            
+//
 //            ////////////////////////////////////////////////////////////////////////////
 //            // 7. Wait until the end of the stream to check that there are not crashes
 //            Thread.Sleep(50000);
@@ -511,7 +507,7 @@
 //            ////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 1. Check that worker process buffer needed requests with the first instance of dynamic sound.
 //            var instance1 = new DynamicSoundEffectInstance(defaultEngine, 44100, AudioChannels.Mono, AudioDataEncoding.PCM_8Bits);
-//            instance1.BufferNeeded += SetBufferNeededHasBeenCalledToTrue; 
+//            instance1.BufferNeeded += SetBufferNeededHasBeenCalledToTrue;
 //            instance1.Play();
 //            Thread.Sleep(50);
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called with a first single instance.");
@@ -521,7 +517,7 @@
 //            ////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 2. Check that worker process buffer needed requests with the second instance of dynamic sound.
 //            var instance2 = new DynamicSoundEffectInstance(defaultEngine, 44100, AudioChannels.Mono, AudioDataEncoding.PCM_8Bits);
-//            instance2.BufferNeeded += SetBufferNeededHasBeenCalledToTrue; 
+//            instance2.BufferNeeded += SetBufferNeededHasBeenCalledToTrue;
 //            instance2.Play();
 //            Thread.Sleep(50);
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called with a second instance.");
@@ -541,7 +537,7 @@
 //            // 4. Check that the worker is correctly recreated when the number of dynamic instances have reached 0
 //            instance2.Dispose();
 //            instance1 = new DynamicSoundEffectInstance(defaultEngine, 44100, AudioChannels.Mono, AudioDataEncoding.PCM_8Bits);
-//            instance1.BufferNeeded += SetBufferNeededHasBeenCalledToTrue; 
+//            instance1.BufferNeeded += SetBufferNeededHasBeenCalledToTrue;
 //            instance1.Play();
 //            Thread.Sleep(50);
 //            Assert.True(bufferNeededHasBeenCalled, "Buffer Needed has not been called with a single instance after destruct of all instances.");
@@ -589,84 +585,6 @@
 //            pinnedDataWave1.Free();
 //            pinnedDataStereo.Free();
 //            pinnedDataSayuriPart.Free();
-//        }
-//
-//        [Fact]
-//        public void TestImplementationSpecificAndroid()
-//        {
-//            int subBufferSize = 1000;
-//
-//            GCHandle pinnedDataSayuriPart;
-//
-//#if STRIDE_PLATFORM_ANDROID
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "sayuriPart.wav");
-//            subBufferSize = sayuriPart.Instance.SubBufferSize;
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//#endif
-//
-//            //////////////////////////////////////////////////////////////////////////////////////////
-//            // 1. Check that the there is no problems submitting buffers smallers than impl subbuffers
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "EffectFishLamp");
-//            sayuriPart.BufferLength = (subBufferSize / 4) + ((subBufferSize / 4) % 2);
-//            sayuriPart.Instance.BufferNeeded += SubmitSayuriPart;
-//            sayuriPart.Instance.Play();
-//            Thread.Sleep(4000);
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//            Thread.Sleep(1000);
-//
-//            //////////////////////////////////////////////////////////////////////////////////////////////
-//            // 2. Check that the there is no problems submitting buffers with same size as impl subbuffers
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "EffectFishLamp");
-//            sayuriPart.BufferLength = subBufferSize;
-//            sayuriPart.Instance.BufferNeeded += SubmitSayuriPart;
-//            sayuriPart.Instance.Play();
-//            Thread.Sleep(4000);
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//            Thread.Sleep(1000);
-//
-//            //////////////////////////////////////////////////////////////////////////////////////////////////
-//            // 3. Check that the there is no problems submitting buffers with bigger size than impl subbuffers
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "EffectFishLamp");
-//            sayuriPart.BufferLength = 2 * subBufferSize;
-//            sayuriPart.Instance.BufferNeeded += SubmitSayuriPart;
-//            sayuriPart.Instance.Play();
-//            Thread.Sleep(4000);
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//            Thread.Sleep(1000);
-//
-//            ///////////////////////////////////////////////////////////////////////////////////////////////////////
-//            // 3. Check that the there is no problems submitting buffers with bigger size than impl  while buffer
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "EffectFishLamp");
-//            sayuriPart.BufferLength = 5 * subBufferSize;
-//            sayuriPart.Instance.BufferNeeded += SubmitSayuriPart;
-//            sayuriPart.Instance.Play();
-//            Thread.Sleep(4000);
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//            Thread.Sleep(1000);
-//
-//            /////////////////////////////////////////////////////////////////////////////////////////////////
-//            // 4. Test that buffer smaller than subbuffer size are played and that nbofbuffers is zero after
-//            LoadWaveFileIntoBuffers(out pinnedDataSayuriPart, out sayuriPart, "EffectFishLamp");
-//            sayuriPart.BufferLength = (3 * subBufferSize / 4)+ ((3 * subBufferSize / 4) % 2);
-//            SubmitSayuriPart(null, null);
-//            sayuriPart.Instance.Play();
-//            Thread.Sleep(1000);  // should here sound here
-//            Assert.Equal(0, sayuriPart.Instance.PendingBufferCount, "The number of pending buffer is not zero after that all audio data have been consumed.");
-//
-//            ///////////////////////////////////////////////////////
-//            // 5. Restart correctly after having consumed all data
-//            sayuriPart.BufferLength = 2 * subBufferSize;
-//            sayuriPart.Instance.BufferNeeded += SubmitSayuriPart;
-//            SubmitSayuriPart(null, null);
-//            Thread.Sleep(3000);
-//            sayuriPart.Instance.Dispose();
-//            pinnedDataSayuriPart.Free();
-//            Thread.Sleep(1000);
 //        }
 //    }
 //}

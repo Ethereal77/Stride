@@ -334,8 +334,7 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
     private static readonly (string Suffix, PlatformType Type)[] PlatformSuffixes =
     {
         (".Windows", PlatformType.Windows),
-        (".Linux",   PlatformType.Linux),
-        (".Android", PlatformType.Android)
+        (".Linux",   PlatformType.Linux)
     };
 
     /// <summary>

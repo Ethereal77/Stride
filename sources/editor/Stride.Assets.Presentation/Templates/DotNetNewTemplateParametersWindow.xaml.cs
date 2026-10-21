@@ -291,7 +291,6 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
         {
             "windows" => PlatformType.Windows,
             "linux"   => PlatformType.Linux,
-            "android" => PlatformType.Android,
             _         => null
         };
         if (!platform.HasValue)

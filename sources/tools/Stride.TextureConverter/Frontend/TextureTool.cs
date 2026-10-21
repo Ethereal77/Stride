@@ -11,16 +11,14 @@ using Stride.Graphics;
 using Stride.TextureConverter.Requests;
 using Stride.TextureConverter.TexLibraries;
 using Stride.TextureConverter.Backend.Requests;
-using System.Runtime.InteropServices;
 
 namespace Stride.TextureConverter
 {
-
     /// <summary>
     /// Provides method to load images or textures, to modify them and to convert them with different texture compression format.
-    /// Input supported format : png, jpg, bmp, gif, tga, tif/tiff (Every ImageSharp supported format...), dds, pvr, ktx.
-    /// Output format : png, jpg, bmp, gif, tga, tif/tiff (Every ImageSharp supported format...), dds, pvr, ktx.
-    /// Compression format : DXT1-5, ETC1-2, uncompressed formats (BGRA8888, RGBA8888)
+    /// Input supported format : png, jpg, bmp, gif, tga, tif/tiff (Every ImageSharp supported format...), dds, ktx.
+    /// Output format : png, jpg, bmp, gif, tga, tif/tiff (Every ImageSharp supported format...), dds, ktx.
+    /// Compression format : DXT1-5, uncompressed formats (BGRA8888, RGBA8888)
     /// Image processing : resize, flip, gamma correction
     /// Texture utilities : Mipmap generation, normal map generation
     /// </summary>
@@ -38,18 +36,6 @@ namespace Stride.TextureConverter
         {
             var type = typeof(TextureTool);
             NativeLibraryHelper.PreloadLibrary("stride_directxtex", type);
-            if (IsAstcEncAvailable())
-                NativeLibraryHelper.PreloadLibrary("astcenc", type);
-
-            // Currently shipped RIDs: win-x64, linux-x64. Skip on others
-            // until binaries for them are added under deps/astcenc/dotnet/<rid>/.
-            static bool IsAstcEncAvailable()
-            {
-                var arch = RuntimeInformation.ProcessArchitecture;
-                if (OperatingSystem.IsWindows()) return arch == Architecture.X64;
-                if (OperatingSystem.IsLinux())   return arch == Architecture.X64;
-                return false;
-            }
         }
 
         /// <summary>
@@ -65,7 +51,6 @@ namespace Stride.TextureConverter
                 new DxtTexLib(), // used to compress/decompress texture to DXT1-5 and load/save *.dds compressed texture files.
                 new ImageSharpTexLib(), // used to open/save common bitmap image formats.
                 new StrideTexLibrary(), // used to save/load stride texture format.
-                new AstcTexLib(), // used to compress/decompress textures to/from ASTC LDR (4x4..12x12 block sizes).
                 new ColorKeyTexLibrary(), // used to apply ColorKey on R8G8B8A8/B8G8R8A8_Unorm
                 new AtlasTexLibrary(), // used to create and manipulate texture atlas
                 new ArrayTexLib(), // used to create and manipulate texture array and texture cube
@@ -485,10 +470,6 @@ namespace Stride.TextureConverter
         /// <summary>
         /// Switches the channel R and B.
         /// </summary>
-        /// <remarks>
-        /// PVR texture and ATC library can't handle BGRA order, channels B and R must be switched to get the new order RGBA. (This switch is made automatically)
-        /// If the image is in a compressed format, it will be first decompressed.
-        /// </remarks>
         /// <param name="image">The image.</param>
         public void SwitchChannel(TexImage image)
         {
@@ -1539,8 +1520,6 @@ namespace Stride.TextureConverter
                 var cube = texTool.CreateTextureCube(list);
                 //texTool.Compress(cube, Stride.Framework.Graphics.PixelFormat.BC3_UNorm);
                 texTool.GenerateMipMaps(cube, Filter.MipMapGeneration.Box);
-
-                texTool.Save(cube, @"C:\dev\data\test\cube.pvr");
 
                 /*texTool.Remove(cube, 0);
 

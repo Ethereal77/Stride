@@ -12,10 +12,7 @@
     <Compile Remove="Frontend\TexArray.cs" />
   </ItemGroup>
   <ItemGroup>
-    <StrideNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.dll;$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.so;$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.dylib">
-      <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
-    </StrideNativeLib>
-    <StrideNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\astcenc\dotnet\**\*.dll;$(MSBuildThisFileDirectory)..\..\..\deps\astcenc\dotnet\**\*.so;$(MSBuildThisFileDirectory)..\..\..\deps\astcenc\dotnet\**\*.dylib">
+    <StrideNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.dll;$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.so">
       <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
     </StrideNativeLib>
   </ItemGroup>

@@ -27,7 +27,6 @@
     <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">Windows</StridePlatform>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatform>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' ">Android</StridePlatform>
     <StridePlatform Condition=" '$(StridePlatform)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StridePlatform)' == '' ">Windows</StridePlatform>
 
@@ -38,7 +37,6 @@
     <!-- Platform dependencies -->
     <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">dotnet</StridePlatformDeps>
     <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatformDeps>
-    <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' ">Android</StridePlatformDeps>
   </PropertyGroup>
 
   <!-- ================================================================ -->
@@ -74,14 +72,6 @@
 
     <!-- Create delimited version for .Contains() checks in Stride.Frameworks.targets -->
     <_StridePlatforms>;$(StridePlatforms);</_StridePlatforms>
-
-    <!-- Add host platform when targeting mobile so the host TFM + native libs build: the
-         AssetCompiler runs in-process and loads host native libs (libstrideaudio for Celt)
-         when compiling Sound/VR assets. Mutate _StridePlatforms not StridePlatforms so
-         StrideTestPlatforms (test-target TFMs) stays scoped to mobile.
-         Opt out via -p:StridePlatformAutoAddHost=false for CI runtime-only mobile builds. -->
-    <_StridePlatforms Condition="'$(StridePlatformAutoAddHost)' != 'false' And $([MSBuild]::IsOSPlatform(Windows)) And ($(_StridePlatforms.Contains(';Android;'))) And !$(_StridePlatforms.Contains(';Windows;'))">;Windows$(_StridePlatforms)</_StridePlatforms>
-    <_StridePlatforms Condition="'$(StridePlatformAutoAddHost)' != 'false' And $([MSBuild]::IsOSPlatform(Linux)) And ($(_StridePlatforms.Contains(';Android;'))) And !$(_StridePlatforms.Contains(';Linux;'))">;Linux$(_StridePlatforms)</_StridePlatforms>
   </PropertyGroup>
 
   <!-- ================================================================ -->
@@ -91,10 +81,9 @@
        <TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>. Computed here (props)
        so the value is known when the csproj body evaluates and the literal <TargetFrameworks>
        element lives in the csproj (keeps SDK-style project-system detection working).
-       Ordered base; desktop-native; mobile/UWP — gated on the active $(_StridePlatforms). -->
+       Ordered base; desktop-native; UWP — gated on the active $(_StridePlatforms). -->
   <PropertyGroup>
-    <!-- mobile/UWP tail shared by every variant -->
-    <_StrideRuntimeMobileFrameworks Condition="$(_StridePlatforms.Contains(';Android;'))">$(_StrideRuntimeMobileFrameworks);$(StrideFrameworkAndroid)</_StrideRuntimeMobileFrameworks>
+    <!-- UWP tail shared by every variant -->
     <_StrideRuntimeMobileFrameworks Condition="$(_StridePlatforms.Contains(';UWP;'))">$(_StrideRuntimeMobileFrameworks);$(StrideFrameworkUWP)</_StrideRuntimeMobileFrameworks>
 
     <!-- desktop-native variants, included only when that platform is active -->

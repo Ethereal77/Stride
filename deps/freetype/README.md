@@ -32,9 +32,4 @@ dotnet/
   win-x86/        Windows x86
   win-arm64/      Windows ARM64
   linux-x64/      Linux x64
-Android/
-  android-arm/    Android ARMv7
-  android-arm64/  Android ARM64
-  android-x86/    Android x86
-  android-x64/    Android x64
 ```

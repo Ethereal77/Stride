@@ -10,12 +10,12 @@ using Sockets.Plugin.Abstractions;
 namespace Sockets.Plugin
 {
     /// <summary>
-    /// Helper methods required for the conversion of platform-specific network items to the abstracted versions. 
+    /// Helper methods required for the conversion of platform-specific network items to the abstracted versions.
     /// </summary>
     static class NetworkExtensions
     {
         /// <summary>
-        /// Returns a <code>CommsInterface</code> wrapper from a platform native <code>NetworkInterface</code>. 
+        /// Returns a <code>CommsInterface</code> wrapper from a platform native <code>NetworkInterface</code>.
         /// </summary>
         /// <param name="nativeInterface"></param>
         /// <returns></returns>
@@ -25,7 +25,7 @@ namespace Sockets.Plugin
         }
 
         /// <summary>
-        /// Converts an <code>OperationalStatus</code> value to the abstracted <code>CommsInterfaceStatus</code>. 
+        /// Converts an <code>OperationalStatus</code> value to the abstracted <code>CommsInterfaceStatus</code>.
         /// </summary>
         /// <param name="nativeStatus"></param>
         /// <returns></returns>
@@ -42,9 +42,7 @@ namespace Sockets.Plugin
 
                 /*
                  * Treat remaining enumerations as "Unknown".
-                 * It's unlikely that they will be returned on 
-                 * a mobile device anyway. 
-                 * 
+                 *
                     case OperationalStatus.Testing:
                         break;
                     case OperationalStatus.Unknown:
@@ -60,7 +58,7 @@ namespace Sockets.Plugin
                 default:
                     return CommsInterfaceStatus.Unknown;
             }
-            
+
         }
 
         /// <summary>

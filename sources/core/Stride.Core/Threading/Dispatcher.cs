@@ -17,9 +17,6 @@ namespace Stride.Core.Threading;
 
 public static class Dispatcher
 {
-#if STRIDE_PLATFORM_ANDROID
-    public static readonly int MaxDegreeOfParallelism = 1;
-#else
     public static int MaxDegreeOfParallelism
     {
         get;
@@ -31,7 +28,6 @@ public static class Dispatcher
     } = int.TryParse(Environment.GetEnvironmentVariable("STRIDE_MAX_PARALLELISM"), out var envValue) && envValue > 0
         ? envValue
         : Environment.ProcessorCount;
-#endif
 
     private static readonly ProfilingKey DispatcherSortKey = new("Dispatcher.Sort");
     private static readonly ProfilingKey DispatcherBatched = new("Dispatcher.Batched");

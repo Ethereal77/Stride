@@ -5,9 +5,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Mono.Options;
+
 using Stride.Core.Diagnostics;
 using Stride.Core.Windows;
 using Stride.Engine.Network;
@@ -76,9 +76,6 @@ namespace Stride.ConnectionRouter
 
                     // Start router (in listen server mode)
                     router.Listen(RouterClient.DefaultPort).Wait();
-
-                    // Start Android management thread
-                    new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
 
                     SetupTrayIcon(logFileName);
 

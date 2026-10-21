@@ -1,6 +1,6 @@
 # Built and packaged by .github/workflows/dep-msdfgen.yml.
 # Static-links msdfgen-core + msdfgen-ext (and FreeType) into a single
-# stride_msdfgen.{dll,so,dylib} per RID.
+# stride_msdfgen.{dll,so} per RID.
 #
 # Workflow passes:
 #   -DMSDFGEN_SRC  = cloned Chlumsky/msdfgen

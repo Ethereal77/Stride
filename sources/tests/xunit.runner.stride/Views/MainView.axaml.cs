@@ -37,7 +37,7 @@ public partial class MainView : UserControl
     void OnLoaded(object? sender, RoutedEventArgs e)
     {
         // Focus the filter textbox immediately so users can start typing without clicking.
-        // Desktop only — on mobile/web (SingleView lifetime) auto-focus pops the soft keyboard
+        // Desktop only — on web (SingleView lifetime) auto-focus pops the soft keyboard
         // before the user has a chance to look at the tree.
         if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
             Dispatcher.UIThread.Post(() => FilterBox.Focus(), DispatcherPriority.Background);

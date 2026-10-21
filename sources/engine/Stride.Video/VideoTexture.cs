@@ -123,7 +123,6 @@ namespace Stride.Video
             var previousDepthStencilBuffer = context.CommandList.DepthStencilBuffer;
             var previousRenderTarget = context.CommandList.RenderTarget;
 
-            // Use the OES texture copy effect on Android:
             CopyTexture(context,
                         effectDecoderTextureCopy,
                         decoderOutputTexture, // Use the inputTexture as the input texture.

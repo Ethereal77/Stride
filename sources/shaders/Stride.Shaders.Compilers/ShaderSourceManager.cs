@@ -1,15 +1,10 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 
 using Stride.Core;
 using Stride.Core.IO;
-using Stride.Core.Serialization.Contents;
 using Stride.Core.Storage;
 
 namespace Stride.Shaders.Compilers
@@ -50,7 +45,7 @@ namespace Stride.Shaders.Compilers
 
         /// <summary>
         /// If enabled and on Windows, the shader source will try to be loaded from the original path first.
-        /// Please note that in certain scenarios (like regression test) this feature can cause issues 
+        /// Please note that in certain scenarios (like regression test) this feature can cause issues
         /// in case the original file is in a different state than the one the app or game was built with.
         /// </summary>
         /// <remarks>For backward compatibility reason this is enabled by default.</remarks>

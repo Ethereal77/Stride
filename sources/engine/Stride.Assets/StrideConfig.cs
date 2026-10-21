@@ -28,11 +28,6 @@ namespace Stride.Assets
         private static readonly Version VS2015Version = new Version(14, 0);
         private static readonly Version VSAnyVersion = new Version(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 
-        internal static readonly Dictionary<Version, string> DotNetForAndroidComponents = new Dictionary<Version, string>
-        {
-            { VSAnyVersion, @"Microsoft.VisualStudio.Workload.NetCrossPlat" },
-            { VS2015Version, @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets" }
-        };
 
         /// <summary>
         /// Registers the solution platforms supported by Stride.
@@ -62,32 +57,6 @@ namespace Stride.Assets
                 Type = PlatformType.Linux,
             };
             solutionPlatforms.Add(linuxPlatform);
-
-            // Android
-            var androidPlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.Android.ToString(),
-                Type = PlatformType.Android,
-                TargetFramework = "net10.0-android",
-                IsAvailable = IsVSComponentAvailableAnyVersion(DotNetForAndroidComponents)
-            };
-            androidPlatform.DefineConstants.Add("STRIDE_PLATFORM_MONO_MOBILE");
-            androidPlatform.DefineConstants.Add("STRIDE_PLATFORM_ANDROID");
-            androidPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
-            androidPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-            androidPlatform.Configurations["Debug"].Properties.AddRange(new[]
-                {
-                    "<AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>",
-                    "<AndroidLinkMode>None</AndroidLinkMode>",
-                });
-            androidPlatform.Configurations["Release"].Properties.AddRange(new[]
-                {
-                    "<AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>",
-                    "<AndroidLinkMode>SdkOnly</AndroidLinkMode>",
-                });
-            androidPlatform.Configurations["Testing"].Properties.AddRange(androidPlatform.Configurations["Release"].Properties);
-            androidPlatform.Configurations["AppStore"].Properties.AddRange(androidPlatform.Configurations["Release"].Properties);
-            solutionPlatforms.Add(androidPlatform);
 
             AssetRegistry.RegisterSupportedPlatforms(solutionPlatforms);
         }

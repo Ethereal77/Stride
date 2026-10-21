@@ -19,7 +19,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Remove="System.IO.Compression.Zip\*.cs" Condition=" '$(TargetPlatformIdentifier)' != 'Android' " />
   </ItemGroup>
 
   <ItemGroup>

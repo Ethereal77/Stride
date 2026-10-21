@@ -203,40 +203,6 @@ namespace Stride.Assets.Textures
                 case true:
                     switch (parameters.Platform)
                     {
-                        case PlatformType.Android:
-                            if (inputImageFormat.IsHDR)
-                            {
-                                outputFormat = inputImageFormat;
-                            }
-                            else
-                            {
-                                switch (parameters.GraphicsProfile)
-                                {
-                                    case GraphicsProfile.Level_9_1:
-                                    case GraphicsProfile.Level_9_2:
-                                    case GraphicsProfile.Level_9_3:
-                                        // Pre-Vulkan GLES 2.0 era: no encoder for ETC1 ships now that PVRTT is gone,
-                                        // and ASTC is not guaranteed on that hardware. Fall back to uncompressed.
-                                        outputFormat = parameters.IsSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
-                                        break;
-                                    case GraphicsProfile.Level_10_0:
-                                    case GraphicsProfile.Level_10_1:
-                                    case GraphicsProfile.Level_11_0:
-                                    case GraphicsProfile.Level_11_1:
-                                    case GraphicsProfile.Level_11_2:
-                                        // ASTC LDR is mandatory on Vulkan-capable Android (2017+).
-                                        // Block size 6x6 (~3.56 bpp) is a good default: matches ETC2_RGB storage while carrying
-                                        // a full alpha channel, and beats ETC2_RGBA at half the size.
-                                        // ASTC encodes alpha implicitly so the alphaMode branches all map to the same block size;
-                                        // ASTC_*_UNorm_SRgb is selected when sRGB sampling is needed.
-                                        // TODO vary ASTC block size by hint/Quality (4x4 high-quality color, 5x5 normal, 8x8 grayscale).
-                                        outputFormat = parameters.IsSRgb ? PixelFormat.ASTC_6x6_UNorm_SRgb : PixelFormat.ASTC_6x6_UNorm;
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException("GraphicsProfile");
-                                }
-                            }
-                            break;
                         case PlatformType.Windows:
                         case PlatformType.UWP:
                         case PlatformType.Linux:

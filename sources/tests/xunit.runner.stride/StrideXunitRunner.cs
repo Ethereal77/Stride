@@ -16,11 +16,9 @@ public static class StrideXunitRunner
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
-#if !ANDROID
     public static void Main(string[] args, Action<bool>? setInteractiveMode = null, Action<bool>? setForceSaveImage = null, Action<string?>? setRenderDocMode = null, Action<Action<ImageCompareResult>>? subscribeImageComparison = null)
     {
-        // Stash on App's static slots — Android's MainActivity assigns the same way, so the App
-        // initialization code reads from a single place regardless of entry point.
+        // Stash on App's static slots, so the App initialization code reads from a single place regardless of entry point
         App.SetInteractiveMode = setInteractiveMode;
         App.SetForceSaveImage = setForceSaveImage;
         App.SetRenderDocMode = setRenderDocMode;
@@ -40,7 +38,6 @@ public static class StrideXunitRunner
             app.Run(app.cts.Token);
         }
     }
-#endif
 
     // Discover and run all tests via XunitFrontController, printing a compact summary so direct
     // exe invocation isn't a no-op. Test Explorer / dotnet test route through the xunit adapter
@@ -57,10 +54,6 @@ public static class StrideXunitRunner
         // Always discover: a single-suite host has just the entry assembly; the Combined host
         // (Stride.Tests.Combined) has 0 [Fact]s of its own and must load every inner suite.
         IReadOnlyList<Assembly> assemblies = DiscoverTestAssemblies();
-#if ANDROID
-        if (Type.GetType("Mono.RuntimeStructs") is not null)
-            PreloadReferencedAssemblies(assemblies);
-#endif
 
         int total = 0, passed = 0, failed = 0, skipped = 0;
         decimal totalTime = 0m;
@@ -125,42 +118,15 @@ public static class StrideXunitRunner
         return failed > 0 ? 1 : 0;
     }
 
-#if ANDROID
-    // Mono on Android: two threads loading the same assembly for the first time can crash
-    // (dotnet/android#13065), as the first test's parallel shader compiles do. Delete with Mono:
-    // Android on .NET 11 is CoreCLR only, which loads from the assembly store.
-    private static void PreloadReferencedAssemblies(IEnumerable<Assembly> roots)
-    {
-        var visited = new HashSet<string>(StringComparer.Ordinal);
-        var pending = new Queue<Assembly>();
-        foreach (var root in roots)
-        {
-            if (visited.Add(root.GetName().Name!))
-                pending.Enqueue(root);
-        }
-        while (pending.TryDequeue(out var assembly))
-        {
-            foreach (var reference in assembly.GetReferencedAssemblies())
-            {
-                if (reference.Name is null || !visited.Add(reference.Name))
-                    continue;
-                try { pending.Enqueue(Assembly.Load(reference)); } catch { /* not in the package */ }
-            }
-        }
-        Console.WriteLine($"Preloaded {visited.Count} assemblies (Mono)");
-    }
-#endif
-
     // Discover test assemblies whose name contains ".Tests". Two passes because the Combined host
     // (Stride.Tests.Combined) has no code using inner-suite types, so the C# compiler drops the
     // ProjectReference-derived assembly refs from its IL — Assembly.Load against GetReferencedAssemblies
-    // would miss them. Second pass scans the .app/APK/bin directory for *.Tests.dll and LoadFrom each.
+    // would miss them. Second pass scans the bin/ directory for *.Tests.dll and LoadFrom each.
     private static List<Assembly> DiscoverTestAssemblies()
     {
-        // Android has no managed entry point, so Assembly.GetEntryAssembly() returns null; the
-        // launcher sets App.TestAssembly to the host assembly instead. Desktop keep a real
-        // entry assembly. Without this fallback the null deref aborts the headless run silently.
-        var entry = Assembly.GetEntryAssembly() ?? App.TestAssembly
+        // The launcher sets App.TestAssembly to the host assembly for when GetEntryAssembly() is null.
+        // Desktop keep a real entry assembly. Without this fallback the null deref aborts the headless run silently.
+        var entry = Assembly.GetEntryAssembly()
             ?? throw new InvalidOperationException("No test host assembly: GetEntryAssembly() and App.TestAssembly are both null.");
         foreach (var refName in entry.GetReferencedAssemblies())
         {
@@ -212,8 +178,8 @@ public static class StrideXunitRunner
         return null;
     }
 
-    // Shared by the desktop --filter args path and the Android headless launcher, which
-    // passes the raw expression as an intent/launch parameter (App.HeadlessFilter).
+    // Shared by the desktop --filter args path, which passes the raw expression as
+    // an launch parameter (App.HeadlessFilter).
     internal static Func<ITestCase, bool>? ParseVstestFilter(string expr)
     {
         if (string.IsNullOrEmpty(expr)) return null;
@@ -255,21 +221,14 @@ public static class StrideXunitRunner
         return null;
     }
 
-    // Headless trx: Android writes to internal FilesDir (targetSdk 30+ scoped storage
-    // blocks app writes through the FUSE-bound external-files path); host scripts pull via
-    // `adb shell run-as <pkg>`.
+    // Headless trx:
     // Desktop drops it beside the test binary so `dotnet test --logger trx` parity tools
     // find it without extra config.
     internal static string GetTrxPath(Assembly testAssembly)
     {
         var name = testAssembly.GetName().Name ?? "tests";
-#if ANDROID
-        var root = Android.App.Application.Context.FilesDir!.AbsolutePath;
-        return Path.Combine(root, "tests", "local", name, $"{name}.trx");
-#else
         var binDir = Path.GetDirectoryName(testAssembly.Location) ?? AppContext.BaseDirectory;
         return Path.Combine(binDir, "TestResults", $"{name}.trx");
-#endif
     }
 
     internal sealed class CompositeSink : IMessageSinkWithTypes
@@ -315,10 +274,7 @@ public static class StrideXunitRunner
         return Environment.GetEnvironmentVariable("STRIDE_TESTS_INTERACTIVE") != "1";
     }
 
-#if !ANDROID
     // Avalonia configuration, don't remove; also used by visual designer.
-    // Mobile platforms wire Avalonia through their own AppDelegate / Activity (CustomizeAppBuilder
-    // overrides), not through this desktop BuildAvaloniaApp helper.
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
@@ -329,5 +285,4 @@ public static class StrideXunitRunner
             })
             .WithInterFont()
             .LogToTrace();
-#endif
 }

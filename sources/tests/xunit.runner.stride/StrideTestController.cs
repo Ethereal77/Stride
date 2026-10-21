@@ -9,9 +9,8 @@ using Xunit.Sdk;
 namespace xunit.runner.stride;
 
 /// <summary>
-/// In-process xunit v2 discovery and execution over an already-loaded assembly. Required on
-/// Android where assemblies are bundled and <see cref="Assembly.Location"/> is empty. Keeping
-/// it in-process on every platform also preserves statics like
+/// In-process xunit v2 discovery and execution over an already-loaded assembly.
+/// Keeping it in-process on every platform also preserves statics like
 /// <c>GameTestBase.ForceInteractiveMode</c> across discovery and run.
 /// </summary>
 internal sealed class StrideTestController : IDisposable

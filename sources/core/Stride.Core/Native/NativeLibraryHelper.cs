@@ -45,7 +45,7 @@ public static partial class NativeLibraryHelper
     private static readonly string libExtension = Platform.Type switch
     {
         PlatformType.Windows => ".dll",
-        PlatformType.Linux or PlatformType.Android => ".so",
+        PlatformType.Linux => ".so",
 
         _ => throw new PlatformNotSupportedException()
     };
@@ -55,7 +55,6 @@ public static partial class NativeLibraryHelper
     {
         PlatformType.Windows => "win",
         PlatformType.Linux => "linux",
-        PlatformType.Android => "android",
 
         _ => throw new PlatformNotSupportedException()
     };
@@ -110,9 +109,9 @@ public static partial class NativeLibraryHelper
 
     /// <summary>
     ///   Locates the full path to a native library, appending the current platform's library
-    ///   extension (<c>.dll</c>, <c>.so</c>, <c>.dylib</c>) to <paramref name="libraryName"/> before
-    ///   searching. On Linux, SONAME-versioned variants (for example, <c>libfoo.so.6</c> or
-    ///   <c>libfoo.6.dylib</c>) are matched and the highest version is returned; the <c>lib</c> prefix
+    ///   extension (<c>.dll</c>, <c>.so</c>) to <paramref name="libraryName"/> before
+    ///   searching. On Linux, SONAME-versioned variants (for example, <c>libfoo.so.6</c>)
+    ///   are matched and the highest version is returned; the <c>lib</c> prefix
     ///   is also tried when omitted, matching the conventions <see cref="PreloadLibrary"/> uses.
     /// </summary>
     /// <param name="libraryName">The library name without extension (for example, <c>"libassimp"</c> or <c>"assimp"</c>).</param>
@@ -351,9 +350,9 @@ public static partial class NativeLibraryHelper
             if (!Directory.Exists(path))
                 return null;
 
-            // NuGet packages often ship only the SONAME-versioned variant (libfoo.so.5,
-            // libfoo.5.dylib). Glob for it; pick the highest version on multiple matches.
-            // Windows/Android/UWP require unversioned names, so they don't glob.
+            // NuGet packages often ship only the SONAME-versioned variant (libfoo.so.5).
+            // Glob for it; pick the highest version on multiple matches.
+            // Windows/UWP require unversioned names, so they don't glob.
             var (pattern, versionPrefix) = Platform.Type switch
             {
                 PlatformType.Linux => (libraryNameWithExtension + ".*", libraryNameWithExtension),
@@ -426,7 +425,7 @@ public static partial class NativeLibraryHelper
         lock (loadedLibrariesLock)
         {
             var libraryNameWithExtension = Path.GetFileName(libraryPath);
-            // Strip the full platform extension (.so[.N] / [.N].dylib / .dll) so the key matches
+            // Strip the full platform extension (.so[.N] / .dll) so the key matches
             // what PreloadLibrary/LocateLibrary look up regardless of SONAME-versioned filenames.
             var libraryNameWithoutExtension = StripPlatformNativeExtension(libraryNameWithExtension);
             nativeDependenciesWithExtensions[libraryNameWithExtension] = libraryPath;
@@ -435,7 +434,7 @@ public static partial class NativeLibraryHelper
             // keep the highest so the current lib wins, not a stale compat copy.
             SetHighestVersion(libraryNameWithoutExtension);
 
-            // Native libs on Linux are conventionally named "lib<X>.so/.dylib" but
+            // Native libs on Linux are conventionally named "lib<X>.so" but
             // [DllImport] strings typically drop the prefix ("X"). Register the stripped
             // form too so the resolver finds it under either spelling.
             if (Platform.Type != PlatformType.Windows
@@ -507,7 +506,7 @@ public static partial class NativeLibraryHelper
         }
     }
 
-    /// <summary>SONAME version of a native filename (libfoo.so.6 → 6.0, libfoo.6.dylib → 6.0; else 0.0).</summary>
+    /// <summary>SONAME version of a native filename (libfoo.so.6 → 6.0; else 0.0).</summary>
     private static Version GetNativeSonameVersion(string path)
     {
         var name = Path.GetFileName(path);
@@ -516,12 +515,6 @@ public static partial class NativeLibraryHelper
         if (soIndex >= 0)
         {
             version = name[(soIndex + ".so.".Length)..];
-        }
-        else if (name.EndsWith(".dylib", StringComparison.Ordinal))
-        {
-            var trimmed = name[..^".dylib".Length];
-            var dot = trimmed.LastIndexOf('.');
-            version = dot >= 0 && dot + 1 < trimmed.Length && char.IsDigit(trimmed[dot + 1]) ? trimmed[(dot + 1)..] : "";
         }
         else
         {

@@ -2,13 +2,10 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Stride.Core.Diagnostics;
 using Stride.Core.IO;
-using Stride.Assets.Effect;
 using Stride.ConnectionRouter;
 using Stride.Engine.Network;
 using Stride.Shaders;

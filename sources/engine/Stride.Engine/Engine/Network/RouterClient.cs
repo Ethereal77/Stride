@@ -143,8 +143,6 @@ namespace Stride.Engine.Network
                 {
                     case PlatformType.UWP:
                         return RouterConnectionMode.ConnectThenListen;
-                    case PlatformType.Android:
-                        return RouterConnectionMode.Listen;
                     default:
                         return RouterConnectionMode.Connect;
                 }

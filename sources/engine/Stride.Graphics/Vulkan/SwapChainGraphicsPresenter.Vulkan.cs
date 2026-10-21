@@ -177,7 +177,7 @@ namespace Stride.Graphics
                 var presentResult = GraphicsDevice.NativeDeviceApi.vkQueuePresentKHR(GraphicsDevice.NativeCommandQueue, &presentInfo);
                 if (presentResult == VkResult.ErrorOutOfDateKHR || presentResult == VkResult.SuboptimalKHR || presentResult == VkResult.ErrorSurfaceLostKHR)
                 {
-                    // Resize/rotation (OutOfDate/Suboptimal) or Android suspend (SurfaceLost) — recreate.
+                    // Resize/rotation (OutOfDate/Suboptimal) — recreate.
                     OnRecreated();
                     return;
                 }
@@ -412,7 +412,7 @@ namespace Stride.Graphics
 
         private unsafe void CreateSwapChain(int width, int height, PixelFormat desiredFormat)
         {
-            // Surface lost (Android suspend) — recreate from the current native window before any query.
+            // Surface lost — recreate from the current native window before any query.
             var probeResult = GraphicsDevice.NativeInstanceApi.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(GraphicsDevice.NativePhysicalDevice, surface, out _);
             if (probeResult == VkResult.ErrorSurfaceLostKHR)
                 RecreateSurface();
@@ -481,7 +481,7 @@ namespace Stride.Graphics
                 "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
 
             // Match currentTransform so the engine skips the rotation compose pass (saves a vsync
-            // on Android tile-based GPUs). Renderer folds the rotation into the projection.
+            // on tile-based GPUs). Renderer folds the rotation into the projection.
             var preTransform = surfaceCapabilities.currentTransform;
             SurfaceRotation = preTransform switch
             {
@@ -501,7 +501,7 @@ namespace Stride.Graphics
                 Description.BackBufferHeight = swapchainHeight;
                 // The depth-stencil was created with the pre-clamp Description size at presenter
                 // construction (before this method runs); re-size it to match the swapchain extent
-                // so attachments don't mismatch (Android Vulkan, rotated surfaces).
+                // so attachments don't mismatch (rotated surfaces).
                 if (DepthStencilBuffer != null
                     && (DepthStencilBuffer.Description.Width != Description.BackBufferWidth
                         || DepthStencilBuffer.Description.Height != Description.BackBufferHeight))
@@ -540,8 +540,8 @@ namespace Stride.Graphics
                 }
             }
 
-            // CompositeAlpha: Android typically only exposes Inherit; pick whichever supported bit
-            // matches the priority (Opaque is the historical default on desktop).
+            // CompositeAlpha: pick whichever supported bit matches the priority
+            // (Opaque is the historical default on desktop).
             var supportedCompositeAlpha = surfaceCapabilities.supportedCompositeAlpha;
             VkCompositeAlphaFlagsKHR compositeAlpha;
             if ((supportedCompositeAlpha & VkCompositeAlphaFlagsKHR.Opaque) != 0) compositeAlpha = VkCompositeAlphaFlagsKHR.Opaque;
@@ -577,7 +577,7 @@ namespace Stride.Graphics
 
         private unsafe void RecreateSurface()
         {
-            // Swapchain must be torn down before the surface (Vulkan spec + Android ANativeWindow exclusivity).
+            // Swapchain must be torn down before the surface (Vulkan spec).
             DestroySwapchain();
             if (surface != VkSurfaceKHR.Null)
             {
@@ -625,10 +625,6 @@ namespace Stride.Graphics
                     hwnd = controlHandle,
                 };
                 GraphicsDevice.CheckResult(GraphicsDevice.NativeInstanceApi.vkCreateWin32SurfaceKHR(GraphicsDevice.NativeInstance, &surfaceCreateInfo, null, out surface));
-            }
-            else if (Platform.Type == PlatformType.Android)
-            {
-                throw new NotImplementedException();
             }
             else if (Platform.Type == PlatformType.Linux)
             {

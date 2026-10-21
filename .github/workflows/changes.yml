@@ -12,8 +12,6 @@ on:
     outputs:
       runtime:
         value: ${{ jobs.detect.outputs.runtime }}
-      android:
-        value: ${{ jobs.detect.outputs.android }}
       full:
         value: ${{ jobs.detect.outputs.full }}
 
@@ -26,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runtime: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.runtime || 'true' }}
-      android: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.android || 'true' }}
       full: ${{ steps.comments.outputs.comment_only == 'true' && 'false' || steps.filter.outputs.full || 'true' }}
     steps:
       - uses: actions/checkout@v7
@@ -141,16 +138,6 @@ jobs:
               - 'deps/**'
               - 'tests/**'
               - 'build/Stride.Runtime.slnf'
-            android:
-              - 'sources/engine/Stride.Games/**'
-              - 'sources/**/*.Android.*'
-              - 'sources/**/Platforms/Android/**'
-              - 'sources/native/**'
-              - 'sources/sdk/**'
-              - 'tests/android/**'
-              - 'tests/**/Android.Vulkan/**'
-              - 'build/Stride.Tests.Game.Android.slnf'
-              - '.github/workflows/test-android-game.yml'
             full:
               - 'sources/**'
               - 'deps/**'

@@ -8,11 +8,11 @@ namespace Stride.Core.Reflection;
 
 public static class ModuleRuntimeHelpers
 {
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "No-ModuleHandle fallback (e.g. Mono); module types kept by serializer registration.")]
-    [UnconditionalSuppressMessage("Trimming", "IL2059", Justification = "No-ModuleHandle fallback (e.g. Mono); module types kept by serializer registration.")]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "No-ModuleHandle fallback; module types kept by serializer registration.")]
+    [UnconditionalSuppressMessage("Trimming", "IL2059", Justification = "No-ModuleHandle fallback; module types kept by serializer registration.")]
     public static void RunModuleConstructor(Module module)
     {
-        // On some platforms such as Android, ModuleHandle is not set
+        // On some platforms ModuleHandle is not set
         if (module.ModuleHandle == ModuleHandle.EmptyHandle)
         {
             // Instead, initialize any type

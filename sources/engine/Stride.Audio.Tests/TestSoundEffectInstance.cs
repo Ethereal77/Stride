@@ -74,7 +74,7 @@
 //
 //        /// <summary>
 //        /// Test that:
-//        ///  - 2 instances of a <see cref="SoundEffect"/> cannot play at the same time. 
+//        ///  - 2 instances of a <see cref="SoundEffect"/> cannot play at the same time.
 //        ///  - 2 instances of 2 different <see cref="SoundEffect"/> can play at the same time.
 //        ///  - an old instance is correctly stopped if the max number of sound tracks is reached.
 //        /// </summary>
@@ -144,7 +144,7 @@
 //                instance.Dispose();
 //
 //            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//            // 2. Check that restarting again and again instances does not result in memory leaks (android recreate the voices)
+//            // 2. Check that restarting again and again instances does not result in memory leaks
 //            for (int i = 0; i < 100; ++i)
 //            {
 //                monoSoundEffect.Play();
@@ -202,7 +202,7 @@
 //            Thread.Sleep(1500);
 //
 //            //////////////////////////////////////////////////////////////////
-//            // 4. Check that there is no crash when restarting the sound 
+//            // 4. Check that there is no crash when restarting the sound
 //            Assert.DoesNotThrow(laugherMono.Play, "Restarting the audio sound after it finishes crashed throwing an exception.");
 //
 //            //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,7 +347,7 @@
 //            Thread.Sleep(1250);
 //
 //            ////////////////////////////////////////////////////////////////
-//            // 5. Check that 2 consecutive calls to ExitLoop does not crash 
+//            // 5. Check that 2 consecutive calls to ExitLoop does not crash
 //            loopedInst.Play();
 //            loopedInst.ExitLoop();
 //            Thread.Sleep(10); // Play need to be commited
@@ -355,7 +355,7 @@
 //            Thread.Sleep(2000);
 //
 //            ////////////////////////////////////////////////////////////////
-//            // 6. Check that ExitLoop does not modify the value of IsLooped 
+//            // 6. Check that ExitLoop does not modify the value of IsLooped
 //            Assert.Equal(true, loopedInst.IsLooped, "SoundEffectInstance.ExitLoop modified the value of IsLooped.");
 //
 //            loopedInst.Dispose();
@@ -452,7 +452,7 @@
 //            loopedInst.Dispose();
 //
 //            //////////////////////////////////////////////////////////////////////////////
-//            // 6. Check that sound is looping without any glitches with a continuous sound 
+//            // 6. Check that sound is looping without any glitches with a continuous sound
 //            var contInst = continousMonoSoundEffect.CreateInstance();
 //            contInst.IsLooped = true;
 //            contInst.Play();
@@ -481,7 +481,7 @@
 //            {
 //                Assert.False(e is ObjectDisposedException, "SoundEffectInstance.PlayState { get } did throw the 'ObjectDisposedException' when called from a disposed object.");
 //            }
-//            
+//
 //            //////////////////////////////////////////////
 //            // 2. Check that PlayState get does not crash
 //            Assert.DoesNotThrow(() => state = monoInstance.PlayState, "SoundEffectInstance.PlayState { get } crashed on valid soundEffectInstance.");
@@ -619,7 +619,7 @@
 //            // 2. Check that Apply3D with null arguments throw the 'ArgumentNullException'
 //            Assert.Throws<ArgumentNullException>(() => monoInstance.Apply3D(null, emit), "SoundEffectInstance.Apply3D did not throw the 'ArgumentNullException' with a null listener.");
 //            Assert.Throws<ArgumentNullException>(() => monoInstance.Apply3D(list, null), "SoundEffectInstance.Apply3D did not throw the 'ArgumentNullException' with a null emitter.");
-//           
+//
 //            /////////////////////////////////////////////////////////////////////////////////////////////
 //            // 3. Check that the sound is not modified when applying 3D at same position with mono sound
 //            monoInst.Play();
@@ -628,11 +628,11 @@
 //            Thread.Sleep(1000);
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            ///////////////////////////////////////////////////////////////////////////////////
 //            // 4. Check that Apply3D throws InvalidOperationException when used on stereo sound
 //            Assert.Throws<InvalidOperationException>(() => stereoInst.Apply3D(list, emit), "InvalidOperationException has not been thrown when used on stereo-sound.");
-//            
+//
 //            /////////////////////////////////////////////////////
 //            // 5. Check that mono signal attenuate with distance
 //            monoInst.Play();
@@ -648,7 +648,7 @@
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            ////////////////////////////////////////////////////////////////////////////////
 //            // 6. Check that signal do not attenuate when we move both emitter and listener
 //            monoInst.Play();
@@ -658,14 +658,14 @@
 //                emit.Position = new Vector3(0, 0, currentDist);
 //                list.Position = new Vector3(0, 0, currentDist);
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                currentDist += 0.01f;
-//            
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            //////////////////////////////////////////////////////////////////////////////////////
 //            // 7. Check that attenuation increase/decrease when modifying DistaceScale parameter
 //            monoInst.Play();
@@ -676,14 +676,14 @@
 //            {
 //                emit.DistanceScale = currentScale;
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                currentScale -= 0.005f;
-//            
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            ////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 8. Check that mono the localization works properly by turning the emiter around the listener
 //            // Should start from the front, go to the right, go to the back, go to the left, and finnaly go back to the front.
@@ -694,16 +694,16 @@
 //            {
 //                const float Offset = (float) Math.PI / 2;
 //                emit.Position = new Vector3((float)Math.Cos(angle + Offset), 0, (float)Math.Sin(angle + Offset));
-//            
+//
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                angle -= 0.005f;
-//            
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 9. Check that the sound frequency is modified properly when object move away and goes back to the listener (doppler effect)
 //            monoInst.Play();
@@ -714,22 +714,22 @@
 //            while (speed > -SpeedLimit)
 //            {
 //                emit.Velocity = new Vector3(0,0,speed);
-//            
+//
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                speed += sign * 0.005f * SpeedLimit;
-//            
+//
 //                if (speed > SpeedLimit)
 //                {
 //                    sign = -1f;
 //                    speed = 0;
 //                }
-//            
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(1000);
-//            
+//
 //            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 10. Check that the sound frequency is not modified when both objects move away at same speed (doppler effect)
 //            monoInst.Play();
@@ -738,16 +738,16 @@
 //            {
 //                emit.Velocity = new Vector3(0, 0, speed);
 //                list.Velocity = new Vector3(0, 0, speed);
-//            
+//
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                speed += 0.005f * SpeedLimit;
-//                
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
 //            Thread.Sleep(600);
-//            
+//
 //            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //            // 11. Check the doppler effect influence is modified properly when DopplerScale changes (should increase)
 //            monoInst.Play();
@@ -758,11 +758,11 @@
 //            while (dopplerScale < 50f)
 //            {
 //                emit.DopplerScale = dopplerScale;
-//            
+//
 //                monoInst.Apply3D(list, emit);
-//            
+//
 //                dopplerScale *= 1.01f;
-//            
+//
 //                Thread.Sleep(10);
 //            }
 //            monoInst.Stop();
@@ -781,7 +781,7 @@
 //                contInst.Volume = volume;
 //                contInst.Apply3D(new AudioListener(), new AudioEmitter());
 //                Assert.Equal(MathUtil.Clamp(volume, 0f, 1f), contInst.Volume, "Volume of continous sound is not what it should be.");
-//            
+//
 //                volume += sign * 0.01f;
 //
 //                if (volume < 0)

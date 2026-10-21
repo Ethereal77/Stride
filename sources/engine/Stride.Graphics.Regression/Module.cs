@@ -40,8 +40,7 @@ internal static class Module
     // sets VK_DRIVER_FILES) when this method actually runs. Inlining it into Initialize() would
     // resolve the Lavapipe type ref at Initialize's JIT time and load the assembly on the GPU
     // path too.
-    // Desktop only: the Lavapipe package ships win/linux software-Vulkan (see csproj) and
-    // throws from its ModuleInitializer on mobile; Android provide Vulkan via emulator/device.
+    // Desktop only: the Lavapipe package ships win/linux software-Vulkan (see csproj).
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ConfigureLavapipe()
     {

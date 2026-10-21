@@ -24,22 +24,6 @@ namespace Stride.ConnectionRouter
 
                 log.Info($"Device removed: {oldDevice.Value.Name} ({oldDevice.Key})");
             }
-
-            // Start new devices
-            foreach (var androidDevice in enumeratedDevices)
-            {
-                if (currentDevices.ContainsKey(androidDevice.Key))
-                    continue;
-
-                var connectedDevice = new ConnectedDevice
-                {
-                    Key = androidDevice.Key,
-                    Name = androidDevice.Value,
-                };
-                currentDevices.Add(androidDevice.Key, connectedDevice);
-
-                connectDevice(connectedDevice);
-            }
         }
 
         public static async Task LaunchPersistentClient(ConnectedDevice connectedDevice, Router router, string address, int localPort)

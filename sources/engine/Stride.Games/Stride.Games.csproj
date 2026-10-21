@@ -9,13 +9,6 @@
     <StrideCodeAnalysis>true</StrideCodeAnalysis>
     <UseWindowsForms Condition="$(TargetFramework.Contains('-windows'))">true</UseWindowsForms>
   </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(TargetFramework)' == '$(StrideFrameworkAndroid)'">
-      <ItemGroup>
-        <AndroidResource Include="Platforms\Android\Resources\Layout\stride_popup_edittext.xml" />
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -24,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Stride.Graphics\Stride.Graphics.csproj" />
     <PackageReference Include="Silk.NET.Sdl" PrivateAssets="compile" />
-    <PackageReference Include="Silk.NET.Windowing.Sdl" Condition="'$(TargetFramework)' == '$(StrideFrameworkAndroid)'" />
   </ItemGroup>
   <Import Project="$(StrideRoot)sources/sdk/Stride.Build.Sdk/Sdk/Sdk.targets" />
 </Project>

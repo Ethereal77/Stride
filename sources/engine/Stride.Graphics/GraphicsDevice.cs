@@ -235,7 +235,7 @@ namespace Stride.Graphics
         /// </summary>
         partial void WaitForGPUIdle();
 
-        /// <summary>Blocks until all in-flight GPU work completes. Used by mobile platforms before OS suspend.</summary>
+        /// <summary>Blocks until all in-flight GPU work completes.</summary>
         public void WaitForGpuIdle() => WaitForGPUIdle();
 
         /// <summary>

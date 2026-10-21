@@ -983,7 +983,7 @@ async function checkAlternateGold(srcId, suite, name, srcImg) {
 
 async function computeThumbDiff(suite, name, srcId, canvasId) {
   try {
-  
+
     const goldUrl = `/api/gold/image?suite=${enc(suite)}&platform=${enc(currentPlatform)}&name=${enc(name)}`;
     const srcUrl = `/api/source/${srcId}/image?suite=${enc(suite)}&platform=${enc(currentPlatform)}&name=${enc(name)}`;
     const [goldImg, srcImg] = await Promise.all([loadImg(goldUrl), loadImg(srcUrl)]);
@@ -1426,7 +1426,7 @@ async function loadCiRuns() {
     const res = await fetch('/api/ci/runs?limit=30');
     const allRuns = await res.json();
     // Deduplicate by (repo, SHA, workflow) so each platform-specific workflow at a SHA gets
-    // its own row (a commit with separate Windows + Android dispatches shows both). The "CI"
+    // its own row (a commit with separate Windows + Linux dispatches shows both). The "CI"
     // umbrella collapses to one row across re-runs. Different forks at the same SHA also get
     // separate rows. Latest run wins per key (allRuns is created_at desc).
     const seen = new Map();

@@ -7,10 +7,6 @@ on:
         description: Include Linux
         default: true
         type: boolean
-      platform-android:
-        description: Include Android
-        default: true
-        type: boolean
       sign:
         description: Code sign packages
         default: true
@@ -101,7 +97,6 @@ jobs:
         run: |
           $platforms = "Windows"
           if ("${{ inputs.platform-linux }}" -eq "true") { $platforms += ";Linux" }
-          if ("${{ inputs.platform-android }}" -eq "true") { $platforms += ";Android" }
           echo "Building for platforms: $platforms"
           # --no-restore: Stride.build's targets restore their own solutions (same as the
           # previous desktop msbuild invocation, which never passed /restore).

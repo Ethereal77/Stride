@@ -4,7 +4,7 @@
 namespace Stride.Rendering.Images
 {
     /// <summary>
-    /// Lens flare artifact shader. 
+    /// Lens flare artifact shader.
     /// </summary>
     internal shader FlareArtifactShader<int TapCount> : ImageEffectShader
     {
@@ -33,14 +33,14 @@ namespace Stride.Rendering.Images
             float3 result = float3(0.0, 0.0, 0.0);
 
             [unroll]
-            for (int i = 0; i < TapCount; i++) 
+            for (int i = 0; i < TapCount; i++)
             {
                 // Zoom effect
                 float2 zoomOffsetsDistortions = ZoomOffsetsDistortions[i];
                 uv = ( originalUV - 0.5) * zoomOffsetsDistortions.x + 0.5;
 
                 // Distort UV around the center
-                float distortion = sin(pow(distanceToCenter, zoomOffsetsDistortions.y)); // NOTE: Introducing the zoomOffsetsDistortions local variable prevents glLinkProgram from freezing on some android devices
+                float distortion = sin(pow(distanceToCenter, zoomOffsetsDistortions.y));
                 float2 distortedUV = distortion * (uv - 0.5) + 0.5;
                 float3 tapColor = Texture0.Sample(LinearSampler, distortedUV).rgb;
 

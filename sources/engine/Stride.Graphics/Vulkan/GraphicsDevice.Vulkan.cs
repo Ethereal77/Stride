@@ -180,11 +180,6 @@ namespace Stride.Graphics
             get { return nativeDeviceApi; }
         }
 
-#if STRIDE_PLATFORM_ANDROID
-        // True when VK_ANDROID_external_memory_android_hardware_buffer + dependencies were enabled.
-        internal bool HasAndroidHardwareBufferSupport { get; private set; }
-#endif
-
         /// <summary>
         /// Whether <c>scalarBlockLayout</c> is enabled: needed by shaders whose structured buffers use Direct3D's tight layout
         /// (the shader compiler marks them, see <see cref="TightStructuredBuffers"/>).
@@ -479,18 +474,7 @@ namespace Stride.Graphics
             Span<VkUtf8String> supportedExtensionProperties = stackalloc VkUtf8String[]
             {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-                VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
-
-#if STRIDE_PLATFORM_ANDROID
-                // AHardwareBuffer import (zero-copy buffers from camera / MediaCodec / etc.).
-                VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME,
-                VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
-                VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
-                VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME,
-                VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
-                VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
-                VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME,
-#endif
+                VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
             };
 
             var availableExtensionProperties = GetAvailableExtensionProperties(supportedExtensionProperties);
@@ -504,28 +488,6 @@ namespace Stride.Graphics
             // Stride uses Vulkan 1.3 core features and entry points
             if (Adapter.NativeApiVersion < VkVersion.Version_1_3)
                 throw new NotSupportedException($"Vulkan: Device supports only Vulkan {Adapter.DriverInfo.ApiVersion}, but Stride requires Vulkan 1.3.");
-
-#if STRIDE_PLATFORM_ANDROID
-            // All extensions in the AHardwareBuffer → VkImage chain must be present together.
-            HasAndroidHardwareBufferSupport =
-                availableExtensionProperties.Contains(VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME)
-                && availableExtensionProperties.Contains(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME);
-            if (HasAndroidHardwareBufferSupport)
-            {
-                desiredExtensionProperties.Add(VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-                desiredExtensionProperties.Add(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME);
-            }
-#endif
 
             // Profiling labels travel through VK_EXT_debug_utils (instance-level, enabled at factory init).
             // Replaces the deprecated VK_EXT_debug_marker which required a separate device extension and

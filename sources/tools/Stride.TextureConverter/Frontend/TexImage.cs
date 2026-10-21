@@ -30,12 +30,10 @@ namespace Stride.TextureConverter
         // Texture infos
         public int ArraySize { get; internal set; }
         public int MipmapCount { get; internal set; }
+        public int FaceCount { get; internal set; }
         public SubImage[] SubImageArray { get; internal set; }
         public TextureDimension Dimension { get; internal set; }
         public string Name { get; set; }
-
-        // PVRTT needs
-        public int FaceCount { get; internal set; }
 
         // ITexLibrary Data
         internal ITexLibrary DisposingLibrary { get; set; }

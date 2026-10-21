@@ -146,7 +146,7 @@ public class ObjectDatabase : IDisposable
         if (objectIds.Length == 0)
             return null;
 
-        var packUrl = bundleBackend.BundleDirectory + bundleName + BundleOdbBackend.BundleExtension; // we don't want the pack to be compressed in the APK on android
+        var packUrl = bundleBackend.BundleDirectory + bundleName + BundleOdbBackend.BundleExtension;
 
         // Create pack
         BundleOdbBackend.CreateBundle(packUrl, backendRead1, objectIds, disableCompressionIds, indexMap, dependencies, useIncrementalBundle);

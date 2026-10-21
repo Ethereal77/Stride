@@ -37,7 +37,6 @@
     <!-- Default mappings -->
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Windows'">Windows</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'UAP'">UWP</StridePlatform>
-    <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Android'">Android</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('linux'))">Linux</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == ''">Windows</StridePlatform>
   </PropertyGroup>
@@ -149,7 +148,6 @@
       <_StrideDepsFile Include="@(ReferenceDependencyPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(ReferenceDependencyPaths.CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
       <_StrideDepsFile Include="@(RuntimeCopyLocalItems->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
       <_StrideDepsFile Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
-      <!-- Android -->
       <_StrideDepsFile Include="@(_ReferencesFromNuGetPackages->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
       <None Include="@(_StrideDepsFile)" CopyToOutputDirectory="PreserveNewest" PublishFolderType="None" />
     </ItemGroup>

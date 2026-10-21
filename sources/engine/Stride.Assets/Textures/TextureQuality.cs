@@ -9,11 +9,11 @@ namespace Stride.Assets.Textures
     /// The desired texture quality.
     /// </summary>
     [DataContract("TextureQuality")]
-    public enum TextureQuality // Matches PvrttWrapper.ECompressorQuality
+    public enum TextureQuality
     {
         Fast,
         Normal,
         High,
-        Best,
+        Best
     }
 }

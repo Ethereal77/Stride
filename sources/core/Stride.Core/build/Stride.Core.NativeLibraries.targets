@@ -17,11 +17,6 @@
 
     NuGet consumers source items from @(RuntimeCopyLocalItems);
     engine self-build sources from .ssdeps via @(_StrideDependencyNativeLib).
-
-    Android stay in Stride.Dependencies.targets (engine self-build only):
-    Microsoft.Android.Sdk auto-converts Android runtime assets
-    to AndroidNativeLibrary — the .ssdeps-based glue is only needed
-    for the engine's in-tree non-RID layouts.
     ================================================================
   -->
 

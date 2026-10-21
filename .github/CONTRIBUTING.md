@@ -15,7 +15,6 @@ opt in by adding a label to the PR (collaborator access required):
 
 - `ci-enduser` — end-user sample screenshot + packaging suite (never auto-runs)
 - `ci-editor` — GameStudio editor screenshot suite (never auto-runs)
-- `ci-android` — Android game suite, when its narrow path filter didn't already trigger it
 - `ci-run-on-draft` — run the normal path-gated CI on a **draft** PR (which otherwise skips CI)
 
 Labels run through the PR's own workflow ([`pr-label-suites.yml`](workflows/pr-label-suites.yml) /

@@ -29,7 +29,6 @@ namespace Stride.Assets.Presentation.ViewModel
         {
             base.OnSessionSaved();
 
-            //display orientation needs changes in Android manifest files
             var currentOrientation = gameSettingsAsset.GetOrCreate<RenderingSettings>().DisplayOrientation;
             if (displayOrientation != currentOrientation && Session.CurrentProject != null)
             {

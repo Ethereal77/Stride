@@ -16,7 +16,6 @@ When installing VS 2026, make sure these are selected:
 
 **Optional components:**
 - **MSVC Build Tools for ARM64/ARM64EC (Latest)** — only needed if you actively develop or package for Windows ARM64. If missing, the ARM64 native build is **automatically skipped with a warning** (the rest of the build still succeeds).
-- **.NET Multi-platform App UI development** + **Android NDK 20.1+** (via *Tools > Android > Android SDK Manager*) — to target Android.
 - **Visual Studio extension development** + **.NET Framework 4.7.2 targeting pack** — to build the VSIX package.
 
 > [!NOTE]

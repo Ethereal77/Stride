@@ -195,7 +195,7 @@ namespace Stride.AssetCompiler
 
                 // Only write the up-to-date marker on success — otherwise MSBuild's Inputs/Outputs
                 // check on StrideCompileAsset would skip re-running CompilerApp next build, leaving
-                // the partial bundle in place and silently packing it into the APK.
+                // the partial bundle in place.
                 if (result == BuildResultCode.Successful && builderOptions.MSBuildUpToDateCheckFileBase != null)
                     SaveBuildUpToDateFile(builderOptions.MSBuildUpToDateCheckFileBase, builderOptions.PackageFile, package, bundleFiles, aliasesFile);
 

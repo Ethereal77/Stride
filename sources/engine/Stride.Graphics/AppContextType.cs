@@ -57,11 +57,6 @@ public enum AppContextType
     DesktopWpf = DesktopWPF,
 
     /// <summary>
-    ///   The <c>Game</c> runs on an Android device in an <c>AndroidStrideGameView</c>.
-    /// </summary>
-    Android,
-
-    /// <summary>
     ///   The <c>Game</c> runs on UWP (<em>Universal Windows Platform</em>) in a <em>Xaml</em>
     ///   <c>SwapChainPanel</c>.
     /// </summary>

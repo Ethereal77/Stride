@@ -38,7 +38,7 @@ internal class IntrinsicsGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(file, GenerateIntrinsicsData);
         context.RegisterSourceOutput(file, GenerateIntrinsicsCall);
 
-        // context.RegisterSourceOutput(file, (spc, ns) => 
+        // context.RegisterSourceOutput(file, (spc, ns) =>
         // {
         //     spc.AddSource("IntrinsicsParsedData.cs", $"/*{JsonSerializer.Serialize(ns, new JsonSerializerOptions { WriteIndented = true })}*/");
         // });
@@ -62,9 +62,7 @@ internal class IntrinsicsGenerator : IIncrementalGenerator
         if (namespaces.Items.Count == 0)
             builder.AppendLine("// No intrinsics parsed");
 
-        // Per-namespace Build<Name>() methods scope locals away from the static ctor; emitting
-        // every namespace's dictionary as a field initializer in the cctor blew past Mono Android's
-        // per-method locals/IL size cap (InvalidProgramException: locals size too big).
+        // Per-namespace Build<Name>() methods scope locals away from the static ctor.
         foreach (var ns in namespaces)
             builder.AppendLine($"public static FrozenDictionary<string, IntrinsicDefinition[]> {ns.Name.Name} {{ get; }} = Build{ns.Name.Name}();");
 

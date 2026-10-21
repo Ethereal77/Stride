@@ -80,20 +80,6 @@ namespace Stride.Graphics.Tests
             Assert.Equal(expectedHeight, height);
         }
 
-        // ASTC blocks aren't 4x4: width rounds up to 8, height to 5.
-        [Theory]
-        [InlineData(0, 1504, 845)]  // 1500->1504 (mult of 8), 844->845 (mult of 5)
-        [InlineData(1, 752, 425)]   // 750->752, 422->425
-        public void GetMipDimensionsAstcUseFormatBlockSize(int mipIndex, int expectedWidth, int expectedHeight)
-        {
-            var (width, height) = Image.GetMipDimensions(PixelFormat.ASTC_8x5_UNorm, 1500, 844, mipIndex);
-
-            Assert.Equal(expectedWidth, width);
-            Assert.Equal(expectedHeight, height);
-            Assert.Equal(0, width % 8);
-            Assert.Equal(0, height % 5);
-        }
-
         [Fact]
         public void TestTexture1D()
         {
@@ -506,7 +492,6 @@ namespace Stride.Graphics.Tests
         {
             // TODO: Remove this when Load/Save methods are implemented for Tga
             Skip.If(sourceFormat is ImageFileType.Tga, reason: "Load/Save not implemented for this format");
-            Skip.If(Platform.Type == PlatformType.Android && sourceFormat == ImageFileType.Tiff, reason: "Load/Save not implemented for this format");
 
             PerformDrawTest(
                 (game, context) =>

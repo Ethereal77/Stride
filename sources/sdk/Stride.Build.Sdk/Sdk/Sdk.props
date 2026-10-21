@@ -9,7 +9,7 @@
 
     What you CAN do here:
     - Set DEFAULT property values (use Condition="'$(Property)' == ''")
-    - Define framework constants (net10.0, net10.0-android, etc.)
+    - Define framework constants (net10.0, net10.0-windows, etc.)
     - Import other .props files
 
     What you CANNOT do here:

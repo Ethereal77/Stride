@@ -84,7 +84,7 @@ namespace Stride.Core.Assets.Editor.Settings
 
             UseEffectCompilerServer = new SettingsKey<bool>("Tools/UseEffectCompilerServer", SettingsContainer, false)
             {
-                DisplayName = $"{Tools}/{Tr._p("Settings", "Use effect compiler server for mobile platforms")}",
+                DisplayName = $"{Tools}/{Tr._p("Settings", "Use effect compiler server")}",
             };
             ReloadLastSession = new SettingsKey<bool>("Interface/ReloadLastSession", SettingsContainer, false)
             {

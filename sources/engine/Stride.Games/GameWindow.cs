@@ -92,7 +92,7 @@ namespace Stride.Games
         /// <value>The client area bounds.</value>
         /// <remarks>
         /// X and Y are the client area origin in screen coordinates. On platforms where the window system
-        /// does not expose global window positions (Wayland, Android, headless), the origin is (0,0)
+        /// does not expose global window positions (Wayland, headless), the origin is (0,0)
         /// and coordinates are window-relative.
         /// Returns an empty rectangle when the window is minimized or has no usable client area;
         /// check for a positive size before using it for rendering or resize decisions.
@@ -148,7 +148,7 @@ namespace Stride.Games
         /// </summary>
         /// <remarks>
         /// Matches the origin of <see cref="ClientBounds"/>. On platforms where the window system
-        /// does not expose global window positions (Wayland, Android, headless), getting
+        /// does not expose global window positions (Wayland, headless), getting
         /// returns (0,0) and setting has no effect.
         /// </remarks>
         public virtual Int2 Position { get; set; }

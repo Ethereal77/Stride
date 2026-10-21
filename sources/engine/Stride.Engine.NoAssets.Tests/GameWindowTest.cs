@@ -19,7 +19,6 @@ namespace Stride.Engine.Tests
         public void RenderToWindow(AppContextType contextType)
         {
             Skip.If(Platform.Type == PlatformType.Linux && contextType == AppContextType.DesktopWinForms, reason: "WinForms not available on Linux");
-            Skip.If(Platform.Type == PlatformType.Android, reason: "Desktop window contexts not available on Android");
 
             PerformTest(game =>
             {

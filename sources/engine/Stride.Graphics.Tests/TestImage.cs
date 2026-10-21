@@ -187,14 +187,6 @@ namespace Stride.Graphics.Tests
             {
                 foreach (ImageFileType intermediateFormat in Enum.GetValues<ImageFileType>())
                 {
-                    if (Platform.Type == PlatformType.Android && (
-                        intermediateFormat == ImageFileType.Bmp || // TODO remove this when Save method is implemented for the bmp format
-                        intermediateFormat == ImageFileType.Gif || // TODO remove this when Save method is implemented for the gif format
-                        intermediateFormat == ImageFileType.Tiff || // TODO remove this when Save method is implemented for the tiff format
-                        sourceFormat == ImageFileType.Bmp || // TODO remove this when Load method is fixed for the bmp format
-                        sourceFormat == ImageFileType.Tiff)) // TODO remove this when Load method is fixed for the tiff format
-                        continue;
-
                     if (intermediateFormat == ImageFileType.Tga || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for Tga.
                         continue;
 

@@ -30,11 +30,7 @@ namespace Stride.Audio.Tests.Engine
                 game.BeforeDrawing += onBeforeDraw;
                 game.AfterDrawing += onAfterDraw;
 
-                // DesktopSDL doesn't work for xunit on Android (SDL can't init its window without an Activity)
-                var context = OperatingSystem.IsAndroid()
-                    ? GameContextFactory.NewGameContext(AppContextType.Headless)
-                    : null;
-                game.Run(context);
+                game.Run(null);
             }
         }
 

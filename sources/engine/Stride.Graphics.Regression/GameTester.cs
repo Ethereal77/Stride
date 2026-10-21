@@ -7,13 +7,6 @@ using Stride.Core.Diagnostics;
 using Stride.Engine;
 using Stride.Games;
 
-#if STRIDE_PLATFORM_ANDROID
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using Stride.Core;
-using Stride.Games;
-#endif
-
 namespace Stride.Graphics.Regression
 {
     /// <summary>
@@ -23,9 +16,6 @@ namespace Stride.Graphics.Regression
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("GameTester");
 
-#if STRIDE_PLATFORM_ANDROID
-        private static object uniThreadLock = new();
-#endif
 
         /// <summary>
         ///   Runs the specified game test in a platform-specific environment.
@@ -37,12 +27,6 @@ namespace Stride.Graphics.Regression
         ///   <list type="bullet">
         ///     <item>
         ///       On desktop platforms, the game is executed in a blocking manner.
-        ///     </item>
-        ///     <item>
-        ///       On Android platforms, the game is executed within a platform-specific activity or view,
-        ///       with proper handling for game completion and exceptions.
-        ///       It also uses synchronization mechanisms to ensure thread safety and waits for the game to
-        ///       complete before returning.
         ///     </item>
         ///   </list>
         /// </remarks>
@@ -76,79 +60,6 @@ namespace Stride.Graphics.Regression
 
             throw new NotImplementedException();
 
-#elif STRIDE_PLATFORM_ANDROID
-
-#if STRIDE_PLATFORM_ANDROID
-            // Headless path mirrors desktop: when ScreenShotAutomationEnabled (set from
-            // !ForceInteractiveMode), run offscreen in-process — no separate Activity (Android),
-            // no per-test process. Interactive runs fall through to the SDL-window path below
-            // for visual inspection.
-            if (game is GameTestBase { ScreenShotAutomationEnabled: true })
-            {
-                try
-                {
-                    var context = GameContextFactory.NewGameContext(AppContextType.Headless);
-                    game.Run(context);
-                }
-                finally
-                {
-                    // Swallow Dispose so the original Run exception (if any) propagates.
-                    try { game.Dispose(); } catch { }
-                }
-                return;
-            }
-#endif
-            lock(uniThreadLock)
-            {
-                // Prepare finish callback
-                var tcs = new TaskCompletionSource<bool>();
-                EventHandler<EventArgs> gameFinishedCallback = (sender, e) =>
-                {
-                    // Notify waiters that the Game has exited
-                    Logger.Info("Game finished.");
-                    tcs.TrySetResult(true);
-                };
-
-                EventHandler<GameUnhandledExceptionEventArgs> exceptionhandler = (sender, e) =>
-                {
-                    // Notify waiters that the Game has thrown an exception
-                    Logger.Error($"Game finished with exception = {e}.");
-                    tcs.TrySetException((Exception) e.ExceptionObject);
-                };
-
-                // Transmit data to activity
-                // TODO: Avoid static with string intent + Dictionary?
-                try
-                {
-                    game.UnhandledException += exceptionhandler;
-
-                    Logger.Info(@"Starting activity");
-#if STRIDE_PLATFORM_ANDROID
-                    // Start activity
-                    AndroidGameTestActivity.GameToStart = game;
-                    AndroidGameTestActivity.Destroyed += gameFinishedCallback;
-                    PlatformAndroid.Context.StartActivity(typeof(AndroidGameTestActivity));
-                    // Wait for completion
-                    // TODO: Should we put a timeout and issue a Game.Exit() in main thread if too long?
-                    tcs.Task.Wait();
-#endif
-
-                    Logger.Info(@"Activity ended");
-                }
-                catch (AggregateException e)
-                {
-                    // Unwrap aggregate exceptions
-                    if (e.InnerExceptions.Count == 1)
-                        ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-                }
-                finally
-                {
-#if STRIDE_PLATFORM_ANDROID
-                    AndroidGameTestActivity.Destroyed -= gameFinishedCallback;
-                    AndroidGameTestActivity.GameToStart = null;
-#endif
-                }
-            }
 #endif
         }
     }

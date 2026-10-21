@@ -37,7 +37,6 @@ ipch/
 obj/
 Win32
 Win32Debug
-*.androidcache
 libfreetype.a
 libcore.a
 libbulletc.a

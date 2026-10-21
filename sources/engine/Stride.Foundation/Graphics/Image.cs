@@ -906,8 +906,6 @@ namespace Stride.Graphics
 
             if (format.IsCompressed)
             {
-                // ASTC has variable block dimensions (4x4..12x12); fetch from format extensions
-                // instead of assuming 4x4 + switching on format for bytes-per-block.
                 int blockWidth = format.BlockWidth;
                 int blockHeight = format.BlockHeight;
                 int bytesPerBlock = format.BlockSize;

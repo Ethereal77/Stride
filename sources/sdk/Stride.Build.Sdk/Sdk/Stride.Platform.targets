@@ -20,13 +20,6 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Platform Defines - Android -->
-  <!-- ================================================================ -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)'">
-    <StridePlatformDefines>STRIDE_PLATFORM_MONO_MOBILE;STRIDE_PLATFORM_ANDROID</StridePlatformDefines>
-  </PropertyGroup>
-
-  <!-- ================================================================ -->
   <!-- .NET Runtime Defines -->
   <!-- ================================================================ -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net10'))">
@@ -41,31 +34,6 @@
     <DefineConstants Condition="'$(StridePlatformDefines)' != ''">$(StridePlatformDefines);$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(StrideNETRuntimeDefines)' != ''">$(DefineConstants);$(StrideNETRuntimeDefines)</DefineConstants>
     <DefineConstants Condition="'$(StridePackageBuild)' == 'true'">$(DefineConstants);STRIDE_PACKAGE_BUILD</DefineConstants>
-  </PropertyGroup>
-
-  <!-- ================================================================ -->
-  <!-- Android-Specific Build Properties -->
-  <!-- ================================================================ -->
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)'">
-    <!-- On Android, everything is library (even Exe) -->
-    <OutputType>Library</OutputType>
-    <!-- 24 (Nougat): Vulkan is API 24+, and our native libs are built with android-24. -->
-    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
-    <AndroidStoreUncompressedFileExtensions />
-    <!-- Use AssemblyName for Resource class to avoid clashes between assemblies. Respect
-         caller-provided values; AssemblyName may not be a valid C# namespace (e.g. .10_0). -->
-    <AndroidResgenNamespace Condition="'$(AndroidResgenNamespace)' == ''">$(AssemblyName)</AndroidResgenNamespace>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' And '$(OutputType)' == 'Exe'">
-    <AndroidApplication>true</AndroidApplication>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' And '$(Configuration)' == 'Debug'">
-    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
-    <AndroidLinkMode>None</AndroidLinkMode>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)' And '$(Configuration)' == 'Release'">
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
 
   <!-- UWP platform support intentionally omitted (UWP is being phased out) -->

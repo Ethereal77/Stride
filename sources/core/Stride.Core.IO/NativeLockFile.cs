@@ -17,7 +17,7 @@ public static partial class NativeLockFile
     internal const uint LOCKFILE_FAIL_IMMEDIATELY = 0x00000001;
     internal const uint LOCKFILE_EXCLUSIVE_LOCK = 0x00000002;
 
-    // Unix (Linux, Android)
+    // Unix (Linux)
     [DllImport("libc", EntryPoint = "fcntl", SetLastError = true)]
     private static extern int fcntl(int fd, int cmd, ref Flock lockInfo);
 
@@ -25,7 +25,7 @@ public static partial class NativeLockFile
     private const int F_SETLK = 6;   // Non-blocking
     private const int F_SETLKW = 7;  // Blocking
 
-    // OFD lock commands (per-file-description, Linux 3.15+ / Android 5.0+)
+    // OFD lock commands (per-file-description, Linux 3.15+)
     // These behave like Windows LockFileEx — per-handle, not per-process.
     private const int F_OFD_SETLK = 37;   // Non-blocking
     private const int F_OFD_SETLKW = 38;  // Blocking
@@ -35,7 +35,7 @@ public static partial class NativeLockFile
     private const short F_UNLCK = 2;
 
     private const int EINVAL = 22;
-    // Contention errnos (Linux/Android EAGAIN/EACCES, Windows ERROR_LOCK_VIOLATION) — distinct from EINVAL (unsupported).
+    // Contention errnos (Linux EAGAIN/EACCES, Windows ERROR_LOCK_VIOLATION) — distinct from EINVAL (unsupported).
     private const int EAGAIN = 11;
     private const int EACCES = 13;
     private const int ERROR_LOCK_VIOLATION = 33;
@@ -59,7 +59,7 @@ public static partial class NativeLockFile
     }
 
     /// <summary>
-    ///   On Linux/Android: true = use OFD locks, false = use standard fcntl, null = not yet determined.
+    ///   On Linux: true = use OFD locks, false = use standard fcntl, null = not yet determined.
     /// </summary>
     private static bool? useOfdLocks;
 
@@ -69,11 +69,6 @@ public static partial class NativeLockFile
     /// <returns><c>true</c> if the lock was acquired, <c>false</c> if the lock could not be acquired.</returns>
     public static bool TryLockFile(FileStream fileStream, long offset, long count, bool exclusive, bool failImmediately = false)
     {
-        if (Platform.Type == PlatformType.Android)
-        {
-            count = (count + offset > int.MaxValue) ? int.MaxValue - offset : count;
-        }
-
         if (OperatingSystem.IsWindows())
         {
             var countLow = (uint)count;
@@ -98,11 +93,6 @@ public static partial class NativeLockFile
     /// <summary>Non-blocking lock acquisition that classifies failure for retry decisions.</summary>
     public static FileLockResult TryAcquireFile(FileStream fileStream, long offset, long count, bool exclusive)
     {
-        if (Platform.Type == PlatformType.Android)
-        {
-            count = (count + offset > int.MaxValue) ? int.MaxValue - offset : count;
-        }
-
         if (OperatingSystem.IsWindows())
         {
             var countLow = (uint)count;
@@ -133,11 +123,6 @@ public static partial class NativeLockFile
     /// </summary>
     public static void TryUnlockFile(FileStream fileStream, long offset, long count)
     {
-        if (Platform.Type == PlatformType.Android)
-        {
-            count = (count + offset > int.MaxValue) ? int.MaxValue - offset : count;
-        }
-
         if (OperatingSystem.IsWindows())
         {
             var countLow = (uint)count;
@@ -161,7 +146,7 @@ public static partial class NativeLockFile
     }
 
     /// <summary>
-    ///   Lock on Unix: on Linux/Android, tries OFD locks first (per-handle, like Windows LockFileEx),
+    ///   Lock on Unix: on Linux, tries OFD locks first (per-handle, like Windows LockFileEx),
     ///   falls back to standard fcntl (per-process) if OFD is not supported.
     /// </summary>
     private static FileLockResult UnixLock(FileStream fileStream, long offset, long count, bool exclusive)
@@ -177,8 +162,8 @@ public static partial class NativeLockFile
             l_pid = 0, // required for OFD locks, ignored by standard fcntl
         };
 
-        // On Linux/Android, try OFD locks first (per-handle byte-range locking)
-        if (OperatingSystem.IsLinux() || Platform.Type == PlatformType.Android)
+        // On Linux, try OFD locks first (per-handle byte-range locking)
+        if (OperatingSystem.IsLinux())
         {
             if (useOfdLocks != false)
             {

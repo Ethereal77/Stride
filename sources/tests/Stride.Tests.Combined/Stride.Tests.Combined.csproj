@@ -7,7 +7,7 @@
     <AssemblyName>Stride.Tests.Combined</AssemblyName>
     <RootNamespace>Stride.Tests.Combined</RootNamespace>
     <!-- StrideTestPlatforms defaults from StridePlatforms via the MultiPlatform Tests SDK; pass
-         -p:StridePlatforms=<Android|Windows|Linux> to target a different platform. -->
+         -p:StridePlatforms=<Windows|Linux> to target a different platform. -->
     <StrideCompileAssets>false</StrideCompileAssets>
     <StrideGraphicsRegression>true</StrideGraphicsRegression>
     <!-- Forwarded to each suite ref: drop its launcher/entry point but keep asset compile +
@@ -75,7 +75,7 @@
        BundleOdbBackend derives incremental URLs from it. -->
   <Target Name="_StrideCollectSuiteBundles"
           AfterTargets="ResolveProjectReferences"
-          BeforeTargets="_CollectBundleResources;_GenerateAndroidAssetsDir">
+          BeforeTargets="_CollectBundleResources">
     <ItemGroup>
       <_StrideSuiteBundle Include="$(StrideRoot)bin\Tests\%(ProjectReference.Filename)\$(StridePlatform)-$(StrideGraphicsApi)\$(Configuration)\data\db\bundles\default.bundle"
                           Condition="$([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Tests'))">
@@ -120,38 +120,4 @@
           Condition="Exists('%(_StrideSuiteAliases.Identity)')" />
   </Target>
 
-  <!-- Android: package the collected data/db tree into the .app/APK. CompilerApp.targets'
-       deploy targets only fire when StrideCompileAssets=true; the meta consumes per-suite
-       outputs instead, so do the platform packaging here. -->
-  <Target Name="_StrideEmitCombinedAssetItems"
-          AfterTargets="_StrideCollectSuiteBundles"
-          BeforeTargets="_CollectBundleResources;_GenerateAndroidAssetsDir"
-          Condition="'$(StridePlatform)' == 'Android'">
-    <ItemGroup>
-      <_StrideCombinedAssetFile Include="$(OutputPath)data\db\**\*.*" />
-    </ItemGroup>
-    <AssignTargetPath Files="@(_StrideCombinedAssetFile)" RootFolder="$([System.IO.Path]::GetFullPath('$(OutputPath)'))">
-      <Output TaskParameter="AssignedFiles" ItemName="_StrideCombinedAssetTargeted" />
-    </AssignTargetPath>
-    <ItemGroup Condition="'$(StridePlatform)' == 'Android'">
-      <AndroidAsset Include="@(_StrideCombinedAssetTargeted)">
-        <Link>%(_StrideCombinedAssetTargeted.TargetPath)</Link>
-      </AndroidAsset>
-    </ItemGroup>
-    <!-- Keep .bundle uncompressed in the APK. _StrideDeployAssetsAndroid usually does
-         this but skipped (StrideCompileAssets=false) -->
-    <PropertyGroup Condition="'$(StridePlatform)' == 'Android'">
-      <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.bundle</AndroidStoreUncompressedFileExtensions>
-    </PropertyGroup>
-  </Target>
-
-  <!-- Android: push each referenced suite's gold images. The base _StridePushTestGoldImages only
-       pushes this project's own gold dir (tests/Stride.Tests.Combined/, which doesn't exist);
-       push each ProjectReference's tests/<Filename>/ instead. -->
-  <Target Name="_StridePushSuiteGoldImages"
-          AfterTargets="Install"
-          Condition="'$(StridePlatform)' == 'Android'">
-    <Exec Command="&quot;$(AdbToolPath)adb&quot; $(AdbTarget) push --sync &quot;$(StrideRoot)tests\%(ProjectReference.Filename)\.&quot; &quot;/sdcard/Android/data/$(_AndroidPackage)/files/tests/%(ProjectReference.Filename)&quot;"
-          Condition="$([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Tests')) And Exists('$(StrideRoot)tests\%(ProjectReference.Filename)')" />
-  </Target>
 </Project>

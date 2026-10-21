@@ -140,7 +140,7 @@ Use `git` to revert the project file changes (all 125 `.csproj` files). The dire
 
 **Step 5 — Re-add `BuildSdk` target to `build/Stride.build`:**
 
-Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildAndroid`, `BuildUWP`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`, `RunTestsMobile`.
+Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildUWP`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`.
 
 ```xml
 <!--
@@ -222,7 +222,7 @@ sources/sdk/
 |   +-- Sdk/
 |       +-- Sdk.props                          # Entry point (before project file)
 |       +-- Sdk.targets                        # Entry point (after project file)
-|       +-- Stride.Frameworks.props            # Framework constants (net10.0, net10.0-android, ...)
+|       +-- Stride.Frameworks.props            # Framework constants (net10.0, net10.0-windows, ...)
 |       +-- Stride.Frameworks.targets          # Per-TFM StrideTargetFramework/StridePlatform re-derivation
 |       +-- Stride.Platform.props              # Platform detection, output paths, runtime TargetFrameworks sets
 |       +-- Stride.Platform.targets            # Platform-specific compiler defines
@@ -323,7 +323,7 @@ YourProject.csproj
       |
 Stride.Build.Sdk/Sdk/Sdk.targets (top)
   +-- Microsoft.NET.Sdk/Sdk.targets (base .NET SDK)
-  +-- Stride.Platform.targets       (platform defines, mobile properties)
+  +-- Stride.Platform.targets       (platform defines)
   +-- Stride.Frameworks.targets     (per-TFM StrideTargetFramework/StridePlatform)
   +-- Stride.Graphics.targets       (API defines, UI framework)
   +-- Stride.GraphicsApi.InnerBuild.targets (multi-API dispatch)
@@ -342,18 +342,17 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Property | Purpose | Set by |
 |----------|---------|--------|
-| `StridePlatform` | Current platform (Windows, Linux, Android) | Auto-detected in Stride.Platform.props |
+| `StridePlatform` | Current platform (Windows, Linux) | Auto-detected in Stride.Platform.props |
 | `StridePlatformOriginal` | Original platform value before TFM-based override | Stride.Platform.props |
 | `StridePlatformFullName` | Platform name + optional `StrideBuildDirExtension` suffix | Stride.Platform.props |
 | `StridePlatforms` | Semicolon-separated list of target platforms | Auto-detected per OS |
-| `StridePlatformDeps` | Platform identifier for native deps (dotnet, Android) | Stride.Platform.props |
+| `StridePlatformDeps` | Platform identifier for native deps (dotnet) | Stride.Platform.props |
 
 **Platform defines** (added to `DefineConstants`):
 
 | Platform | Defines |
 |----------|---------|
 | Windows/Linux | `STRIDE_PLATFORM_DESKTOP` |
-| Android | `STRIDE_PLATFORM_MONO_MOBILE;STRIDE_PLATFORM_ANDROID` |
 | All .NET | `STRIDE_RUNTIME_CORECLR` |
 
 ### Graphics API
@@ -372,7 +371,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 |----------|---------|-----------|
 | Windows | Direct3D11 | Direct3D11, Direct3D12,Vulkan |
 | Linux | Vulkan | Vulkan |
-| Android | Vulkan | Vulkan |
 
 **Graphics API defines** (added to `DefineConstants`):
 
@@ -403,7 +401,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 |----------|-------|---------|
 | `StrideFramework` | `net10.0` | Base target framework |
 | `StrideFrameworkWindows` | `net10.0-windows` | Windows-specific TFM |
-| `StrideFrameworkAndroid` | `net10.0-android` | Android TFM |
 | `StrideEditorTargetFramework` | `net10.0-windows` | Editor TFM (WPF) |
 | `StrideXplatEditorTargetFramework` | `net10.0` | Cross-platform editor TFM |
 
@@ -494,10 +491,10 @@ Practical effect:
 
 The `.ssdeps` system (`Stride.Dependencies.targets`) handles native library distribution:
 
-- `.ssdeps` files sit alongside referenced DLLs, listing native libraries (.dll/.so/.dylib) and content files
+- `.ssdeps` files sit alongside referenced DLLs, listing native libraries (.dll/.so) and content files
 - At build time, native libs are resolved and copied to the output directory
 - During NuGet packaging, native libs are placed in the correct `runtimes/` layout
-- Platform-specific handling for desktop, and Android
+- Platform-specific handling for desktop
 
 ---
 
@@ -595,7 +592,6 @@ NuGet's `build/` convention auto-imports `.props` and `.targets` files even for 
 
 | Feature | Reason |
 |---------|--------|
-| Xamarin-specific workarounds | .NET for Android doesn't need them |
 | `SolutionName` default | Not needed in SDK-style builds |
 | `StridePackageStride` path resolution | Package paths are SDK-relative |
 | `DependencyDir`, `BuildDir`, `SourceDir` | Package structure replaces relative paths |
@@ -623,7 +619,7 @@ The property is likely being read in `Sdk.props` (too early). Move the logic to 
 
 ### Multi-targeting not working
 
-Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows;Android` (etc.) to target other platforms.
+Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows;Linux` (etc.) to target other platforms.
 
 ### Assembly processor not running
 

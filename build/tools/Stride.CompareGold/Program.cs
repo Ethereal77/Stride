@@ -4,9 +4,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
-// 5505 instead of 5555: the latter is Android ADB's daemon port, which the Android emulator
-// already binds when running test pulls — they collide otherwise. Override with --port N
-// when running a second instance against another checkout.
 // Top-level help (subcommand help is handled inside HeadlessPromote). No args = start the UI.
 if (args is [var first, ..] && first is "--help" or "-h" or "help")
 {
@@ -740,9 +737,9 @@ List<object> ListSourceItems(string dir, string primaryGoldDir)
         .ToList();
 }
 
-// The sidecar's matched path is whatever filesystem the test ran on (device path on
-// Android, Windows path locally). Map back to the local checkout by taking the last
-// 4 segments: <suite>/<Platform.API>/<Device>/<name>.png.
+// The sidecar's matched path is whatever filesystem the test ran on (Windows path locally).
+// Map back to the local checkout by taking the last 4 segments:
+// <suite>/<Platform.API>/<Device>/<name>.png.
 string? ResolveMatchedGoldLocalPath(string? matched)
 {
     if (string.IsNullOrEmpty(matched)) return null;

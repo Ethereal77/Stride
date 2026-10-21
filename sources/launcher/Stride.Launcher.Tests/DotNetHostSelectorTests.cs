@@ -132,7 +132,6 @@ public class DotNetHostSelectorTests
     [Theory]
     [InlineData("net11.0", 11)]
     [InlineData("net11.0-windows7.0", 11)]
-    [InlineData("NET8.0-android", 8)]
     [InlineData("11", 11)]
     [InlineData("11.0.100-rc.1.25451.107", 11)]
     [InlineData("net472", null)]

@@ -19,9 +19,6 @@
   <PropertyGroup Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)'">
     <DefineConstants>STRIDE_VIDEO_FFMPEG;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkAndroid)'">
-    <DefineConstants>STRIDE_VIDEO_MEDIACODEC;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\tests\xunit.runner.stride\xunit.runner.stride.csproj" />
     <ProjectReference Include="..\..\..\sources\engine\Stride.Engine\Stride.Engine.csproj">

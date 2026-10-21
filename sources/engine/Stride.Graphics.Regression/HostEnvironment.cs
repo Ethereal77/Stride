@@ -22,7 +22,7 @@ internal static class HostEnvironment
     {
         try
         {
-            if (OperatingSystem.IsLinux() || OperatingSystem.IsAndroid())
+            if (OperatingSystem.IsLinux())
             {
                 foreach (var line in File.ReadAllLines("/proc/cpuinfo"))
                 {
