@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-#if defined(WINDOWS_DESKTOP) || defined(UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
+#if defined(WINDOWS_DESKTOP) || !defined(__clang__)
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeThreading.h"
@@ -47,7 +47,7 @@ extern "C" {
 
 #define REFIID const IID &
 #define HRESULT long
-#define UINT32 unsigned int 
+#define UINT32 unsigned int
 #define ULONG unsigned long
 #define THIS_
 #define THIS void
@@ -72,7 +72,7 @@ extern "C" {
 #define XAUDIO2_DEFAULT_CHANNELS        0             // Used in CreateMasteringVoice
 #define XAUDIO2_DEFAULT_SAMPLERATE      0             // Used in CreateMasteringVoice
 #define BYTE char
-#define UINT64 unsigned __int64 
+#define UINT64 unsigned __int64
 #define _In_opt_z_
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
 #define _Inout_
@@ -259,10 +259,10 @@ extern "C" {
 
 		//
 		//! Specifies parameters used to initialize HRTF.
-		//! 
+		//!
 		//! Instances of the XAPO interface are created by using the CreateHrtfApo() API:
 		//!   ```STDAPI CreateHrtfApo(_In_ const HrtfApoInit* pInit, _Outptr_ IXAPO** ppXapo);```
-		//! 
+		//!
 		//
 		typedef struct HrtfApoInit
 		{
@@ -1200,7 +1200,7 @@ extern "C" {
 				{
 					delete res;
 					return NULL;
-				}		
+				}
 			}
 
 			//X3DAudio
@@ -1219,7 +1219,7 @@ extern "C" {
 			device->x_audio2_->StopEngine();
 
 			device->mastering_voice_->DestroyVoice();
-			
+
 			delete device;
 		}
 
@@ -1384,7 +1384,7 @@ extern "C" {
 				}
 
 				apoRoot->QueryInterface(xnHrtfParamsIID, reinterpret_cast<void**>(&res->hrtf_params_));
-					
+
 				XAUDIO2_EFFECT_DESCRIPTOR fxDesc{};
 				fxDesc.InitialState = true;
 				fxDesc.OutputChannels = 2; // Stereo output
@@ -1432,7 +1432,7 @@ extern "C" {
 			source->source_voice_->DestroyVoice();
 			if (source->emitter_) delete source->emitter_;
 			if (source->dsp_settings_)
-			{		
+			{
 				delete[] source->dsp_settings_->pMatrixCoefficients;
 				delete[] source->dsp_settings_->pDelayTimes;
 				delete source->dsp_settings_;
@@ -1490,9 +1490,9 @@ extern "C" {
 					break;
 				}
 			}
-			
+
 			source->bufferLock_.Unlock();
-			
+
 			return buffer;
 		}
 
@@ -1556,7 +1556,7 @@ extern "C" {
 
 			if (!source->streamed_)
 				return double(source->single_buffer_.PlayBegin + state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
-			
+
 			//things work different for streamed sources, but anyway we simply subtract the snapshotted samples at begin of the stream ( could be the begin of the loop )
 			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 		}
@@ -1572,7 +1572,7 @@ extern "C" {
 					source->single_buffer_.PlayLength = singleBuffer->length_;
 				}
 				else
-				{					
+				{
 					auto sampleStart = int(double(source->sampleRate_) * startTime);
 					auto sampleStop = int(double(source->sampleRate_) * stopTime);
 
@@ -1672,7 +1672,7 @@ extern "C" {
 				}
 
 				bufferLock_.Unlock();
-			}			
+			}
 		}
 
         void xnAudioSource::OnLoopEnd(void* context)
@@ -1694,7 +1694,7 @@ extern "C" {
 			//flag the stream
 			buffer->buffer_.Flags = type == EndOfStream ? XAUDIO2_END_OF_STREAM : 0;
 			buffer->type_ = type;
-			
+
 			buffer->length_ = buffer->buffer_.AudioBytes = bufferSize;
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
@@ -1777,7 +1777,7 @@ extern "C" {
 				source->hrtf_params_->SetSourcePosition(&hrtfEmitterPos);
 
 				//set orientation, relative to head, already computed c# side, todo c++ side
-				HrtfOrientation hrtfEmitterRot { 
+				HrtfOrientation hrtfEmitterRot {
 					localTransform.Flat.M11, localTransform.Flat.M12, localTransform.Flat.M13,
 					localTransform.Flat.M21, localTransform.Flat.M22, localTransform.Flat.M23,
 					localTransform.Flat.M31, localTransform.Flat.M32, localTransform.Flat.M33 };
@@ -1837,12 +1837,12 @@ extern "C" {
 		DLL_EXPORT_API void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			(void)sampleRate;
-			
+
 			buffer->buffer_.AudioBytes = bufferSize;
-			
+
 			buffer->buffer_.PlayBegin = 0;
 			buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
-			
+
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
 

@@ -31,7 +31,7 @@ namespace Stride.Games
 {
     /// <summary>
     ///   Contains context used to render the Game (i.e. it abstracts a Windows Forms <c>Control</c>,
-    ///   or a <c>DrawingSurface</c> for UWP, etc.)
+    ///   or a <c>HWND</c> for Win32, etc.)
     /// </summary>
     public abstract class GameContext
     {
@@ -103,13 +103,9 @@ namespace Stride.Games
         {
             get
             {
-#if STRIDE_PLATFORM_UWP
-                return "Stride Game";
-#else
                 var assembly = Assembly.GetEntryAssembly();
                 var productAttribute = assembly?.GetCustomAttribute<AssemblyProductAttribute>();
                 return productAttribute?.Product ?? "Stride Game";
-#endif
             }
         }
 
@@ -121,11 +117,7 @@ namespace Stride.Games
         {
             get
             {
-#if STRIDE_PLATFORM_UWP
-                return string.Empty;
-#else
                 return PlatformFolders.ApplicationExecutablePath ?? string.Empty;
-#endif
             }
         }
 

@@ -77,7 +77,6 @@ namespace Stride.Graphics
 
             set
             {
-//#if !STRIDE_PLATFORM_UWP
 //                if (swapChain == null)
 //                    return;
 
@@ -134,7 +133,6 @@ namespace Stride.Graphics
 //                    description.RefreshRate = new SharpDX.DXGI.Rational(0, 0);
 //                    swapChain.ResizeTarget(ref description);
 //                }
-//#endif
             }
         }
 

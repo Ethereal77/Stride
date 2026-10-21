@@ -31,15 +31,6 @@
                 <TextBlock Margin="4,0" Text="{sd:Localize (This will remove the project from the package and disk.)}" Visibility="{Binding MarkedToRemove, Mode=OneWay, Converter={sd:VisibleOrCollapsed}}" Foreground="OrangeRed" TextWrapping="Wrap"/>
               </StackPanel>
               <!-- TODO: The margin is a hack to align it with previous checkbox; this should be done differently (the checkbox content should be the stack panel with text + this?) -->
-              <!-- Note: User can choose template only by deleting/reading the platform (we don't handle editing an existing one since we don't know the current template -->
-              <!-- FIXME: UWP CoreWindow - temporarily disable template selection -->
-              <!--<ComboBox ItemsSource="{Binding AvailableTemplates}" SelectedValue="{Binding SelectedTemplate}" Visibility="{sd:MultiBinding {Binding HasTemplates}, {Binding IsAlreadyInstalled, Converter={sd:InvertBool}}, Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}}" IsEnabled="{Binding IsSelected}" Margin="44,0,0,0" HorizontalAlignment="Left">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding DisplayName}" Margin="4,0,0,0"/>
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>-->
               <DockPanel Margin="24,0,0,4" Visibility="{Binding IsAvailableOnMachine, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}">
                 <Image DockPanel.Dock="Left" Source="{StaticResource ImageWarning}" Height="16"/>
                 <TextBlock Margin="4,0" Text="{sd:Localize This machine doesn\'t meet the requirements to build for this platform.}" FontSize="10" TextWrapping="Wrap"/>

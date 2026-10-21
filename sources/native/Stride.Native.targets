@@ -77,20 +77,10 @@
     <Warning Text="[Stride] Windows ARM64 native build skipped, no ARM64 toolset (checked: $(StrideNativeWindowsArm64LibPath)). Install 'MSVC v145 ARM64/ARM64EC build tools' from the VS installer, or set -p:StrideNativeWindowsArm64Enabled=false to silence this warning." />
   </Target>
 
-  <Choose>
-    <When Condition="'$(TargetFramework)' == '$(StrideFrameworkUWP)'">
-      <PropertyGroup>
-        <StrideNativeClang Condition="'$(Configuration)' == 'Debug'">$(StrideNativeClang) -Od</StrideNativeClang>
-        <StrideNativeClang Condition="'$(Configuration)' == 'Release'">$(StrideNativeClang) -O2</StrideNativeClang>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <StrideNativeClang Condition="'$(Configuration)' == 'Debug'">$(StrideNativeClang) -O0 -g</StrideNativeClang>
-        <StrideNativeClang Condition="'$(Configuration)' == 'Release'">$(StrideNativeClang) -O3</StrideNativeClang>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
+  <PropertyGroup>
+    <StrideNativeClang Condition="'$(Configuration)' == 'Debug'">$(StrideNativeClang) -O0 -g</StrideNativeClang>
+    <StrideNativeClang Condition="'$(Configuration)' == 'Release'">$(StrideNativeClang) -O3</StrideNativeClang>
+  </PropertyGroup>
 
   <!-- Define default CPU architectures.
        Each desktop RID is gated by both StridePlatforms membership (user opt-in) and the host
@@ -99,10 +89,6 @@
   <ItemGroup Condition="'$(TargetFramework)' == '$(StrideFramework)'">
     <StrideNativeCPU Condition="$([MSBuild]::IsOSPlatform('Windows')) And $(_StridePlatforms.Contains(';Windows;'))" Include="win-x64;win-arm64" LibraryExtension=".dll" LibraryRuntime="win" />
     <StrideNativeCPU Condition="$(_StridePlatforms.Contains(';Linux;'))" Include="linux-x64" LibraryExtension=".so" LibraryRuntime="linux" />
-  </ItemGroup>
-  <!-- Can be deleted -->
-  <ItemGroup Condition="'$(TargetFramework)' == '$(StrideFrameworkUWP)'">
-    <StrideNativeCPU Include="x64;ARM" LibraryExtension=".dll" />
   </ItemGroup>
   <!-- Use runtimes/*/native folder -->
   <ItemGroup>
@@ -192,17 +178,6 @@
     <Exec Condition="'%(StrideNativeCFile.Extension)' != '.cpp' AND '$(StrideNativeWindowsArm64Enabled)' == 'true'" Command="&quot;$(StrideNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(StrideNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-arm64\%(StrideNativeCFile.Filename).obj&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -fms-extensions -DWINDOWS_DESKTOP -target aarch64-pc-windows-msvc" />
     <Exec Condition="'%(StrideNativeCFile.Extension)' == '.cpp' AND '$(StrideNativeWindowsArm64Enabled)' == 'true'" Command="&quot;$(StrideNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(StrideNativeClangCPP) $(StrideNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-arm64\%(StrideNativeCFile.Filename).obj&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot;  -fms-extensions -DWINDOWS_DESKTOP -target aarch64-pc-windows-msvc" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\WindowsDesktop\WindowsDesktop.vcxproj" Targets="Build" Properties="StrideNativeOutputName=$(StrideNativeOutputName);StrideNativeOutputDir=$(StrideNativeOutputPath)\runtimes\win-arm64\native;StrideDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;StrideNativePathLibs=libNativePath.lib $(StrideNativePathLibsWindowsArm64);StrideNativeProjectFolder=$(ProjectDir);StrideNativeProjectObjFolder=$(OutputObjectPath)\win-arm64;Configuration=$(Configuration);Platform=arm64" StopOnFirstFailure="true" Condition="'$(StrideNativeWindowsArm64Enabled)' == 'true'" />
-
-  </Target>
-
-  <Target Name="CompileNativeClang_UWP" Inputs="@(StrideNativeCFile);@(StrideNativeHFile)" Outputs="@(StrideNativeOutput)"  Condition="'$(TargetFramework)' == '$(StrideFrameworkUWP)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_StrideRegisterNativeOutputs">
-    <MakeDir Directories="$(OutputObjectPath)\x64"/>
-    <Exec Command="&quot;$(StrideNativeClangCommand)&quot; --driver-mode=cl $(StrideNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\x64\%(StrideNativeCFile.Filename).obj&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m64" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="StrideNativeOutputName=$(StrideNativeOutputName);StrideNativeOutputDir=$(StrideNativeOutputPath)\x64;StrideDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;StrideNativePathLibs=libNativePath.lib $(StrideNativePathLibsUWP);StrideNativeProjectFolder=$(ProjectDir);StrideNativeProjectObjFolder=$(OutputObjectPath)\x64;Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
-
-    <MakeDir Directories="$(OutputObjectPath)\ARM"/>
-    <Exec Command="&quot;$(StrideNativeClangCommand)&quot; --driver-mode=cl $(StrideNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\ARM\%(StrideNativeCFile.Filename).obj&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m32 --target=thumbv7-windows-msvc" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="StrideNativeOutputName=$(StrideNativeOutputName);StrideNativeOutputDir=$(StrideNativeOutputPath)\ARM;StrideDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;StrideNativePathLibs=libNativePath.lib $(StrideNativePathLibsUWP);StrideNativeProjectFolder=$(ProjectDir);StrideNativeProjectObjFolder=$(OutputObjectPath)\ARM;Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
 
   </Target>
 

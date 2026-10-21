@@ -56,10 +56,6 @@ namespace Stride.Graphics.Regression
             using var process = Process.GetCurrentProcess();
             Logger.Info($"Process memory: working set={process.WorkingSet64 / 1024 / 1024}MB, private={process.PrivateMemorySize64 / 1024 / 1024}MB, GC={GC.GetTotalMemory(false) / 1024 / 1024}MB");
 
-#elif STRIDE_PLATFORM_UWP
-
-            throw new NotImplementedException();
-
 #endif
         }
     }

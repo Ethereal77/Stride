@@ -63,12 +63,8 @@ namespace Stride.Games
 
         public static GamePlatform Create(GameBase game)
         {
-#if STRIDE_PLATFORM_UWP
-            return new GamePlatformUWP(game);
-#else
-            // Here we cover all Desktop variants: OpenTK, SDL, Winforms,...
+            // Here we cover all Desktop variants: SDL, WinForms, Win32,...
             return new GamePlatformDesktop(game);
-#endif
         }
 
         public abstract string DefaultAppDirectory { get; }
@@ -421,26 +417,12 @@ namespace Stride.Games
 
         public virtual GraphicsDevice CreateDevice(GraphicsDeviceInformation deviceInformation)
         {
-#if STRIDE_GRAPHICS_API_DIRECT3D11 && STRIDE_PLATFORM_UWP
-            var isWindowsMixedReality = game.Context is GameContextUWPCoreWindow context && context.IsWindowsMixedReality;
-            if (isWindowsMixedReality)
-                deviceInformation.DeviceCreationFlags |= DeviceCreationFlags.BgraSupport;
-#endif
             var graphicsDevice = GraphicsDevice.New(deviceInformation.Adapter, deviceInformation.DeviceCreationFlags, gameWindow.NativeWindow, deviceInformation.GraphicsProfile);
             graphicsDevice.ColorSpace = deviceInformation.PresentationParameters.ColorSpace;
 
-#if STRIDE_GRAPHICS_API_DIRECT3D11 && STRIDE_PLATFORM_UWP
-            if (isWindowsMixedReality)
-            {
-                graphicsDevice.Presenter = new WindowsMixedRealityGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters);
-            }
-            else
-#endif
-            {
-                graphicsDevice.Presenter = gameWindow is GameWindowHeadless
-                    ? new HeadlessGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters)
-                    : new SwapChainGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters);
-            }
+            graphicsDevice.Presenter = gameWindow is GameWindowHeadless
+                ? new HeadlessGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters)
+                : new SwapChainGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters);
 
             DeviceChanged(graphicsDevice, deviceInformation);
 

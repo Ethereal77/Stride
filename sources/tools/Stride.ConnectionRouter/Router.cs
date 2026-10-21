@@ -87,7 +87,6 @@ namespace Stride.ConnectionRouter
                     catch (Exception e)
                     {
                         // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
-                        // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
                         Log.Info($"Client {clientSocketContext.RemoteAddress}:{clientSocketContext.RemotePort} disconnected with exception.", e);
                         clientSocketContext.Dispose();
                     }
@@ -376,7 +375,7 @@ namespace Stride.ConnectionRouter
             }
 
             // TODO: Handle server disconnections
-            //clientSocketContext.Disconnected += 
+            //clientSocketContext.Disconnected +=
         }
 
         private async Task ForwardSocket(SimpleSocket source, SimpleSocket target)

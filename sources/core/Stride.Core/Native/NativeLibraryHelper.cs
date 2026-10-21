@@ -352,7 +352,7 @@ public static partial class NativeLibraryHelper
 
             // NuGet packages often ship only the SONAME-versioned variant (libfoo.so.5).
             // Glob for it; pick the highest version on multiple matches.
-            // Windows/UWP require unversioned names, so they don't glob.
+            // Windows require unversioned names, so they don't glob.
             var (pattern, versionPrefix) = Platform.Type switch
             {
                 PlatformType.Linux => (libraryNameWithExtension + ".*", libraryNameWithExtension),

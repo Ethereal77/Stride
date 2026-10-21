@@ -36,9 +36,9 @@
     <!-- PrivateAssets="compile": native bindings stay out of consumer compile graphs (analyzer perf);
          consumers calling GraphicsMarshal interop add their own PackageReference. -->
     <PackageReference Include="Vortice.Vulkan" Condition="'$(TargetFramework)' == '$(StrideFramework)'" PrivateAssets="compile" />
-    <PackageReference Include="Silk.NET.Direct3D11" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)' Or '$(TargetFramework)' == '$(StrideFrameworkUWP)'" PrivateAssets="compile" />
-    <PackageReference Include="Silk.NET.Direct3D12" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)' Or '$(TargetFramework)' == '$(StrideFrameworkUWP)'" PrivateAssets="compile" />
-    <PackageReference Include="Silk.NET.Direct3D.Compilers" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)' Or '$(TargetFramework)' == '$(StrideFrameworkUWP)'" PrivateAssets="compile" />
+    <PackageReference Include="Silk.NET.Direct3D11" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)'" PrivateAssets="compile" />
+    <PackageReference Include="Silk.NET.Direct3D12" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)'" PrivateAssets="compile" />
+    <PackageReference Include="Silk.NET.Direct3D.Compilers" Condition="'$(TargetFramework)' == '$(StrideFramework)' Or '$(TargetFramework)' == '$(StrideFrameworkWindows)'" PrivateAssets="compile" />
     <PackageReference Include="Silk.NET.Sdl" PrivateAssets="compile" />
     <!-- D3D12 Agility SDK: native-only package, copied by build\Stride.Graphics.targets (and the StrideNativeLib below for engine builds) -->
     <PackageReference Include="Microsoft.Direct3D.D3D12" Condition="'$(TargetFramework)' == '$(StrideFramework)'" GeneratePathProperty="true" />

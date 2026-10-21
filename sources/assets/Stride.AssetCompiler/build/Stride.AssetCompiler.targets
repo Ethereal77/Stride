@@ -304,33 +304,6 @@
     <RemoveDir Condition="Exists('$(StrideCompileAssetOutputPath)')" ContinueOnError="true"  Directories="$(StrideCompileAssetOutputPath)"/>
   </Target>
 
-  <!-- UWP: Adjust Appx folders -->
-  <PropertyGroup Condition="'$(StrideIsExecutable)' == 'true' And '$(StridePlatform)' == 'UWP'">
-    <!-- Use OutputPath to define AppxPackage directory -->
-    <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
-    <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
-    <AppxPackageName>$(AssemblyName)</AppxPackageName>
-  </PropertyGroup>
-
-  <!-- UWP: Compile and Transform Assets into Content during PrepareResources phase. -->
-  <PropertyGroup Condition="'$(StrideIsExecutable)' == 'true' And '$(StridePlatform)' == 'UWP'">
-    <PrepareResourcesDependsOn>
-      _StrideDeployAssetsAsContent;
-      $(PrepareResourcesDependsOn)
-    </PrepareResourcesDependsOn>
-  </PropertyGroup>
-  <Target Name="_StrideDeployAssetsAsContent" DependsOnTargets="StrideCompileAsset">
-    <ItemGroup>
-      <!-- Define the Assets to deploy -->
-      <AssetsToDeploy Include="$(StrideCompileAssetOutputPath)\**\*.*"/>
-
-      <Content Include="@(AssetsToDeploy)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      </Content>
-    </ItemGroup>
-  </Target>
-
   <!-- Publish: always deploy files as content -->
   <Target Name="_StrideDeployAssetsPublish" DependsOnTargets="StrideCompileAsset" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>

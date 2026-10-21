@@ -200,7 +200,7 @@ namespace Stride.Shaders.Compiler
             {
 #if STRIDE_PLATFORM_DESKTOP
                 case GraphicsPlatform.Direct3D11:
-                    if (Platform.Type != PlatformType.Windows && Platform.Type != PlatformType.UWP)
+                    if (Platform.Type != PlatformType.Windows)
                         throw new NotSupportedException();
                     compiler = new Direct3D.ShaderCompiler();
                     useSpirvCrossToHlsl = true;

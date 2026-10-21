@@ -57,17 +57,6 @@ public enum AppContextType
     DesktopWpf = DesktopWPF,
 
     /// <summary>
-    ///   The <c>Game</c> runs on UWP (<em>Universal Windows Platform</em>) in a <em>Xaml</em>
-    ///   <c>SwapChainPanel</c>.
-    /// </summary>
-    UWPXaml,
-
-    /// <summary>
-    ///   The <c>Game</c> runs on UWP (<em>Universal Windows Platform</em>) in a <c>CoreWindow</c>.
-    /// </summary>
-    UWPCoreWindow,
-
-    /// <summary>
     ///   The <c>Game</c> runs in headless mode without a window or display.
     ///   Used for automated testing with software renderers (e.g. Lavapipe).
     /// </summary>

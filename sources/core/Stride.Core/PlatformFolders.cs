@@ -79,36 +79,21 @@ public static class PlatformFolders
 
     private static string GetApplicationLocalDirectory()
     {
-#if STRIDE_PLATFORM_UWP
-        return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
-#else
-        // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "local");
         Directory.CreateDirectory(directory);
         return directory;
-#endif
     }
 
     private static string GetApplicationRoamingDirectory()
     {
-#if STRIDE_PLATFORM_UWP
-        return Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
-#else
-        // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "roaming");
         Directory.CreateDirectory(directory);
         return directory;
-#endif
     }
 
     private static string GetApplicationCacheDirectory()
     {
-#if STRIDE_PLATFORM_UWP
-        var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
-#else
-        // TODO: Should we add "local" ?
         var directory = Path.Combine(GetApplicationBinaryDirectory(), "cache");
-#endif
         Directory.CreateDirectory(directory);
         return directory;
     }
@@ -135,11 +120,7 @@ public static class PlatformFolders
 
     private static string GetApplicationTemporaryDirectory()
     {
-#if STRIDE_PLATFORM_UWP
-        return Windows.Storage.ApplicationData.Current.TemporaryFolder.Path;
-#else
         return Path.GetTempPath();
-#endif
     }
 
     private static string GetApplicationBinaryDirectory()
@@ -159,13 +140,11 @@ public static class PlatformFolders
         {
             return Path.GetDirectoryName(executableName)!;
         }
-#if STRIDE_RUNTIME_CORECLR
+  #if STRIDE_RUNTIME_CORECLR
         return AppContext.BaseDirectory;
-#else
+  #else
         return AppDomain.CurrentDomain.BaseDirectory;
-#endif
-#elif STRIDE_PLATFORM_UWP
-        return Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+  #endif
 #else
         throw new NotImplementedException();
 #endif
@@ -173,10 +152,6 @@ public static class PlatformFolders
 
     private static string GetApplicationDataDirectory()
     {
-#if STRIDE_PLATFORM_UWP
-        return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
-#else
         return Path.Combine(GetApplicationBinaryDirectory(), "data");
-#endif
     }
 }

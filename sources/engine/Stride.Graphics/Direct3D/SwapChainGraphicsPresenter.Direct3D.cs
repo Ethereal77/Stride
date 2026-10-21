@@ -72,7 +72,7 @@ namespace Stride.Graphics
 
         private bool useFlipModel;
 
-        // We assume a minimum of IDXGISwapChain1 support (DXGI 1.2, Windows 7+ / UWP)
+        // We assume a minimum of IDXGISwapChain1 support (DXGI 1.2, Windows 7+)
         private IDXGISwapChain1* swapChain;
         private uint swapChainVersion;
 
@@ -267,15 +267,10 @@ namespace Stride.Graphics
         /// </returns>
         private bool GetFullScreenState()
         {
-#if STRIDE_PLATFORM_UWP
-            // In UWP, SwapChains are always windowed. The system controls full-screen mode
-            return false;
-#else
             SkipInit(out int isFullScreen);
             swapChain->GetFullscreenState(ref isFullScreen, ppTarget: null);
 
             return isFullScreen != 0;
-#endif
         }
 
         /// <summary>
@@ -290,7 +285,6 @@ namespace Stride.Graphics
         /// </param>
         private void SetFullscreenState(bool isFullScreen)
         {
-#if !STRIDE_PLATFORM_UWP
             if (swapChain is null)
                 return;
 
@@ -352,7 +346,6 @@ namespace Stride.Graphics
                 if (result.IsFailure)
                     result.Throw();
             }
-#endif
         }
 
         /// <inheritdoc/>
@@ -494,23 +487,6 @@ namespace Stride.Graphics
             // Manually update all children Textures (Views)
             var childrenTextures = DestroyChildrenTextures(backBuffer);
 
-#if STRIDE_PLATFORM_UWP
-            if (Description.DeviceWindowHandle.NativeWindow is Windows.UI.Xaml.Controls.SwapChainPanel swapChainPanel)
-            {
-                if (swapChainVersion >= 2)
-                {
-                    Matrix3X2F transform = new()
-                    {
-                        DXGI11 = 1f / swapChainPanel.CompositionScaleX,
-                        DXGI22 = 1f / swapChainPanel.CompositionScaleY
-                    };
-
-                    var swapChain2 = NativeSwapChain.AsComPtrUnsafe<IDXGISwapChain1, IDXGISwapChain2>();
-                    swapChain2.SetMatrixTransform(ref transform);
-                }
-            }
-#endif
-
             if (useFlipModel)
                 format = ToSupportedFlipModelFormat(format); // See CreateSwapChainForDesktop
 
@@ -592,125 +568,9 @@ namespace Stride.Graphics
             if (SurfaceRotation != SurfaceRotation.Identity)
                 throw new NotImplementedException($"SurfaceRotation '{SurfaceRotation}' is not supported on Direct3D presenters.");
 
-#if STRIDE_PLATFORM_UWP
-            CreateSwapChainForUWP();
-#else
             CreateSwapChainForWindows();
-#endif
         }
 
-#if STRIDE_PLATFORM_UWP
-        /// <summary>
-        ///   Creates or reinitializes the Swap-Chain on the Universal Windows Platform (UWP).
-        /// </summary>
-        private void CreateSwapChainForUWP()
-        {
-            // Use two buffers to enable flip effect
-            bufferCount = 2;
-
-            // UWP does automatic sizing of the Swap-Chain based on the XAML element containing it.
-            // We don't control it, we just can react to size changes.
-            var description = new SwapChainDesc1
-            {
-                Width = (uint) Description.BackBufferWidth,
-                Height = (uint) Description.BackBufferHeight,
-                Format = (Format) Description.BackBufferFormat.ToNonSRgb(),
-                Stereo = 0,
-                SampleDesc = new SampleDesc(count: (uint) Description.MultisampleCount, quality: 0),
-                BufferUsage = DXGI.UsageRenderTargetOutput,
-                BufferCount = (uint) bufferCount,
-                Scaling = Scaling.Stretch,
-                SwapEffect = SwapEffect.FlipSequential
-            };
-
-            var deviceAsIUnknown = GraphicsDevice.NativeDevice.AsIUnknown();
-            var noOutput = NullComPtr<IDXGIOutput>();
-
-            ComPtr<IDXGISwapChain1> swapChain = default;
-
-            switch (Description.DeviceWindowHandle.Context)
-            {
-                case Games.AppContextType.UWPXaml:
-                {
-                    var hWindow = Description.DeviceWindowHandle.Handle;
-                    var nativePanel = GetNativePanelFromHandle(Description.DeviceWindowHandle);
-
-                    // If we are in UWP, we assume a minimum of IDXGIFactory2 support (DXGI 1.2, Windows 8+ / UWP)
-                    var swapChainFactory = GraphicsAdapterFactory.NativeFactory.AsComPtrUnsafe<IDXGIFactory1, IDXGIFactory2>();
-
-                    ref readonly var noFullscreenDesc = ref NullRef<SwapChainFullscreenDesc>();
-
-                    // Creates the Swap-Chain for XAML composition
-                    // TODO: Why not CreateSwapChainForCoreWindow / CreateSwapChainForComposition?
-                    HResult result = swapChainFactory.CreateSwapChainForHwnd(deviceAsIUnknown, hWindow, in description, in noFullscreenDesc, noOutput, ref swapChain);
-
-                    if (result.IsFailure)
-                        result.Throw();
-
-                    // Associate the SwapChainPanel with the Swap-Chain
-                    nativePanel.SwapChain = swapChain;
-
-                    break;
-
-                    /// <summary>
-                    ///   Gets an <see cref="ISwapChainPanelNative"/> from the handle of the window.
-                    /// </summary>
-                    static ISwapChainPanelNative GetNativePanelFromHandle(WindowHandle windowHandle)
-                    {
-                        var nativeWindow = windowHandle.NativeWindow;
-                        var comPtr = Marshal.GetIUnknownForObject(nativeWindow);
-
-                        HResult result = Marshal.QueryInterface(comPtr, in SilkMarshal.GuidOf<ISwapChainPanelNative>(), out var ptrPanel);
-
-                        if (result.IsFailure || ptrPanel == IntPtr.Zero)
-                            result.Throw();
-
-                        return new ISwapChainPanelNative(ptrPanel);
-                    }
-                }
-                case Games.AppContextType.UWPCoreWindow:
-                {
-                    HResult result = GraphicsDevice.NativeDevice.QueryInterface<IDXGIDevice2>(out var dxgiDevice2);
-
-                    if (result.IsFailure)
-                        result.Throw();
-
-                    // Ensure that DXGI does not queue more than one frame at a time.
-                    //   This both reduces latency and ensures that the application will only render after each VSync,
-                    //   minimizing power consumption.
-                    dxgiDevice2.SetMaximumFrameLatency(1);
-
-                    // Next, get the parent factory from the DXGI Device
-                    ComPtr<IDXGIAdapter> dxgiAdapter = default;
-                    dxgiDevice2.GetAdapter(ref dxgiAdapter);
-
-                    result = dxgiAdapter.GetParent(out ComPtr<IDXGIFactory2> dxgiFactory2);
-
-                    if (result.IsFailure)
-                        result.Throw();
-
-                    // Finally, create the Swap-Chain
-                    var coreWindow = ToComPtr((IUnknown*) Marshal.GetIUnknownForObject(Description.DeviceWindowHandle.NativeWindow));
-
-                    result = dxgiFactory2.CreateSwapChainForCoreWindow(deviceAsIUnknown, coreWindow, in description, noOutput, ref swapChain);
-
-                    if (result.IsFailure)
-                        result.Throw();
-
-                    SafeRelease(ref coreWindow);
-                    SafeRelease(ref dxgiFactory2);
-                    SafeRelease(ref dxgiAdapter);
-                    SafeRelease(ref dxgiDevice2);
-                    break;
-                }
-                default:
-                    throw new NotSupportedException($"Window context [{Description.DeviceWindowHandle.Context}] not supported while creating SwapChain");
-            }
-
-            this.swapChain = swapChain;
-            swapChainVersion = GetLatestDxgiSwapChainVersion(swapChain);
-        }
-#else
         /// <summary>
         ///   Creates or reinitializes the Swap-Chain on the desktop Windows platform.
         /// </summary>
@@ -783,7 +643,7 @@ namespace Stride.Graphics
 
             ComPtr<IDXGIOutput> doNotRestrictOutput = default;
 
-            // We assume at least IDXGISwapChain1 support (DXGI 1.2, Windows 7+ / UWP)
+            // We assume at least IDXGISwapChain1 support (DXGI 1.2, Windows 7+)
             Debug.Assert(GraphicsAdapterFactory.NativeFactoryVersion >= 2);
             var nativeFactory = GraphicsAdapterFactory.NativeFactory.AsComPtrUnsafe<IDXGIFactory1, IDXGIFactory2>();
 
@@ -849,7 +709,6 @@ namespace Stride.Graphics
 
             return flags;
         }
-#endif
 
         /// <summary>
         ///   Ensures the provided pixel format is supported for a flip model Swap-Chain, as

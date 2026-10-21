@@ -64,7 +64,6 @@ public static class VSProjectHelper
         var outputType = project.GetPropertyValue("OutputType");
         return outputType.Equals("winexe", StringComparison.InvariantCultureIgnoreCase)
             || outputType.Equals("exe", StringComparison.InvariantCultureIgnoreCase)
-            || outputType.Equals("appcontainerexe", StringComparison.InvariantCultureIgnoreCase) // UWP
             ? ProjectType.Executable
             : ProjectType.Library;
     }

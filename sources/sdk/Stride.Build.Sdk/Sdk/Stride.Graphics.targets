@@ -24,13 +24,11 @@
     <StrideGraphicsApis Condition="('$(StrideGraphicsApis)' == '' Or '$(StrideGraphicsApiDependentBuildAll)' == 'true') And ('$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')">Direct3D11;Direct3D12;Vulkan</StrideGraphicsApis>
 
     <StrideDefaultGraphicsApi Condition="'$(StrideGraphicsApis)' != ''">$(StrideGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</StrideDefaultGraphicsApi>
-    <StrideDefaultGraphicsApi Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkUWP)'">Direct3D11</StrideDefaultGraphicsApi>
   </PropertyGroup>
 
   <!-- Some platforms only have a single graphics API.
        If yes, set it right away and disable StrideGraphicsApiDependent (only for inner builds) -->
   <PropertyGroup Condition="'$(StrideGraphicsApiDependent)' == 'true' And !('$(TargetFrameworks)' != '' and '$(TargetFramework)' == '')">
-    <StrideGraphicsApiDependent Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkUWP)'">false</StrideGraphicsApiDependent>
     <StrideGraphicsApi Condition="'$(StrideGraphicsApiDependent)' == 'false'">$(StrideDefaultGraphicsApi)</StrideGraphicsApi>
   </PropertyGroup>
 
@@ -82,7 +80,7 @@
   <!-- UI Framework Configuration -->
   <!-- ================================================================ -->
   <PropertyGroup>
-    <StrideUI Condition="'$(StrideTargetFramework)' != '$(StrideFrameworkUWP)'">SDL</StrideUI>
+    <StrideUI>SDL</StrideUI>
     <StrideUI Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' AND ('$(StrideGraphicsApi)' == 'Direct3D11' Or '$(StrideGraphicsApi)' == 'Direct3D12' Or '$(StrideGraphicsApi)' == 'Vulkan')">$(StrideUI);WINFORMS;WPF</StrideUI>
 
     <DefineConstants Condition="$(StrideUI.Contains('SDL'))">$(DefineConstants);STRIDE_UI_SDL</DefineConstants>

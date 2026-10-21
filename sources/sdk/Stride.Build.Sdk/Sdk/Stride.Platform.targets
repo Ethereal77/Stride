@@ -36,6 +36,4 @@
     <DefineConstants Condition="'$(StridePackageBuild)' == 'true'">$(DefineConstants);STRIDE_PACKAGE_BUILD</DefineConstants>
   </PropertyGroup>
 
-  <!-- UWP platform support intentionally omitted (UWP is being phased out) -->
-
 </Project>

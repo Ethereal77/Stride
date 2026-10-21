@@ -140,7 +140,7 @@ Use `git` to revert the project file changes (all 125 `.csproj` files). The dire
 
 **Step 5 — Re-add `BuildSdk` target to `build/Stride.build`:**
 
-Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildUWP`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`.
+Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`.
 
 ```xml
 <!--
@@ -411,7 +411,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 | `StrideUI` | Semicolon-separated UI frameworks: SDL, WINFORMS, WPF |
 | `StrideUIList` | Item group generated from `$(StrideUI)` |
 
-SDL is included for all non-UWP platforms. WINFORMS and WPF are added on Windows when using Direct3D11, Direct3D12, or Vulkan.
+SDL is included for all platforms. WINFORMS and WPF are added on Windows when using Direct3D11, Direct3D12, or Vulkan.
 
 Defines: `STRIDE_UI_SDL`, `STRIDE_UI_WINFORMS`, `STRIDE_UI_WPF`.
 
@@ -599,7 +599,6 @@ NuGet's `build/` convention auto-imports `.props` and `.targets` files even for 
 | `ErrorReport=prompt`, `FileAlignment=512` | .NET defaults are sufficient |
 | `ExecutableExtension` | .NET SDK handles this |
 | C++ output path for vcxproj | C++ projects don't use `Stride.Build.Sdk` |
-| UWP-specific properties | UWP is being phased out |
 
 ---
 

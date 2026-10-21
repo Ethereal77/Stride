@@ -72,7 +72,8 @@
 // cannot change. To the extent permitted under your local laws, the 
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
-#if STRIDE_PLATFORM_UWP
+// TODO: Re-enable WIC
+#if FALSE
 using System;
 
 namespace Stride.Graphics

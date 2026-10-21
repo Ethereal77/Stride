@@ -156,7 +156,7 @@ public abstract class GraphicsPresenter : ComponentBase
     ///     <item><see langword="false"/> if the presentation will be in a window.</item>
     ///   </list>
     /// </value>
-    /// <remarks>This property is only valid on desktop Windows. It has no effect on UWP.</remarks>
+    /// <remarks>This property is only valid on desktop Windows.</remarks>
     public abstract bool IsFullScreen { get; set; }
 
     /// <summary>

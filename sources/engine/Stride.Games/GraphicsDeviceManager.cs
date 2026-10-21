@@ -673,7 +673,7 @@ namespace Stride.Games
         /// <param name="foundDevices">A list of possible device configurations to be ranked and reordered.</param>
         protected virtual void RankDevices(List<GraphicsDeviceInformation> foundDevices)
         {
-            // Don't sort if there is a single device (mostly for XAML/UWP)
+            // Don't sort if there is a single device
             if (foundDevices.Count == 1)
                 return;
 

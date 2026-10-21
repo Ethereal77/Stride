@@ -32,7 +32,6 @@
   <PropertyGroup>
     <StrideTargetFramework>$(TargetFramework)</StrideTargetFramework>
     <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkWindows)'))">$(StrideFrameworkWindows)</StrideTargetFramework>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatform>
     <!-- net10.0 + Game in test platforms: tag StridePlatform=Game so the host-loadable
          library TFM gets its own output folder (bin/Tests/.../Game-Vulkan/).
          Game is suppressed when a runnable host (Linux/Windows) is also in the list:

@@ -20,7 +20,6 @@
        to the host OS. Fix it here so SDK conditions gating on StridePlatform pick the right
        platform from a non-Stride-runtime project. -->
   <PropertyGroup>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatform>
   </PropertyGroup>
 
 </Project>

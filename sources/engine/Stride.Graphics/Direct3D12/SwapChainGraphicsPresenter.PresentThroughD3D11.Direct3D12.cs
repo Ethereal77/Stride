@@ -26,11 +26,7 @@ namespace Stride.Graphics
         // monitor, DWM crashes in a loop while a Direct3D 12 Swap-Chain presents with WARP 1.0.13 or later
         // (Microsoft.Direct3D.WARP, as pinned by the editor tests); Direct3D 11 Swap-Chains are not affected.
         // Workaround only: remove it once the pinned WARP has a fix (repro: https://github.com/xen2/warp-dwm-repro).
-#if STRIDE_PLATFORM_UWP
-        private static readonly bool presentThroughD3D11 = false;
-#else
         private static readonly bool presentThroughD3D11 = Environment.GetEnvironmentVariable("STRIDE_GRAPHICS_PRESENT_THROUGH_D3D11") == "1";
-#endif
 
         private static readonly Logger Log = GlobalLogger.GetLogger(nameof(SwapChainGraphicsPresenter));
 

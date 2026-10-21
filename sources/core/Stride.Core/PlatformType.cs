@@ -38,11 +38,6 @@ public enum PlatformType
     Windows,
 
     /// <summary>
-    ///   The Universal Windows Platform (UWP) for applications that run on Windows 10 and later devices, and XBox gaming consoles.
-    /// </summary>
-    UWP,
-
-    /// <summary>
     ///   The Linux operating system, typically used for servers and desktops.
     /// </summary>
     Linux

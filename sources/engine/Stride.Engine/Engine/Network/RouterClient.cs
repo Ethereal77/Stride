@@ -135,19 +135,7 @@ namespace Stride.Engine.Network
         /// <summary>
         /// Gets a value indicating whether this platform initiates connections by listening on a port and wait for router (true) or connecting to router (false).
         /// </summary>
-        private static RouterConnectionMode ConnectionMode
-        {
-            get
-            {
-                switch (Platform.Type)
-                {
-                    case PlatformType.UWP:
-                        return RouterConnectionMode.ConnectThenListen;
-                    default:
-                        return RouterConnectionMode.Connect;
-                }
-            }
-        }
+        private static RouterConnectionMode ConnectionMode => RouterConnectionMode.Connect;
 
         private enum RouterConnectionMode
         {
@@ -163,9 +151,9 @@ namespace Stride.Engine.Network
 
             /// <summary>
             /// First, tries to connect, and if not possible, listen for a router connection.
-            /// This is useful for platform where we can't be sure (no way to determine if emulator and/or run in desktop or remotely, such as UWP).
+            /// This is useful for platform where we can't be sure (no way to determine if emulator and/or run in desktop or remotely).
             /// </summary>
-            ConnectThenListen = 3,
+            ConnectThenListen = 3
         }
     }
 }

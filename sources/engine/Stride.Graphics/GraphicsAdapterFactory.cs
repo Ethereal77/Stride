@@ -20,8 +20,11 @@ namespace Stride.Graphics
         private static GraphicsAdapter defaultAdapter;
 
         /// <summary>
-        ///   Initializes the <see cref="GraphicsAdapterFactory"/>. On Desktop and WinRT, this is done statically.
+        ///   Initializes the <see cref="GraphicsAdapterFactory"/>.
         /// </summary>
+        /// <remarks>
+        ///   This method is automatically called on Desktop platforms.
+        /// </remarks>
         public static void Initialize()
         {
             lock (StaticLock)

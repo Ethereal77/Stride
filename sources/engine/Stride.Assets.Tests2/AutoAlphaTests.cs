@@ -23,12 +23,7 @@ namespace Stride.Assets.Tests2
             { Tuple.Create(PlatformType.Windows, AlphaFormat.None), PixelFormat.BC1_UNorm },
             { Tuple.Create(PlatformType.Windows, AlphaFormat.Mask), PixelFormat.BC1_UNorm },
             { Tuple.Create(PlatformType.Windows, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },
-            { Tuple.Create(PlatformType.Windows, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm },
-
-            { Tuple.Create(PlatformType.UWP, AlphaFormat.None), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.UWP, AlphaFormat.Mask), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.UWP, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },
-            { Tuple.Create(PlatformType.UWP, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm }
+            { Tuple.Create(PlatformType.Windows, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm }
         };
 
         private static void CheckTextureFormat(Game game, string textureUrl, AlphaFormat expectedFormat)

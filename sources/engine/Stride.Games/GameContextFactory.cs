@@ -48,12 +48,6 @@ namespace Stride.Games
                 case AppContextType.DesktopWPF:
                     res = NewGameContextWpf(requestedWidth, requestedHeight, isUserManagingRun);
                     break;
-                case AppContextType.UWPXaml:
-                    res = NewGameContextUWPXaml(requestedWidth, requestedHeight);
-                    break;
-                case AppContextType.UWPCoreWindow:
-                    res = NewGameContextUWPCoreWindow(requestedWidth, requestedHeight);
-                    break;
                 case AppContextType.Headless:
                     res = new GameContextHeadless(requestedWidth, requestedHeight);
                     break;
@@ -75,24 +69,6 @@ namespace Stride.Games
             return new GameContextSDL(null, requestedWidth, requestedHeight, isUserManagingRun);
 #elif (STRIDE_UI_WINFORMS || STRIDE_UI_WPF)
             return new GameContextWinforms(null, requestedWidth, requestedHeight, isUserManagingRun);
-#else
-            return null;
-#endif
-        }
-
-        public static GameContext NewGameContextUWPXaml(int requestedWidth = 0, int requestedHeight = 0)
-        {
-#if STRIDE_PLATFORM_UWP
-            return new GameContextUWPXaml(null, requestedWidth, requestedHeight);
-#else
-            return null;
-#endif
-        }
-
-        public static GameContext NewGameContextUWPCoreWindow(int requestedWidth = 0, int requestedHeight = 0)
-        {
-#if STRIDE_PLATFORM_UWP
-            return new GameContextUWPCoreWindow(null, requestedWidth, requestedHeight);
 #else
             return null;
 #endif

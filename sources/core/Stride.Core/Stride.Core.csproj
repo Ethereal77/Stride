@@ -9,13 +9,12 @@
     <StrideCodeAnalysis>true</StrideCodeAnalysis>
     <TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
     <StrideAssemblyProcessorOptions>--auto-module-initializer --serialization</StrideAssemblyProcessorOptions>
-    <ExtrasUwpMetaPackageVersion>6.2.12</ExtrasUwpMetaPackageVersion>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -30,7 +29,7 @@
     <!-- You need to rebuild this project if the file changes (VS caches it somewhere) -->
     <None Include="$(MSBuildThisFileDirectory)\..\Stride.Core.CompilerServices\bin\$(Configuration)\netstandard2.0\Stride.Core.CompilerServices.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Diagnostics\ILogger.Extensions.cs">
       <DependentUpon>ILogger.Extensions.tt</DependentUpon>
@@ -58,7 +57,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="Diagnostics\ILogger.Extensions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -79,7 +78,7 @@
       <LastGenOutput>TupleSerializer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>

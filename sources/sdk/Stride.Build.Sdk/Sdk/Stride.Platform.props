@@ -26,7 +26,6 @@
     <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(win))' ">Windows</StridePlatform>
     <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">Windows</StridePlatform>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatform>
     <StridePlatform Condition=" '$(StridePlatform)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StridePlatform)' == '' ">Windows</StridePlatform>
 
@@ -36,7 +35,6 @@
 
     <!-- Platform dependencies -->
     <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">dotnet</StridePlatformDeps>
-    <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkUWP)' ">UWP</StridePlatformDeps>
   </PropertyGroup>
 
   <!-- ================================================================ -->
@@ -81,18 +79,15 @@
        <TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>. Computed here (props)
        so the value is known when the csproj body evaluates and the literal <TargetFrameworks>
        element lives in the csproj (keeps SDK-style project-system detection working).
-       Ordered base; desktop-native; UWP — gated on the active $(_StridePlatforms). -->
+       Ordered base; desktop-native -->
   <PropertyGroup>
-    <!-- UWP tail shared by every variant -->
-    <_StrideRuntimeMobileFrameworks Condition="$(_StridePlatforms.Contains(';UWP;'))">$(_StrideRuntimeMobileFrameworks);$(StrideFrameworkUWP)</_StrideRuntimeMobileFrameworks>
-
     <!-- desktop-native variants, included only when that platform is active -->
     <_StrideRuntimeWindowsFramework Condition="$(_StridePlatforms.Contains(';Windows;'))">;$(StrideFrameworkWindows)</_StrideRuntimeWindowsFramework>
 
     <!-- base only: most runtime assemblies -->
-    <StrideRuntimeTargetFrameworks>$(StrideFramework)$(_StrideRuntimeMobileFrameworks)</StrideRuntimeTargetFrameworks>
+    <StrideRuntimeTargetFrameworks>$(StrideFramework)</StrideRuntimeTargetFrameworks>
     <!-- + Windows desktop (e.g. raw input) -->
-    <StrideRuntimeTargetFrameworksWindows>$(StrideFramework)$(_StrideRuntimeWindowsFramework)$(_StrideRuntimeMobileFrameworks)</StrideRuntimeTargetFrameworksWindows>
+    <StrideRuntimeTargetFrameworksWindows>$(StrideFramework)$(_StrideRuntimeWindowsFramework)</StrideRuntimeTargetFrameworksWindows>
   </PropertyGroup>
 
   <!-- ================================================================ -->

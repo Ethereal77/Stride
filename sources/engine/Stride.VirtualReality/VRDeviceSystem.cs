@@ -71,7 +71,7 @@ namespace Stride.VirtualReality
                         {
 #if STRIDE_GRAPHICS_API_DIRECT3D11
                             Device = new OculusOvrHmd();
-                                
+
 #endif
                             break;
                         }
@@ -89,16 +89,6 @@ namespace Stride.VirtualReality
 #endif
                                 break;
                             }
-                        case VRApi.WindowsMixedReality:
-                        {
-#if STRIDE_GRAPHICS_API_DIRECT3D11 && STRIDE_PLATFORM_UWP
-                            if (Windows.Graphics.Holographic.HolographicSpace.IsAvailable && GraphicsDevice.Presenter is WindowsMixedRealityGraphicsPresenter)
-                            {
-                                Device = new WindowsMixedRealityHmd();
-                            }
-#endif
-                            break;
-                        }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }

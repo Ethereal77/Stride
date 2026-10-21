@@ -4,13 +4,6 @@ using System;
 using System.IO;
 using Stride.Core;
 
-#if STRIDE_PLATFORM_UWP
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.System.Profile;
-using Windows.Security.ExchangeActiveSyncProvisioning;
-#endif
-
 namespace Stride.Graphics.Regression
 {
     public partial class TestRunner
@@ -50,18 +43,6 @@ namespace Stride.Graphics.Regression
     #elif STRIDE_GRAPHICS_API_VULKAN
             result.DeviceName = "Vulkan";
     #endif
-#elif STRIDE_PLATFORM_UWP
-            result.Platform = "UWP";
-            var deviceInfo = new EasClientDeviceInformation();
-            result.DeviceName = deviceInfo.SystemManufacturer + " " + deviceInfo.SystemProductName;
-            try
-            {
-                result.Serial = deviceInfo.Id.ToString();
-            }
-            catch (Exception)
-            {
-                // Ignored on UWP
-            }
 #endif
 
             return result;

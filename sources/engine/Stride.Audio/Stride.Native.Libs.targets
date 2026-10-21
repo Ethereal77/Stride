@@ -2,7 +2,6 @@
   <PropertyGroup>
     <StrideNativePathLibsWindows_x64>$(MSBuildThisFileDirectory)..\..\..\deps\NativePath\dotnet\win-x64\libCelt.lib</StrideNativePathLibsWindows_x64>
     <StrideNativePathLibsWindowsArm64>$(MSBuildThisFileDirectory)..\..\..\deps\NativePath\dotnet\win-arm64\libCelt.lib</StrideNativePathLibsWindowsArm64>
-    <StrideNativePathLibsUWP>libCelt.lib Xaudio2.lib</StrideNativePathLibsUWP>
   </PropertyGroup>
 
   <ItemGroup>

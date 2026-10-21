@@ -128,7 +128,7 @@ Example: dotnet build build/Stride.build -t:Package
   </Target>
 
   <!--
-  Build Stride: Windows, Windows 10 (UWP)
+  Build Stride: Windows
   -->
   <Target Name="Clean">
     <RemoveDir Directories="$(StrideRoot)Bin"/>

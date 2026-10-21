@@ -698,11 +698,6 @@ namespace Stride.Input
                 case AppContextType.DesktopSDL:
                     break;
 #endif
-#if STRIDE_PLATFORM_UWP
-                case AppContextType.UWPXaml:
-                case AppContextType.UWPCoreWindow:
-                    break;
-#endif
                 case AppContextType.DesktopWinForms:
 #if STRIDE_UI_WINFORMS || STRIDE_UI_WPF
                     // Gate on the feature switch so trimming/AOT can drop the whole Win32 controller
