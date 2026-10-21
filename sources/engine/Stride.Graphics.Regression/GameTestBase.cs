@@ -997,8 +997,6 @@ namespace Stride.Graphics.Regression
             string deviceName;
             if (driverId == "MesaLLVMPipe" && desc.Contains("llvmpipe", StringComparison.OrdinalIgnoreCase))
                 deviceName = "Lavapipe";
-            else if (driverId == "GoogleSwiftShader" && desc.StartsWith("SwiftShader", StringComparison.OrdinalIgnoreCase))
-                deviceName = "SwiftShader";
             else if (adapter.VendorId == 0x1414) deviceName = "WARP"; // Microsoft Basic / WARP
             else deviceName = desc;
 

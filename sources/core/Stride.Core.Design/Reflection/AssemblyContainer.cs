@@ -467,8 +467,8 @@ public class AssemblyContainer
     // API at resolver time (Game/GraphicsAdapter haven't initialized yet), so we prefer the
     // native API for the host platform.
     private static readonly string[] GraphicsApiProbeOrder = OperatingSystem.IsWindows()
-        ? new[] { "Direct3D11", "Direct3D12", "Vulkan", "OpenGL", "OpenGLES" }
-        : new[] { "Vulkan", "OpenGL", "OpenGLES" };
+        ? new[] { "Direct3D11", "Direct3D12", "Vulkan" }
+        : new[] { "Vulkan" };
 
     /// <summary>
     /// Checks if a NuGet package folder contains a dev-redirect stub props and resolves the assembly path from its HintPath.

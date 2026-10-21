@@ -38,7 +38,7 @@
       <Code Type="Fragment" Language="cs"><![CDATA[
         var apis = Apis.Split(new[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
         var known = new System.Collections.Generic.HashSet<string>(
-            new[] { "Direct3D11", "Direct3D12", "Vulkan", "OpenGL", "OpenGLES", "Null" },
+            new[] { "Direct3D11", "Direct3D12", "Vulkan", "Null" },
             System.StringComparer.OrdinalIgnoreCase);
 
         // PackageId -> single owning API (Silk.NET.Direct3D12=Direct3D12, Vortice.Vulkan=Vulkan, ...).

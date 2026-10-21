@@ -278,7 +278,7 @@ namespace Stride.Rendering.Lights
                         int maxMipMapCount = Texture.CountMipLevels(lightParameters.ProjectionTexture.Width, lightParameters.ProjectionTexture.Height);
                         float projectiveTextureMipMapLevel = (float)(maxMipMapCount - 1) * spotLight.MipMapScale; // "- 1" because the lowest mip level is 0, not 1.
                         projectionTextureMipMapLevels[lightIndex] = projectiveTextureMipMapLevel;
-                        transitionAreas[lightIndex] = Math.Max(spotLight.TransitionArea, 0.001f);   // Keep the value just above zero. This is to prevent some issues with the "smoothstep()" function on OpenGL and OpenGL ES.
+                        transitionAreas[lightIndex] = Math.Max(spotLight.TransitionArea, 0.001f);   // Keep the value just above zero. This is to prevent some issues with the "smoothstep()" function on Vulkan.
 
                         ++lightIndex;
                     }

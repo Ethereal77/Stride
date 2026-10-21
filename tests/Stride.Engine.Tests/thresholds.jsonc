@@ -6,7 +6,7 @@
 //   image    - image filename (required, or omit for suite-wide default); supports '*' and '?' wildcards
 //   platform - "Windows", "Linux" (optional, omit = any)
 //   api      - "Vulkan", "Direct3D11", "Direct3D12" (optional, omit = any)
-//   device   - "SwiftShader", "WARP", GPU name (optional, omit = any)
+//   device   - "Lavapipe", "WARP", GPU name (optional, omit = any)
 //   allow    - max allowed pixel counts per diff range (e.g. "1-2": 500, "16+": 2)
 [
   {

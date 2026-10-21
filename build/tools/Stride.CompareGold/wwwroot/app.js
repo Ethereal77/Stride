@@ -1304,7 +1304,7 @@ function updateActionCounts() {
 // === Utils ===
 function isSoftwareRenderer(platform) {
   const p = platform.toLowerCase();
-  return p.includes('swiftshader') || p.includes('warp');
+  return p.includes('lavapipe') || p.includes('warp');
 }
 
 function getGfxApi(platform) {

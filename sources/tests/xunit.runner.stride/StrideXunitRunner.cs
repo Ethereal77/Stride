@@ -280,7 +280,7 @@ public static class StrideXunitRunner
             .UsePlatformDetect()
             .With(new Win32PlatformOptions
             {
-                // Use Software rendering, otherwise default renderer (OpenGL) interfere with GPU capture tools such as RenderDoc
+                // Use Software rendering, otherwise default renderer (OpenGL) interferes with GPU capture tools such as RenderDoc
                 RenderingMode = new[] { Win32RenderingMode.Software }
             })
             .WithInterFont()

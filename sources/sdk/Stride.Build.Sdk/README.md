@@ -6,7 +6,7 @@ This is the base SDK used by all Stride source projects via `<Project Sdk="Strid
 
 - Platform detection (Windows, Linux)
 - Target framework management and multi-platform targeting
-- Graphics API multi-targeting (Direct3D 11/12, OpenGL, Vulkan)
+- Graphics API multi-targeting (Direct3D 11/12, Vulkan)
 - Assembly processor integration (IL post-processing)
 - Native dependency resolution (.ssdeps system)
 - Shader compilation support

@@ -44,8 +44,6 @@
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D11/')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D12/')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Vulkan/')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
-      <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/OpenGL/')) And '$(StrideGraphicsApi)' != 'OpenGL'" />
-      <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/OpenGLES/')) And '$(StrideGraphicsApi)' != 'OpenGLES'" />
     </ItemGroup>
     <ItemGroup>
       <None Include="@(_StrideDepsFile)" CopyToOutputDirectory="PreserveNewest" />
@@ -65,8 +63,6 @@
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Direct3D11\')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Direct3D12\')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Vulkan\')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
-      <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\OpenGL\')) And '$(StrideGraphicsApi)' != 'OpenGL'" />
-      <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\OpenGLES\')) And '$(StrideGraphicsApi)' != 'OpenGLES'" />
     </ItemGroup>
   </Target>
 

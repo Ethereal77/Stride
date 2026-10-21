@@ -34,8 +34,8 @@ public enum aiPostProcessSteps : uint
     aiProcess_JoinIdenticalVertices = 0x2,
 
     /// <summary>
-    /// Converts all the imported data to a left-handed coordinate space./// By default the data is returned in a right-handed coordinate space (which
-    /// OpenGL prefers). In this space, +X points to the right,
+    /// Converts all the imported data to a left-handed coordinate space./// By default the data is returned in a right-handed coordinate space.
+    /// In this space, +X points to the right,
     /// +Z points towards the viewer, and +Y points upwards. In the DirectX
     /// coordinate space +X points to the right, +Y points upwards, and +Z points
     /// away from the viewer./// You'll probably want to consider this flag if you use Direct3D for
@@ -334,7 +334,7 @@ public enum aiPostProcessSteps : uint
     ///  together with #aiProcess_OptimizeGraph, if possible. The flag is fully
     ///  compatible with both #aiProcess_SplitLargeMeshes and #aiProcess_SortByPType.
     /// </summary>
-    aiProcess_OptimizeMeshes  = 0x200000,
+    aiProcess_OptimizeMeshes = 0x200000,
 
 
     /// <summary>
@@ -353,7 +353,7 @@ public enum aiPostProcessSteps : uint
     ///  #aiProcess_OptimizeMeshes in combination with #aiProcess_OptimizeGraph
     ///  usually fixes them all and makes them renderable.
     /// </summary>
-    aiProcess_OptimizeGraph  = 0x400000,
+    aiProcess_OptimizeGraph = 0x400000,
 
     /// <summary>
     /// This step flips all UV coordinates along the y-axis and adjusts
@@ -378,13 +378,13 @@ public enum aiPostProcessSteps : uint
     ///  x1
     /// @endcode
     /// </summary>
-    aiProcess_FlipWindingOrder  = 0x1000000,
+    aiProcess_FlipWindingOrder = 0x1000000,
 
     /// <summary>
     /// This step splits meshes with many bones into sub-meshes so that each
     /// sub-mesh has fewer or as many bones as a given limit.
     /// </summary>
-    aiProcess_SplitByBoneCount  = 0x2000000,
+    aiProcess_SplitByBoneCount = 0x2000000,
 
     /// <summary>
     /// This step removes bones losslessly or according to some threshold.///  In some cases (i.e. formats that require it) exporters are forced to
@@ -395,7 +395,7 @@ public enum aiPostProcessSteps : uint
     ///  Use <tt>#AI_CONFIG_PP_DB_ALL_OR_NONE</tt> if you want bones removed if and
     ///  only if all bones within the scene qualify for removal.
     /// </summary>
-    aiProcess_Debone  = 0x4000000,
+    aiProcess_Debone = 0x4000000,
 
 
 
@@ -414,7 +414,7 @@ public enum aiPostProcessSteps : uint
     ///  it will check if a file with the same name exists at the root folder
     ///  of the imported model. And if so, it uses that.
     /// </summary>
-    aiProcess_EmbedTextures  = 0x10000000,
+    aiProcess_EmbedTextures = 0x10000000,
 
     // aiProcess_GenEntityMeshes = 0x100000,
     // aiProcess_OptimizeAnimations = 0x200000

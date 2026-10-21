@@ -114,14 +114,14 @@ namespace Stride.Core.Assets
 
                     // Resolve MSBuild-style properties. The graphicsApi arg drives the first probe
                     // (Direct3D11 by default on the editor path); fall back to other APIs whose
-                    // dev DLL exists, so a Linux build using Vulkan/OpenGL still resolves.
+                    // dev DLL exists, so a Linux build using Vulkan still resolves.
                     hintPath = hintPath
                         .Replace("$(StrideDevRoot)", devRoot)
                         .Replace("$(StrideDevConfiguration)", devConfig);
 
                     if (hintPath.Contains("$(StrideGraphicsApi)"))
                     {
-                        var probeOrder = new[] { graphicsApi, "Direct3D11", "Direct3D12", "Vulkan", "OpenGL", "OpenGLES" };
+                        var probeOrder = new[] { graphicsApi, "Direct3D11", "Direct3D12", "Vulkan" };
                         foreach (var api in probeOrder)
                         {
                             var candidate = hintPath.Replace("$(StrideGraphicsApi)", api);

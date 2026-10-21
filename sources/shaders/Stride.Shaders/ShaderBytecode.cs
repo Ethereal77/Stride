@@ -76,13 +76,13 @@ public partial class ShaderBytecode
     }
 
     /// <summary>
-    ///   Gets the Shader data as a <see langword="string"/>. In some platforms (e.g. OpenGL), the data
+    ///   Gets the Shader data as a <see langword="string"/>. In some platforms, the data
     ///   represents the GLSL source code, instead of compiled bytecode.
     /// </summary>
     /// <returns>The Shader data as GLSL source code.</returns>
     public string GetDataAsString()
     {
-        // TODO: This is a workaround for OpenGL, where the shader bytecode is actually GLSL source code.
+        // TODO: This is a workaround for when the shader bytecode is actually GLSL source code.
         //       But the class is still called ShaderBytecode!
 
         return Encoding.UTF8.GetString(Data);

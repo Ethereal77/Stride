@@ -126,7 +126,7 @@ namespace Stride.Graphics
         internal bool HasSurfaceSupport;
         internal bool HasDebugUtilsSupport;
 
-        // We use GraphicsDevice (similar to OpenGL)
+        // We use GraphicsDevice
         private static readonly Logger Log = GlobalLogger.GetLogger(nameof(GraphicsDevice));
 
         /// <summary>

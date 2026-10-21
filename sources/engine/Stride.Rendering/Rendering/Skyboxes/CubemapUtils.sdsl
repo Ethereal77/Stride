@@ -7,7 +7,7 @@ namespace Stride.Rendering.Cubemap
     /// </summary>
     shader CubemapUtils
     {
-        // The standard cubemap face layout, shared by Direct3D, OpenGL and Vulkan
+        // The standard cubemap face layout, shared by Direct3D and Vulkan
         //  ________ ________ ________ ________ ________ ________
         // |     y  |  y     |   ___x |  z     |  y     |     y  |
         // |     |  |  |     |  |     |  |     |  |     |     |  |
@@ -32,10 +32,10 @@ namespace Stride.Rendering.Cubemap
                 return float3(position.x, -position.y, 1); // face Z
             if (viewIndex == 5)
                 return float3(-position.x, -position.y, -1); // face -Z
-        
+
             return 0;
         }
-    
+
         float3 ConvertTexcoordsFlip(float2 inputTexcoord, int viewIndex)
         {
             float2 position = float2(2, -2) * inputTexcoord + float2(-1, 1);
@@ -52,7 +52,7 @@ namespace Stride.Rendering.Cubemap
                 return float3(-position.x, position.y, 1); // face Z
             if (viewIndex == 5)
                 return float3(position.x, position.y, -1); // face -Z
-        
+
             return 0;
         }
 
@@ -74,11 +74,11 @@ namespace Stride.Rendering.Cubemap
         {
             samplingDir = normalize(samplingDir);
             float3 reflectionPointDir = reflectionPoint - cubemapCenter;
-        
+
             float b = 2 * dot(reflectionPointDir, samplingDir);
             float c = dot(reflectionPointDir, reflectionPointDir) - cubemapRadius * cubemapRadius;
             float discr = b*b - 4*c;
-        
+
             if (discr >= 0)
             {
                 float sqrtDelta = sqrt(discr);

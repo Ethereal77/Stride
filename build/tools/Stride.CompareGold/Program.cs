@@ -826,7 +826,7 @@ static int ScoreFallback(string candidatePlatApi, string candidateDevice, bool c
 static bool IsSoftwareRenderer(string device)
 {
     var d = device.ToLowerInvariant();
-    return d.Contains("warp") || d.Contains("swiftshader") || d.Contains("lavapipe") || d.Contains("llvmpipe");
+    return d.Contains("warp") || d.Contains("lavapipe") || d.Contains("llvmpipe");
 }
 
 static IResult ServeImage(string baseDir, string suite, string platform, string name)

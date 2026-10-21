@@ -85,7 +85,7 @@ Please check our [Contributing Guidelines](https://doc.stride3d.net/latest/en/co
 | Build | Status |
 |:--|:--:|
 | Windows | [![](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml) |
-| Linux Vulkan/OpenGL | [![](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml) |
+| Linux Vulkan | [![](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml) |
 | Tests (Simple) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
 | Tests (Game/WARP) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
 

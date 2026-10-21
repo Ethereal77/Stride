@@ -135,8 +135,8 @@ namespace Stride.Graphics
         }
 
         /// <summary>
-        ///   Gets a value indicating whether this adapter is a software rasterizer (llvmpipe,
-        ///   SwiftShader) rather than a physical GPU.
+        ///   Gets a value indicating whether this adapter is a software rasterizer (llvmpipe)
+        ///   rather than a physical GPU.
         /// </summary>
         public bool IsSoftwareAdapter => properties.deviceType == VkPhysicalDeviceType.Cpu;
 

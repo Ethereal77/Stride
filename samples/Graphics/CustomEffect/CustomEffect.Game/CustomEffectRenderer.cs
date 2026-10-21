@@ -40,7 +40,6 @@ namespace CustomEffect
             customEffectInstance.Parameters.Set(EffectKeys.Amplitude, 0.015f);
             customEffectInstance.Parameters.Set(EffectKeys.InvAspectRatio, GraphicsDevice.Presenter.BackBuffer.Height / (float)GraphicsDevice.Presenter.BackBuffer.Width);
 
-            // NOTE: Linear-Wrap sampling is not available for non-square non-power-of-two textures on opengl es 2.0
             samplerState = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp));
         }
 

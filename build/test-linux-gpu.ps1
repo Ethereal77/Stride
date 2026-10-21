@@ -5,8 +5,8 @@
 
 .DESCRIPTION
     1. Builds GPU test projects on Windows targeting Linux/Vulkan
-    2. Copies SwiftShader Linux native to test outputs
-    3. Runs tests via WSL2 with SwiftShader ICD
+    2. Copies Lavapipe Linux native to test outputs
+    3. Runs tests via WSL2 with Lavapipe ICD
 
 .PARAMETER Filter
     Optional test filter (e.g. "TestDrawQuad" or "Stride.Graphics.Tests")
@@ -55,19 +55,19 @@ dotnet build build\Stride.Tests.Game.GPU.slnf `
     -p:StrideGraphicsApi=Vulkan
 if ($LASTEXITCODE -ne 0) { throw "Build failed" }
 
-Write-Host "=== Step 3: Copy SwiftShader Linux native ===" -ForegroundColor Cyan
-$swiftShaderDir = Get-ChildItem -Recurse -Path "$env:USERPROFILE\.nuget\packages\stride.dependencies.swiftshader" -Directory -Filter linux-x64 -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($swiftShaderDir) {
+Write-Host "=== Step 3: Copy Lavapipe Linux native ===" -ForegroundColor Cyan
+$lavapipeDir = Get-ChildItem -Recurse -Path "$env:USERPROFILE\.nuget\packages\stride.dependencies.lavapipe" -Directory -Filter linux-x64 -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($lavapipeDir) {
     Get-ChildItem bin\Tests -Directory | ForEach-Object {
         $dest = Join-Path $_.FullName "Linux\Vulkan\runtimes\linux-x64\native"
         if (Test-Path (Join-Path $_.FullName "Linux\Vulkan")) {
             New-Item -Path $dest -ItemType Directory -Force | Out-Null
-            Copy-Item "$($swiftShaderDir.Parent.FullName)\linux-x64\native\*" $dest -Force
-            Write-Host "  Copied SwiftShader to $dest"
+            Copy-Item "$($lavapipeDir.Parent.FullName)\linux-x64\native\*" $dest -Force
+            Write-Host "  Copied Lavapipe to $dest"
         }
     }
 } else {
-    Write-Warning "SwiftShader linux-x64 not found in NuGet cache"
+    Write-Warning "Lavapipe linux-x64 not found in NuGet cache"
 }
 
 } else {
@@ -106,14 +106,14 @@ export STRIDE_GRAPHICS_SOFTWARE_RENDERING=1
 export STRIDE_MAX_PARALLELISM=8
 cd /mnt/c/dev/stride2
 
-# Register SwiftShader ICD
-LIB=$(find bin/Tests -name libvk_swiftshader.so -path "*/linux-x64/*" | head -1)
+# Register Lavapipe ICD
+LIB=$(find bin/Tests -name libvulkan_lvp.so -path "*/linux-x64/*" | head -1)
 if [ -n "$LIB" ]; then
   LIB_ABS=$(readlink -f "$LIB")
-  ICD_JSON="$PWD/vk_swiftshader_icd.json"
+  ICD_JSON="$PWD/lvp_icd.json.json"
   echo "{\"file_format_version\":\"1.0.0\",\"ICD\":{\"library_path\":\"$LIB_ABS\",\"api_version\":\"1.1.0\"}}" > "$ICD_JSON"
   export VK_DRIVER_FILES="$ICD_JSON"
-  echo "SwiftShader ICD: $LIB_ABS"
+  echo "Lavapipe ICD: $LIB_ABS"
 fi
 
 FILTER_ARG=""

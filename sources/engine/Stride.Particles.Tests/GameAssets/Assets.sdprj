@@ -8,11 +8,6 @@ BuildConfiguration:
             GraphicsPlatform: Direct3D
             GraphicsProfile: Level_11_0
             OutputDirectory: ../../../../Bin/Windows-AnyCPU-Direct3D/data/Stride.Input.Tests
-        Windows_OGL: !StrideProjectBuildProfile
-            Platform: Windows
-            GraphicsPlatform: OpenGLCore
-            GraphicsProfile: Level_9_1
-            OutputDirectory: ../../../../Bin/Windows-AnyCPU-OpenGL/data/Stride.Input.Tests
 
 ExplicitFolders: []
 PluginReferences: []

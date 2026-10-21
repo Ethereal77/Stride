@@ -11,7 +11,7 @@ namespace Stride.Rendering.Images
     /// Applies a TripleRhombi blur to a texture. (Hexagonal bokeh)
     /// </summary>
     /// <remarks>
-    /// This is a technique based on DICE's presentation at Siggraph 2011. 
+    /// This is a technique based on DICE's presentation at Siggraph 2011.
     /// http://advances.realtimerendering.com/s2011/White,%20BarreBrisebois-%20Rendering%20in%20BF3%20%28Siggraph%202011%20Advances%20in%20Real-Time%20Rendering%20Course%29.pdf
     /// </remarks>
     public class TripleRhombiBokeh : BokehBlur
@@ -63,17 +63,14 @@ namespace Stride.Rendering.Images
         }
 
         // Updates the texture tap offsets for the final combination pass
-        private void CalculateRhombiOffsets() 
+        private void CalculateRhombiOffsets()
         {
             rhombiTapOffsetsDirty = false;
 
             // Half-radius of the hexagon
-            float halfRadius = Radius * 0.5f; 
+            float halfRadius = Radius * 0.5f;
             // Half-width of an hexagon pointing up (altitude of an equilateral triangle)
             float hexagonalHalfWidth = Radius * MathF.Sqrt(3f) / 2f;
-
-            // TODO Check potential different behavior with OGL where vertical addressing (V)
-            // is swapped compared to D3D textures. 
 
             // TODO Add support for the Phase.
 
@@ -81,8 +78,8 @@ namespace Stride.Rendering.Images
 #pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
 #pragma warning disable SA1021 // Negative signs should be spaced correctly
             // Shifts all rhombis so they share 3 common edges
-            var rhombiPosition = new Vector2[3] 
-            { 
+            var rhombiPosition = new Vector2[3]
+            {
                 new Vector2( -hexagonalHalfWidth,   halfRadius), // top left rhombi
                 new Vector2(  hexagonalHalfWidth,   halfRadius), // top right rhombi
                 new Vector2(                  0f,      -Radius), // bottom rhombi
@@ -90,8 +87,8 @@ namespace Stride.Rendering.Images
 
             // Apply some bias to avoid the "upside-down" Y artifacts caused by rhombi overlapping.
             var biasStrength = 0.4f;
-            var bias = new Vector2[3] 
-            { 
+            var bias = new Vector2[3]
+            {
                 new Vector2( -biasStrength,   biasStrength), // top left rhombi
                 new Vector2(  biasStrength,   biasStrength), // top right rhombi
                 new Vector2(            0f,  -biasStrength), // bottom rhombi

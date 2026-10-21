@@ -17,7 +17,7 @@ namespace Stride.Graphics;
 ///   <para>
 ///     Some platforms may not support all graphics profiles, or may have additional restrictions.
 ///     Also, some graphics APIs may not support all features of a given profile, or may need to
-///     enable specific extensions to access certain features (OpenGL, Vulkan).
+///     enable specific extensions to access certain features (Vulkan).
 ///   </para>
 /// </remarks>
 [DataContract("GraphicsProfile")]

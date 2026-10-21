@@ -201,7 +201,7 @@ namespace Stride.Video
                                  ObjectParameterKey<Texture> inputTextureKey, ValueParameterKey<float> mipLevelKey)
         {
             // Set the "input" texture as the texture that we will copy to "output":
-            effectInstance.Parameters.Set(inputTextureKey, input); // TODO: STABILITY: Supply the parent texture instead? I mean here we're using SampleLOD in the shader because texture views are basically being ignored during sampling on OpenGL/ES.
+            effectInstance.Parameters.Set(inputTextureKey, input); // TODO: STABILITY: Supply the parent texture instead? I mean here we're using SampleLOD in the shader because texture views are basically being ignored during sampling on Vulkan.
 
             // Set the mipmap level of the input texture we want to sample:
             effectInstance.Parameters.Set(mipLevelKey, input.MipLevel);  // TODO: STABILITY: Manually pass the mip level?
