@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  slim-sdk hook for /sources.
+  The mirrored sources/Directory.Build.props is intentionally left untouched;
+  this new file only adds the skeleton layer to the normal MSBuild import chain.
+-->
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\build\skeleton\Skeleton.targets" />
+</Project>

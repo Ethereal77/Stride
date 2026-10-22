@@ -1,7 +1,0 @@
-// ConsumeStructuredBuffer members are rejected with a clear error (see TightStructuredBufferTests)
-namespace Stride.Shaders.Tests;
-
-shader ConsumeBufferMember
-{
-    ConsumeStructuredBuffer<float3> Items;
-};

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+  <!--
+    ============================================================================
+    Stride slim-sdk - skeleton layer
+    ============================================================================
+
+    This file is imported by the Directory.Build.targets shims at the root,
+    sources/, tests/ and samples/. It is the only place where the code-free
+    tree adapts the original Stride build to run without source files.
+
+    Goals:
+      * keep every mirrored .csproj/.props/.targets byte-for-byte identical to
+        the real repository, so build-logic changes can be validated here;
+      * never compile source code (there is none);
+      * run the full MSBuild evaluation / target graph, fast.
+
+    Nothing here is copied from the real repository, so re-running
+    tools/mirror-stride-structure.ps1 is always safe.
+    ============================================================================
+  -->
+
+  <PropertyGroup>
+    <StrideSkeleton>true</StrideSkeleton>
+
+    <!-- Packaging is opt-in: -p:StrideSkeletonPack=true -->
+    <StrideSkipAutoPack Condition="'$(StrideSkeletonPack)' != 'true'">true</StrideSkipAutoPack>
+    <GeneratePackageOnBuild Condition="'$(StrideSkeletonPack)' != 'true'">false</GeneratePackageOnBuild>
+    <StrideSign>false</StrideSign>
+
+    <!-- There is no native (C/C++) code in the skeleton. -->
+    <StrideNativeOutputName></StrideNativeOutputName>
+    <StrideNativeWindowsArm64Enabled>false</StrideNativeWindowsArm64Enabled>
+
+    <!-- There is no IL to post-process and no asset package to compile. -->
+    <StrideAssemblyProcessor>false</StrideAssemblyProcessor>
+    <StrideCompileAssets>false</StrideCompileAssets>
+    <StrideCompilerSkipBuild>true</StrideCompilerSkipBuild>
+    <StrideAssetBuildManifest>false</StrideAssetBuildManifest>
+    <StridePackAssets>false</StridePackAssets>
+    <StrideContainsAssetTypes>false</StrideContainsAssetTypes>
+    <EnableDefaultStrideShaderItems>false</EnableDefaultStrideShaderItems>
+    <StrideMultiGraphicsApiHost>false</StrideMultiGraphicsApiHost>
+    <StrideNuGetResolverUI>false</StrideNuGetResolverUI>
+    <StrideBuildLocalization>false</StrideBuildLocalization>
+    <StrideLocalized>false</StrideLocalized>
+    <StrideDevPackages>false</StrideDevPackages>
+
+    <!-- Keep the worktree-version ledger inside the skeleton. -->
+    <StrideSkipWorktreeVersion>true</StrideSkipWorktreeVersion>
+    <StrideWorktreeLedger>$(MSBuildThisFileDirectory).worktree-ids.txt</StrideWorktreeLedger>
+
+    <!-- Resources that only exist next to source code. -->
+    <ApplicationIcon></ApplicationIcon>
+    <ApplicationManifest></ApplicationManifest>
+    <Win32Manifest></Win32Manifest>
+    <GenerateDocumentationFile Condition="'$(StrideSkeletonDocs)' != 'true'">false</GenerateDocumentationFile>
+
+    <!-- No sources means no generated application entry point; see below. -->
+    <_StrideSkeletonEntryPointFile>$(MSBuildThisFileDirectory)StrideSkeletonEntryPoint.cs</_StrideSkeletonEntryPointFile>
+  </PropertyGroup>
+
+  <!--
+    Project files reference sources, XAML pages, resources and content that were
+    intentionally not mirrored. Remove those items instead of editing the
+    project files. MSBuild does not allow item metadata in evaluation-time
+    conditions, so the filtering runs in a target right before the items are
+    consumed.
+  -->
+  <Target Name="_StrideSkeletonRemoveMissingItems"
+          BeforeTargets="_GenerateCompileInputs;CoreCompile;MarkupCompilePass1;CreateManifestResourceNames;GenerateResource;GetCopyToOutputDirectoryItems;AssignTargetPaths;GetCopyToPublishDirectoryItems;PrepareResourceNames;_GetPackageFiles"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+
+    <ItemGroup>
+      <Compile Remove="@(Compile)" Condition="!Exists('%(FullPath)')" />
+      <EmbeddedResource Remove="@(EmbeddedResource)" Condition="!Exists('%(FullPath)')" />
+      <Page Remove="@(Page)" Condition="!Exists('%(FullPath)')" />
+      <ApplicationDefinition Remove="@(ApplicationDefinition)" Condition="!Exists('%(FullPath)')" />
+      <Resource Remove="@(Resource)" Condition="!Exists('%(FullPath)')" />
+      <Content Remove="@(Content)" Condition="!Exists('%(FullPath)')" />
+      <None Remove="@(None)" Condition="!Exists('%(FullPath)')" />
+      <AdditionalFiles Remove="@(AdditionalFiles)" Condition="!Exists('%(FullPath)')" />
+      <SplashScreen Remove="@(SplashScreen)" Condition="!Exists('%(FullPath)')" />
+      <XamlAppDef Remove="@(XamlAppDef)" Condition="!Exists('%(FullPath)')" />
+    </ItemGroup>
+
+  </Target>
+
+  <!--
+    Native libraries (deps/, Windows SDK redist, vendored binaries) were not mirrored.
+    Stride.Dependencies.targets copies @(StrideNativeLib) verbatim, so drop the missing
+    entries before any target reads or copies them.
+  -->
+  <Target Name="_StrideSkeletonRemoveMissingNativeLibs"
+          BeforeTargets="_StrideBuildDependencies;_StrideGenerateDependenciesCore;_StrideCollectNativeUpToDateCheckBuilt;_StrideSetupNativeLibraries"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+
+    <ItemGroup>
+      <StrideNativeLib Remove="@(StrideNativeLib)" Condition="!Exists('%(FullPath)')" />
+    </ItemGroup>
+
+  </Target>
+
+  <!--
+    Stride.Core.AssemblyProcessor copies $(TargetDir)* into deps/AssemblyProcessor
+    and then hashes the copied assembly (targets CopyFiles / GenerateHash). The
+    BuiltItems item is expanded during evaluation, before the assembly exists, so
+    on a clean tree it only contains sidecar files and GenerateHash fails with
+    MSB3954. Refresh the list from the freshly built output before the copy.
+  -->
+  <Target Name="_StrideSkeletonRefreshAssemblyProcessorOutput"
+          AfterTargets="Build"
+          BeforeTargets="CopyFiles"
+          Condition="'$(MSBuildProjectName)' == 'Stride.Core.AssemblyProcessor'">
+
+    <ItemGroup>
+      <BuiltItems Remove="@(BuiltItems)" />
+      <BuiltItems Include="$(TargetDir)*" />
+    </ItemGroup>
+
+  </Target>
+
+  <!--
+    Executables (tools, tests, GameStudio, ...) need an entry point to compile.
+    Link the same empty Program into every Exe/WinExe project and point
+    StartupObject at it. Test projects normally get a generated Main or a
+    generated launcher from the SDK; both are disabled here.
+  -->
+  <Target Name="_StrideSkeletonAddEntryPoint"
+          BeforeTargets="CoreCompile"
+          Condition="('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe') And '$(MSBuildProjectExtension)' == '.csproj' And '$(DesignTimeBuild)' != 'true'">
+
+    <PropertyGroup>
+      <GenerateProgramFile>false</GenerateProgramFile>
+      <StartupObject>StrideSkeleton.Program</StartupObject>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="$(_StrideSkeletonEntryPointFile)"
+               Link="StrideSkeletonEntryPoint.cs"
+               Visible="false" />
+    </ItemGroup>
+
+  </Target>
+
+</Project>

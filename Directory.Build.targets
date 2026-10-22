@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  slim-sdk root hook.
+  Auto-imported by SDK-style projects whose nearest Directory.Build.targets is
+  the repository root (e.g. build/tools/*/*.csproj). See README.md.
+-->
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)build\skeleton\Skeleton.targets" />
+</Project>

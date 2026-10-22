@@ -18,7 +18,6 @@ on:
           - Direct3D11
           - Direct3D12
           - Vulkan
-          - Null
   workflow_call:
     inputs:
       build-type:
@@ -29,7 +28,7 @@ on:
         type: string
 
 concurrency:
-  group: build-windows-runtime-${{ github.event.pull_request.number || github.sha }}-${{ github.event.inputs.build-type || inputs.build-type || 'Debug' }}-${{ github.event.inputs.graphics-api || inputs.graphics-api || 'Direct3D11' }}
+  group: build-windows-runtime-${{ github.event.pull_request.number || github.ref }}-${{ github.event.inputs.build-type || inputs.build-type || 'Debug' }}-${{ github.event.inputs.graphics-api || inputs.graphics-api || 'Direct3D11' }}
   cancel-in-progress: true
 
 jobs:

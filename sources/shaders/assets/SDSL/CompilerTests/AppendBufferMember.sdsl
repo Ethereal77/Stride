@@ -1,7 +1,0 @@
-// AppendStructuredBuffer members are rejected with a clear error (see TightStructuredBufferTests)
-namespace Stride.Shaders.Tests;
-
-shader AppendBufferMember
-{
-    AppendStructuredBuffer<float3> Items;
-};

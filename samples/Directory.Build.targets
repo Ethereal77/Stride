@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  slim-sdk hook for /samples.
+-->
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\build\skeleton\Skeleton.targets" />
+</Project>

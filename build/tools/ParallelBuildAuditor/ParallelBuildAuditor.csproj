@@ -10,7 +10,8 @@
     <StrideCodeAnalysis>false</StrideCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="18.9.6" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="18.9.6" />
+    <PackageReference Include="MSBuild.StructuredLogger" Version="2.2.243" />
+    <PackageReference Include="Microsoft.Build" Version="17.14.9" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.14.9" />
   </ItemGroup>
 </Project>

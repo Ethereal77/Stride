@@ -39,7 +39,6 @@
   </Folder>
   <Folder Name="/00-Config/">
     <File Path="../sources/shared/SharedAssemblyInfo.cs" />
-    <File Path="../sources/templates/StrideSamplesVersion.props" />
   </Folder>
   <Folder Name="/00-Localization/">
     <File Path="../sources/localization/Stride.Assets.Presentation.pot" />
@@ -168,15 +167,12 @@
   <Folder Name="/60-Editor/">
     <Project Path="../sources/editor/Stride.Assets.Presentation/Stride.Assets.Presentation.csproj" />
     <Project Path="../sources/editor/Stride.Core.Assets.Editor/Stride.Core.Assets.Editor.csproj" />
-    <Project Path="../sources/crashreport/Stride.CrashReport/Stride.CrashReport.csproj" />
-    <Project Path="../sources/crashreport/Stride.CrashReporter/Stride.CrashReporter.csproj" />
-    <Project Path="../sources/crashreport/Stride.CrashReport.TestProbe/Stride.CrashReport.TestProbe.csproj" />
+    <Project Path="../sources/editor/Stride.Editor.CrashReport/Stride.Editor.CrashReport.csproj" />
     <Project Path="../sources/editor/Stride.Editor/Stride.Editor.csproj" />
     <Project Path="../sources/editor/Stride.GameStudio/Stride.GameStudio.csproj" DefaultStartup="true" />
     <Project Path="../sources/engine/Stride.Debugger/Stride.Debugger.csproj" />
   </Folder>
   <Folder Name="/61-Editor.Tests/">
-    <Project Path="../sources/crashreport/Stride.CrashReport.Tests/Stride.CrashReport.Tests.csproj" />
     <Project Path="../sources/editor/Stride.Core.Assets.Editor.Tests/Stride.Core.Assets.Editor.Tests.csproj" />
     <Project Path="../sources/editor/Stride.GameStudio.AutoTesting/Stride.GameStudio.AutoTesting.csproj" />
     <Project Path="../sources/editor/Stride.GameStudio.Tests/Stride.GameStudio.Tests.csproj" />
@@ -192,7 +188,6 @@
     <Project Path="../sources/engine/Stride.Assets.Tests2/Stride.Assets.Tests2.csproj" />
   </Folder>
   <Folder Name="/72-StrideSamples.Templates/">
-    <File Path="../sources/templates/StrideSamplesVersion.props" />
     <Project Path="../sources/engine/Stride.Games.AutoTesting/Stride.Games.AutoTesting.csproj" />
     <Project Path="../sources/templates/Stride.Templates.AssetPacks/Stride.Templates.AssetPacks.csproj" />
     <Project Path="../sources/templates/Stride.Templates.Games.Starters/Stride.Templates.Games.Starters.csproj" />

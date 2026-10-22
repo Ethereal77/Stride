@@ -1,0 +1,2 @@
+# Stride checkout version-suffix ledger. Tokens: dev (-dev), dev2, dev3, ...; '(empty)' = no suffix (clean build).
+dev = H:\Stride-Blaze-new\slim-sdk

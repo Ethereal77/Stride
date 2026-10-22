@@ -1,4 +1,0 @@
-;aic
-SetSig
-SetAzureKeyVaultSecret %StrideSignClientSecret%
-Rebuild
