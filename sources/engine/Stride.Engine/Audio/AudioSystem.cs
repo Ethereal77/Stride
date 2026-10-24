@@ -69,7 +69,7 @@ namespace Stride.Audio
             }
             catch (Exception ex)
             {
-                // Audio may not be available (e.g. missing OpenAL, headless CI).
+                // Audio may not be available (e.g., headless CI).
                 // Log the error but don't crash — audio is not required for rendering tests.
                 System.Diagnostics.Debug.WriteLine($"[AudioSystem] Initialization failed, audio disabled: {ex.Message}");
             }

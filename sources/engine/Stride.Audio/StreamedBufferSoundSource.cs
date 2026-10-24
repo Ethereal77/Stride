@@ -2,15 +2,13 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Threading.Tasks;
 
-using Stride.Core;
 using Stride.Core.Extensions;
 using Stride.Media;
 
 namespace Stride.Audio
 {
-    //The audio buffer is extracted by an external, unknown API (MediaCodec, FFMPEG, ...), and then feed into this class
+    //The audio buffer is extracted by an external, unknown API (MediaEngine, FFMPEG, ...), and then feed into this class
     public partial class StreamedBufferSoundSource : DynamicSoundSource, IMediaExtractor
     {
         /// <summary>

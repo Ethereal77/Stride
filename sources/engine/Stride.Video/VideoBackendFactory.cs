@@ -14,7 +14,7 @@ namespace Stride.Video;
 /// </summary>
 public abstract class VideoBackendFactory
 {
-    /// <summary>Stable identifier (e.g. "FFmpeg", "MediaEngine", "MediaCodec"). Used for
+    /// <summary>Stable identifier (e.g., "MediaEngine", "FFmpeg"). Used for
     /// <see cref="VideoBackendRegistry.PreferredBackendName"/> matching.</summary>
     public abstract string Name { get; }
 

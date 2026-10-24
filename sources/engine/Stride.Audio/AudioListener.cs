@@ -101,7 +101,7 @@ namespace Stride.Audio
         }
 
         /// <summary>
-        /// Internal OpenAL object that represents a device context actually, this is to allow multiple listeners
+        /// Internal object that represents a device context actually, this is to allow multiple listeners
         /// </summary>
         internal AudioLayer.Listener Listener;
 
