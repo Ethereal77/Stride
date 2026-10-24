@@ -25,10 +25,8 @@
     <StrideNativeClangCommand>clang</StrideNativeClangCommand>
     <StrideNativeClangCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(StrideNativeLlvmDir)clang.exe</StrideNativeClangCommand>
 
-    <!-- Linux use system ar. Windows host uses the bundled
+    <!-- Windows host uses the bundled
          llvm-ar with the bsd format flag to match. -->
-    <StrideNativeArCommand>ar</StrideNativeArCommand>
-    <StrideNativeArArgs>rcs</StrideNativeArArgs>
     <StrideNativeArCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(StrideNativeLlvmDir)llvm-ar.exe</StrideNativeArCommand>
     <StrideNativeArArgs Condition="$([MSBuild]::IsOSPlatform('Windows'))">rcs --format bsd</StrideNativeArArgs>
 
@@ -36,7 +34,6 @@
     <StrideNativeClangCPP>-std=c++11 -fno-rtti -fno-exceptions</StrideNativeClangCPP>
 
     <!--<StrideNativeOutputPath>$([MSBuild]::MakeRelative('$(OutputPath)', '$(StridePackageStridePlatformBin)\'))</StrideNativeOutputPath>-->
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>.so; .a; $(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <!-- Auto-disable the Windows ARM64 native build when the ARM64 toolset isn't installed.
@@ -85,10 +82,9 @@
   <!-- Define default CPU architectures.
        Each desktop RID is gated by both StridePlatforms membership (user opt-in) and the host
        OS being able to produce it. Today only the Windows host has the bundled toolchain to
-       cross-compile every desktop RID; Linux hosts build their own. -->
+       cross-compile every desktop RID. -->
   <ItemGroup Condition="'$(TargetFramework)' == '$(StrideFramework)'">
     <StrideNativeCPU Condition="$([MSBuild]::IsOSPlatform('Windows')) And $(_StridePlatforms.Contains(';Windows;'))" Include="win-x64;win-arm64" LibraryExtension=".dll" LibraryRuntime="win" />
-    <StrideNativeCPU Condition="$(_StridePlatforms.Contains(';Linux;'))" Include="linux-x64" LibraryExtension=".so" LibraryRuntime="linux" />
   </ItemGroup>
   <!-- Use runtimes/*/native folder -->
   <ItemGroup>
@@ -181,26 +177,12 @@
 
   </Target>
 
-  <Target Name="CompileNativeClang_Linux" Inputs="@(StrideNativeCFile);@(StrideNativeHFile)" Outputs="@(StrideNativeOutput)" Condition="('$(TargetFramework)' == '$(StrideFramework)') And $(_StridePlatforms.Contains(';Linux;')) And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_StrideRegisterNativeOutputs">
-    <MakeDir Directories="$(OutputObjectPath)\linux-x64"/>
-    <MakeDir Directories="$(StrideNativeOutputPath)\runtimes\linux-x64\native"/>
-    <Exec Condition="'%(StrideNativeCFile.Extension)' != '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClang) -DPLATFORM_LINUX -o &quot;$([System.IO.Path]::Combine('$(OutputObjectPath)',linux-x64, %(StrideNativeCFile.Filename)_x64.o))&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -fPIC -target x86_64-linux-gnu" />
-    <Exec Condition="'%(StrideNativeCFile.Extension)' == '.cpp'" Command="&quot;$(StrideNativeClangCommand)&quot; $(StrideNativeClangCPP) $(StrideNativeClang) -DPLATFORM_LINUX -o &quot;$([System.IO.Path]::Combine('$(OutputObjectPath)',linux-x64, %(StrideNativeCFile.Filename)_x64.o))&quot; -c &quot;%(StrideNativeCFile.FullPath)&quot; -fPIC -target x86_64-linux-gnu" />
-    <Exec Condition="!$([MSBuild]::IsOSUnixLike())" Command="&quot;$(StrideNativeLldCommand)&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(StrideNativeOutputPath)\runtimes\linux-x64\native\$(StrideNativeOutputName).so&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)\linux-x64\%(Filename)_x64.o&quot;', ' ') @(StrideNativePathLibsLinux->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\dotnet\linux-x64\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\dotnet\linux-x64\libNativePath.a&quot;" />
-    <Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="&quot;$(StrideNativeLldCommand)&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(StrideNativeOutputPath)/runtimes/linux-x64/native/$(StrideNativeOutputName).so&quot; @(StrideNativeCFile->'&quot;$(OutputObjectPath)linux-x64/%(Filename)_x64.o&quot;', ' ') @(StrideNativePathLibsLinux->'&quot;$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/linux-x64/%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/linux-x64/libNativePath.a&quot;" />
-
-  </Target>
-
   <Target Name="CompileNativeClang_Clean" BeforeTargets="Clean" DependsOnTargets="_StrideRegisterNativeOutputs">
     <ItemGroup Condition="'$(OutputObjectPath)' != ''">
       <ObjFiles Include="$(OutputObjectPath)\**\*.obj" />
-      <OFiles Include="$(OutputObjectPath)\**\*.o" />
-      <AFiles Include="$(OutputObjectPath)\**\*.a" />
     </ItemGroup>
     <Delete Files="@(StrideNativeOutput)" />
     <Delete Files="@(ObjFiles)" />
-    <Delete Files="@(OFiles)" />
-    <Delete Files="@(AFiles)" />
   </Target>
 
   <!-- Import Windows Clang+LLD targets (new cross-platform approach) -->

@@ -328,13 +328,11 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
 
     /// <summary>
     /// Per-platform exec project dir-suffix → <see cref="PlatformType"/>. Matches the
-    /// preprocessor's dir naming convention: <c>&lt;Name&gt;.Windows</c>,
-    /// <c>&lt;Name&gt;.Linux</c>, etc.
+    /// preprocessor's dir naming convention: <c>&lt;Name&gt;.Windows</c>, etc.
     /// </summary>
     private static readonly (string Suffix, PlatformType Type)[] PlatformSuffixes =
     {
-        (".Windows", PlatformType.Windows),
-        (".Linux",   PlatformType.Linux)
+        (".Windows", PlatformType.Windows)
     };
 
     /// <summary>
@@ -393,7 +391,6 @@ public class DotNetNewTemplateGenerator : SessionTemplateGenerator
     private static PlatformType CurrentHostPlatform()
     {
         if (OperatingSystem.IsWindows()) return PlatformType.Windows;
-        if (OperatingSystem.IsLinux())   return PlatformType.Linux;
         return PlatformType.Windows;
     }
 

@@ -56,45 +56,9 @@ jobs:
           name: freetype-${{ matrix.rid }}
           path: out/${{ matrix.rid }}/
 
-  build-linux:
-    name: Build FreeType (Linux x64)
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout FreeType
-        uses: actions/checkout@v7
-        with:
-          repository: freetype/freetype
-          ref: ${{ github.event.inputs.freetype-version }}
-          path: freetype-src
-
-      - name: Build
-        run: |
-          cmake -S freetype-src -B freetype-build \
-            -DBUILD_SHARED_LIBS=ON \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_FLAGS="-fPIC" \
-            -DFT_DISABLE_BZIP2=ON \
-            -DFT_DISABLE_BROTLI=ON \
-            -DFT_DISABLE_HARFBUZZ=ON \
-            -DFT_DISABLE_PNG=ON \
-            -DFT_DISABLE_ZLIB=ON
-          cmake --build freetype-build -- -j$(nproc)
-
-      - name: Collect output
-        run: |
-          mkdir -p out/linux-x64
-          # Copy the actual shared library (not symlinks) with a versionless name
-          cp $(readlink -f freetype-build/libfreetype.so) out/linux-x64/libfreetype.so
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: freetype-linux-x64
-          path: out/linux-x64/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux]
+    needs: [build-windows]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout FreeType (for version info)
@@ -115,7 +79,7 @@ jobs:
           OUT=freetype-out
 
           # Desktop → dotnet/{rid}/
-          for rid in win-x64 win-arm64 linux-x64; do
+          for rid in win-x64 win-arm64; do
             mkdir -p $OUT/dotnet/$rid
             cp artifacts/freetype-$rid/* $OUT/dotnet/$rid/ 2>/dev/null || true
           done

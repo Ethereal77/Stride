@@ -24,7 +24,7 @@ public static class SerializationHelper
         var streamReader = new StreamReader(stream);
         var yaml = streamReader.ReadToEnd();
         // Normalize line endings: raw string literals bake in \r\n when compiled on Windows,
-        // but the YAML serializer uses Environment.NewLine which is \n on Linux.
+        // but the YAML serializer uses Environment.NewLine which can be \n on other platforms.
         Assert.Equal(expectedYaml.ReplaceLineEndings("\n"), yaml.ReplaceLineEndings("\n"));
     }
 
@@ -38,7 +38,7 @@ public static class SerializationHelper
         var streamReader = new StreamReader(stream);
         var yaml = streamReader.ReadToEnd();
         // Normalize line endings: raw string literals bake in \r\n when compiled on Windows,
-        // but the YAML serializer uses Environment.NewLine which is \n on Linux.
+        // but the YAML serializer uses Environment.NewLine which can be \n on other platforms.
         Assert.Equal(expectedYaml.ReplaceLineEndings("\n"), yaml.ReplaceLineEndings("\n"));
     }
 }

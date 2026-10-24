@@ -88,9 +88,6 @@ public static class CrashPolicy
 
         if (OperatingSystem.IsWindows())
             return !Environment.UserInteractive;
-        if (OperatingSystem.IsLinux())
-            return string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DISPLAY"))
-                && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
 
         // Attended unless SSH, which is handled above
         return false;

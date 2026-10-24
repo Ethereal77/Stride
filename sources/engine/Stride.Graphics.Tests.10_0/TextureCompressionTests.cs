@@ -11,7 +11,7 @@ namespace Stride.Graphics.Tests
 {
     /// <summary>
     /// Exercises the asset-pipeline texture compression paths by drawing each compressed variant fullscreen.
-    /// On Windows/Linux (D3D11/12/Vulkan, profile ≥10.0): ColorNone→BC1, ColorExplicit→BC2,
+    /// On Windows (D3D11/12/Vulkan, profile ≥10.0): ColorNone→BC1, ColorExplicit→BC2,
     /// ColorInterpolated→BC3, Grayscale→BC4, NormalMap→BC5.
     /// Gold images are intentionally per-platform.
     /// </summary>

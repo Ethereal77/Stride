@@ -138,7 +138,6 @@ namespace Stride.Assets
 
             // Structural csproj migrations, gated by the version each change landed at. Run against the
             // NEW-version project (after the reference bump) by UpgradeBeforeAssembliesLoaded.
-            registry.Project("4.1.0.0", UpgradeProjectTo41);
             registry.Project("4.2.0.0", UpgradeProjectTo42);
             registry.Project("4.3.0.0", UpgradeProjectTo43);
             registry.Project("4.4.0.0", UpgradeProjectTo44);
@@ -172,46 +171,6 @@ namespace Stride.Assets
                 tfm = project.GetProperty("TargetFrameworks");
 
             return tfm.IsGlobalProperty ? null : tfm;
-        }
-
-        // 4.1: drop the old Stride ref from Linux executables (no longer needed for runtime.json),
-        // and bump net4.x/net5/netstandard2.0 to net6.0.
-        private static void UpgradeProjectTo41(ProjectUpgradeContext context)
-        {
-            var project = context.Project;
-            var solutionProject = context.SolutionProject;
-
-            // Remove Stride reference for older executable projects (it was necessary in the past due to runtime.json)
-            if (solutionProject.Type == ProjectType.Executable &&
-                solutionProject.Platform == PlatformType.Linux)
-            {
-                var strideReference = project.GetItems("PackageReference").FirstOrDefault(x => x.EvaluatedInclude == "Stride");
-                if (strideReference != null)
-                {
-                    project.RemoveItem(strideReference);
-                    context.IsDirty = true;
-                }
-            }
-
-            var tfm = project.GetProperty("TargetFramework");
-            if (tfm != null)
-            {
-                // Library
-                if (tfm.EvaluatedValue == "netstandard2.0"
-                    || (tfm.EvaluatedValue.StartsWith("net4", StringComparison.Ordinal) && solutionProject.Type == ProjectType.Library))
-                {
-                    tfm.UnevaluatedValue = "net6.0";
-                    context.IsDirty = true;
-                    project.ReevaluateIfNecessary();
-                }
-                // Executable
-                else if ((tfm.EvaluatedValue.StartsWith("net4", StringComparison.Ordinal) || tfm.EvaluatedValue.StartsWith("net5", StringComparison.Ordinal)) && solutionProject.Type == ProjectType.Executable)
-                {
-                    tfm.UnevaluatedValue = solutionProject.Platform == PlatformType.Windows ? "net6.0-windows" : "net6.0";
-                    context.IsDirty = true;
-                    project.ReevaluateIfNecessary();
-                }
-            }
         }
 
         // 4.2: bump net6 to net8.

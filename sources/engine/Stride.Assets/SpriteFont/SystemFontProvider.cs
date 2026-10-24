@@ -53,15 +53,13 @@ namespace Stride.Assets.SpriteFont
             string[] searchDirs;
             if (OperatingSystem.IsWindows())
                 searchDirs = [Environment.GetFolderPath(Environment.SpecialFolder.Fonts)];
-            else if (OperatingSystem.IsLinux())
-                searchDirs = ["/usr/share/fonts", "/usr/local/share/fonts", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/fonts")];
             else
                 searchDirs = [];
 
             // Try the requested font, then its metric-compatible equivalents. The Liberation family
             // ships metric-identical to the Microsoft core fonts (Arial/Times New Roman/Courier New),
             // so substituting whichever member a platform actually has keeps text layout — and the
-            // screenshot goldens that depend on it — consistent across Windows/Linux.
+            // screenshot goldens that depend on it — consistent.
             foreach (var candidate in GetFontNameCandidates(FontName))
             {
                 var fontPath = ResolveFont(candidate, searchDirs);
@@ -101,8 +99,7 @@ namespace Stride.Assets.SpriteFont
         /// <summary>
         /// The requested font name followed by its metric-compatible equivalents. The three groups
         /// (sans / serif / mono) are mutually metric-identical — Liberation is built to match the MS
-        /// core fonts — so the lookup is bidirectional: an asset naming <c>Arial</c> resolves to
-        /// Liberation Sans on Linux, and one naming <c>Liberation Sans</c> resolves to Arial on Windows.
+        /// core fonts — so the lookup is bidirectional.
         /// </summary>
         internal static IEnumerable<string> GetFontNameCandidates(string requested)
         {
@@ -116,7 +113,7 @@ namespace Stride.Assets.SpriteFont
                 "courier new" or "courier" or "liberation mono" or "cousine" or "consolas" or "dejavu sans mono"
                     => ["Courier New", "Liberation Mono", "DejaVu Sans Mono"],
                 // sans-serif: Arial, Helvetica, Liberation Sans, Segoe UI, Tahoma, Verdana, ...
-                _ => ["Arial", "Liberation Sans", "DejaVu Sans"],
+                _ => ["Arial", "Liberation Sans", "DejaVu Sans"]
             };
 
             foreach (var candidate in group)
@@ -185,7 +182,7 @@ namespace Stride.Assets.SpriteFont
 
         private static string GetDefaultFontName()
         {
-            return OperatingSystem.IsLinux() ? "Liberation Sans" : "Arial";
+            return "Arial";
         }
     }
 }

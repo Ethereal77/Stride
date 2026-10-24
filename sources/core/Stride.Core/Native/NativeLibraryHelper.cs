@@ -45,7 +45,6 @@ public static partial class NativeLibraryHelper
     private static readonly string libExtension = Platform.Type switch
     {
         PlatformType.Windows => ".dll",
-        PlatformType.Linux => ".so",
 
         _ => throw new PlatformNotSupportedException()
     };
@@ -54,7 +53,6 @@ public static partial class NativeLibraryHelper
     private static readonly string platform = Platform.Type switch
     {
         PlatformType.Windows => "win",
-        PlatformType.Linux => "linux",
 
         _ => throw new PlatformNotSupportedException()
     };
@@ -109,10 +107,8 @@ public static partial class NativeLibraryHelper
 
     /// <summary>
     ///   Locates the full path to a native library, appending the current platform's library
-    ///   extension (<c>.dll</c>, <c>.so</c>) to <paramref name="libraryName"/> before
-    ///   searching. On Linux, SONAME-versioned variants (for example, <c>libfoo.so.6</c>)
-    ///   are matched and the highest version is returned; the <c>lib</c> prefix
-    ///   is also tried when omitted, matching the conventions <see cref="PreloadLibrary"/> uses.
+    ///   extension (<c>.dll</c>) to <paramref name="libraryName"/> before
+    ///   searching.
     /// </summary>
     /// <param name="libraryName">The library name without extension (for example, <c>"libassimp"</c> or <c>"assimp"</c>).</param>
     /// <param name="ownerType">
@@ -124,30 +120,21 @@ public static partial class NativeLibraryHelper
     /// </exception>
     public static string LocateLibrary(string libraryName, Type ownerType)
     {
-        // Native libs on Linux conventionally carry a 'lib' prefix that callers often omit,
-        // so try the name as given and, on those platforms, the 'lib'-prefixed variant too.
-        string[] candidates = Platform.Type != PlatformType.Windows && !libraryName.StartsWith("lib", StringComparison.Ordinal)
-            ? [libraryName, "lib" + libraryName]
-            : [libraryName];
+        var nameWithExtension = libraryName + libExtension;
 
-        foreach (var name in candidates)
-        {
-            var nameWithExtension = name + libExtension;
+        // Resolver-registered natives: the extension-less map is keyed by base name;
+        // the with-extension map only matches an exact unversioned filename.
+        if (nativeDependenciesWithoutExtensions.TryGetValue(libraryName, out string? knownPath)
+            || nativeDependenciesWithExtensions.TryGetValue(nameWithExtension, out knownPath))
+            return knownPath;
 
-            // Resolver-registered natives: the extension-less map is keyed by SONAME-stripped base name
-            // (matches libassimp.so.6); the with-extension map only matches an exact unversioned filename.
-            if (nativeDependenciesWithoutExtensions.TryGetValue(name, out string? knownPath)
-                || nativeDependenciesWithExtensions.TryGetValue(nameWithExtension, out knownPath))
-                return knownPath;
+        // Try in current path
+        if (File.Exists(nameWithExtension))
+            return nameWithExtension;
 
-            // Try in current path
-            if (File.Exists(nameWithExtension))
-                return nameWithExtension;
-
-            // Try runtimes specific path (globs SONAME-versioned variants, picks highest)
-            if (TryFindLibraryPath(ownerType, nameWithExtension, out knownPath))
-                return knownPath;
-        }
+        // Try runtimes specific path (globs SONAME-versioned variants, picks highest)
+        if (TryFindLibraryPath(ownerType, nameWithExtension, out knownPath))
+            return knownPath;
 
         throw new FileNotFoundException($"Could not locate native library {libraryName}");
     }
@@ -200,40 +187,12 @@ public static partial class NativeLibraryHelper
 
             var libraryNameWithExtension = libraryName + libExtension;
 
-            if (Platform.Type != PlatformType.Windows)
-            {
-                // On Linux opening a library without a path will look it up in the global library locations:
-                // e.g., /lib/x86_64-linux-gnu, /lib, /usr/lib, etc.
-                if (NativeLibrary.TryLoad(libraryNameWithExtension, out nint result))
-                {
-                    return AddLoadedLibrary(libraryName, result);
-                }
-                // Also try with 'lib' prefix common on Linux
-                else if (!libraryName.StartsWith("lib", StringComparison.Ordinal) &&
-                          NativeLibrary.TryLoad("lib" + libraryNameWithExtension, out result))
-                {
-                    return AddLoadedLibrary(libraryName, result);
-                }
-            }
-
             // Try to load the DLL from the directory where its containing type's assembly is located
             if (TryFindLibraryPath(ownerType, libraryNameWithExtension, out string? libraryFilename))
             {
                 if (NativeLibrary.TryLoad(libraryFilename!, out nint result))
                 {
                     return AddLoadedLibrary(libraryName, result);
-                }
-            }
-
-            // Also try with 'lib' prefix in runtimes path (Linux native libs use lib prefix)
-            if (Platform.Type != PlatformType.Windows && !libraryName.StartsWith("lib", StringComparison.Ordinal))
-            {
-                if (TryFindLibraryPath(ownerType, "lib" + libraryNameWithExtension, out libraryFilename))
-                {
-                    if (NativeLibrary.TryLoad(libraryFilename!, out nint result))
-                    {
-                        return AddLoadedLibrary(libraryName, result);
-                    }
                 }
             }
 
@@ -294,7 +253,7 @@ public static partial class NativeLibraryHelper
     /// </param>
     /// <param name="libraryNameWithExtension">
     ///   The file name of the native library to locate, including its extension
-    ///   (for example, <c>"mylib.dll"</c> or <c>"libmylib.so"</c>).
+    ///   (for example, <c>"mylib.dll"</c>).
     ///   Cannot be <see langword="null"/> or empty.
     /// </param>
     /// <param name="result">
@@ -350,31 +309,7 @@ public static partial class NativeLibraryHelper
             if (!Directory.Exists(path))
                 return null;
 
-            // NuGet packages often ship only the SONAME-versioned variant (libfoo.so.5).
-            // Glob for it; pick the highest version on multiple matches.
-            // Windows require unversioned names, so they don't glob.
-            var (pattern, versionPrefix) = Platform.Type switch
-            {
-                PlatformType.Linux => (libraryNameWithExtension + ".*", libraryNameWithExtension),
-
-                _ => (null, null)
-            };
-            if (pattern is null)
-                return null;
-
-            return Directory.EnumerateFiles(path, pattern)
-                .OrderByDescending(f => ParseVersion(f, versionPrefix!))
-                .FirstOrDefault();
-        }
-
-        static Version ParseVersion(string file, string prefix)
-        {
-            var name = Path.GetFileName(file);
-            if (name.StartsWith(prefix)) name = name[prefix.Length..];
-            var s = name.TrimStart('.');
-            // System.Version.TryParse requires at least 2 numeric components.
-            if (!s.Contains('.')) s += ".0";
-            return Version.TryParse(s, out var v) ? v : new Version();
+            return null;
         }
     }
 
@@ -425,32 +360,12 @@ public static partial class NativeLibraryHelper
         lock (loadedLibrariesLock)
         {
             var libraryNameWithExtension = Path.GetFileName(libraryPath);
-            // Strip the full platform extension (.so[.N] / .dll) so the key matches
+            // Strip the full platform extension (.dll) so the key matches
             // what PreloadLibrary/LocateLibrary look up regardless of SONAME-versioned filenames.
             var libraryNameWithoutExtension = StripPlatformNativeExtension(libraryNameWithExtension);
             nativeDependenciesWithExtensions[libraryNameWithExtension] = libraryPath;
+            nativeDependenciesWithoutExtensions.TryAdd(libraryNameWithoutExtension, libraryPath);
 
-            // When a package ships several SONAMEs (Ultz.Native.Assimp 6.x has libassimp.so.5 + .so.6),
-            // keep the highest so the current lib wins, not a stale compat copy.
-            SetHighestVersion(libraryNameWithoutExtension);
-
-            // Native libs on Linux are conventionally named "lib<X>.so" but
-            // [DllImport] strings typically drop the prefix ("X"). Register the stripped
-            // form too so the resolver finds it under either spelling.
-            if (Platform.Type != PlatformType.Windows
-                && libraryNameWithoutExtension.StartsWith("lib", StringComparison.Ordinal))
-            {
-                SetHighestVersion(libraryNameWithoutExtension[3..]);
-            }
-
-            void SetHighestVersion(string key)
-            {
-                if (!nativeDependenciesWithoutExtensions.TryGetValue(key, out var existing)
-                    || GetNativeSonameVersion(libraryPath) >= GetNativeSonameVersion(existing))
-                {
-                    nativeDependenciesWithoutExtensions[key] = libraryPath;
-                }
-            }
 #if STRIDE_PLATFORM_DESKTOP
             EnsureGlobalResolverRegistered();
 #endif
@@ -482,8 +397,7 @@ public static partial class NativeLibraryHelper
 
         if (Directory.Exists(directory))
         {
-            // libfoo.so.6 on Linux; on Windows, the managed assemblies next to them share the extension
-            var pattern = Platform.Type == PlatformType.Linux ? "*" + libExtension + "*" : "*" + libExtension;
+            var pattern = "*" + libExtension;
             foreach (var file in Directory.EnumerateFiles(directory, pattern))
             {
                 if (Platform.Type != PlatformType.Windows || !IsManagedAssembly(file))
@@ -491,6 +405,10 @@ public static partial class NativeLibraryHelper
             }
         }
 
+        //
+        // Determines if a file is a managed Assembly.
+        // Used to skip managed assemblies when registering native dependencies on Windows.
+        //
         static bool IsManagedAssembly(string file)
         {
             try
@@ -506,43 +424,14 @@ public static partial class NativeLibraryHelper
         }
     }
 
-    /// <summary>SONAME version of a native filename (libfoo.so.6 → 6.0; else 0.0).</summary>
-    private static Version GetNativeSonameVersion(string path)
-    {
-        var name = Path.GetFileName(path);
-        string version;
-        var soIndex = name.IndexOf(".so.", StringComparison.Ordinal);
-        if (soIndex >= 0)
-        {
-            version = name[(soIndex + ".so.".Length)..];
-        }
-        else
-        {
-            version = "";
-        }
-        if (version.Length == 0)
-            return new Version(0, 0);
-        if (!version.Contains('.'))
-            version += ".0";
-        return Version.TryParse(version, out var parsed) ? parsed : new Version(0, 0);
-    }
-
     /// <summary>
     /// Strips the native-library extension from <paramref name="fileName"/>, returning the bare
-    /// library name. Handles all four conventions: Windows <c>foo.dll</c>, Linux <c>libfoo.so</c>
-    /// and SONAME-versioned <c>libfoo.so.5</c>.
+    /// library name.
     /// </summary>
     private static string StripPlatformNativeExtension(string fileName)
     {
-        switch (Platform.Type)
-        {
-            case PlatformType.Linux:
-                var soIdx = fileName.IndexOf(".so", StringComparison.Ordinal);
-                return soIdx >= 0 ? fileName[..soIdx] : fileName;
-
-            default: // Windows + everything else: standard single-extension semantics.
-                return Path.GetFileNameWithoutExtension(fileName);
-        }
+        // Windows + everything else: standard single-extension semantics.
+        return Path.GetFileNameWithoutExtension(fileName);
     }
 
 #if STRIDE_PLATFORM_DESKTOP
@@ -563,7 +452,7 @@ public static partial class NativeLibraryHelper
     ///   Makes the <c>[DllImport]</c> calls of <paramref name="assembly"/> find the native libraries known here
     ///   (preloaded or registered) when it lives outside the default load context, which the global resolver
     ///   covers: an assembly loaded from bytes gets a load context of its own. On Windows a library already
-    ///   loaded by full path is found again by name anyway; on Linux it is not.
+    ///   loaded by full path is found again by name anyway.
     /// </summary>
     /// <param name="assembly">The assembly whose load context gets the resolver.</param>
     public static void RegisterResolverFor(Assembly assembly)
@@ -585,8 +474,6 @@ public static partial class NativeLibraryHelper
     /// <summary>
     /// Global resolver for [DllImport] calls — returns preloaded library handles, and lazily
     /// loads from a registered dependency path on first use otherwise.
-    /// On Linux, dlopen with a full path doesn't make the library findable by bare name,
-    /// so DllImport("freetype") won't find a preloaded "/path/to/libfreetype.so" without this.
     /// </summary>
     private static IntPtr ResolvePreloadedLibrary(Assembly assembly, string name)
     {
@@ -634,7 +521,6 @@ public static partial class NativeLibraryHelper
     ///   The file system path of the native library if it can be determined; otherwise, <see langword="null"/>.
     /// </returns>
     /// <remarks>
-    ///   This method supports Windows and Linux platforms.
     ///   On unsupported platforms or if the handle is zero, the method returns <see langword="null"/>.
     /// </remarks>
     private static string? GetLibraryPath(nint handle)
@@ -644,8 +530,6 @@ public static partial class NativeLibraryHelper
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             return GetWindowsPath(handle);
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return GetPosixPath(handle);
 
         return null;
     }
@@ -681,40 +565,6 @@ public static partial class NativeLibraryHelper
     //   DWORD GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
     [LibraryImport("kernel32")]
     private static unsafe partial uint GetModuleFileNameW(nint hModule, char* lpFilename, uint nSize);
-
-
-    /// <summary>
-    ///   Attempts to retrieve the file system path of a native library on Linux.
-    /// </summary>
-    /// <param name="address">The address of the loaded native library.</param>
-    /// <returns>
-    ///   The file system path of the native library if it can be determined; otherwise, <see langword="null"/>.
-    /// </returns>
-    private static string? GetPosixPath(IntPtr address)
-    {
-        if (dladdr(address, out Dl_info info) != 0 &&
-            info.dli_fname != IntPtr.Zero)
-        {
-            return Marshal.PtrToStringAnsi(info.dli_fname);
-        }
-
-        return null;
-    }
-
-    // From POSIX <dlfcn.h>, valid for Linux:
-    //   int dladdr(void *addr, Dl_info *info);
-    [LibraryImport("libdl", EntryPoint = "dladdr")]
-    private static partial int dladdr(IntPtr address, out Dl_info info);
-
-    // Struct equivalent to Dl_info in <dlfcn.h>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Dl_info
-    {
-        public IntPtr dli_fname;  // Pathname of shared object
-        public IntPtr dli_fbase;  // Base address
-        public IntPtr dli_sname;  // Name of nearest symbol
-        public IntPtr dli_saddr;  // Address of nearest symbol
-    }
 
 #endif
 

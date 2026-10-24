@@ -11,14 +11,14 @@ assignees: ''
 
 **Version**: Version number and/or git branch
 
-**Platform(s)**: Does the problem occur on Windows, Linux...?
+**Platform(s)**: Does the problem occur on Windows...?
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
-1. 
+1.
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.

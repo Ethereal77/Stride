@@ -58,7 +58,7 @@ The MRU list is wrapped in `MostRecentlyUsedFileCollection` from the shared [Str
 
 ## EditorPath
 
-Path resolution goes through [Stride.Core.Assets.Editor.EditorPath](../../sources/editor/Stride.Core.Assets.Editor/EditorPath.cs), linked directly into the launcher project. On Windows this resolves to `%APPDATA%\Stride\` (roaming); on Linux it follows XDG conventions.
+Path resolution goes through [Stride.Core.Assets.Editor.EditorPath](../../sources/editor/Stride.Core.Assets.Editor/EditorPath.cs), linked directly into the launcher project. On Windows this resolves to `%APPDATA%\Stride\` (roaming).
 
 ## First-install tasks
 
@@ -66,5 +66,3 @@ Path resolution goes through [Stride.Core.Assets.Editor.EditorPath](../../source
 
 - `PrerequisitesRun` — the prerequisites installer is only auto-launched on the very first run.
 - Announcement dismissal — `AnnouncementViewModel` stores "don't show again" per announcement name.
-
-On Linux, `HasDoneTask` currently returns `true` unconditionally, meaning announcements are never shown and the prerequisites installer never runs — this matches the target platforms (no Windows DirectX redist needed). A `FIXME xplat-editor` comment in the code marks this for a future file-based implementation. See [cross-platform.md](cross-platform.md).

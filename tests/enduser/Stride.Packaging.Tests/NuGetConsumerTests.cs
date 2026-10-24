@@ -36,8 +36,9 @@ public class NuGetConsumerTests
 
         // Build the host-platform executable project directly: it triggers asset compilation
         // and references .Game.
-        var platformSuffix = TestEnvironment.HostPlatform == "linux" ? "Linux"
-                           : "Windows";
+        var platformSuffix = TestEnvironment.HostPlatform == "windows"
+            ? "Windows"
+            : throw new PlatformNotSupportedException($"Unsupported host platform: {TestEnvironment.HostPlatform}");
         var exeProject = Path.Combine(sampleDir, $"{sampleName}.{platformSuffix}", $"{sampleName}.{platformSuffix}.csproj");
         if (!File.Exists(exeProject))
             throw new FileNotFoundException($"Generated executable project not found: {exeProject}");

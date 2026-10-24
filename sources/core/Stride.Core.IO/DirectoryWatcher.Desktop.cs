@@ -130,7 +130,7 @@ public partial class DirectoryWatcher
         if (path != null && Directory.Exists(path))
         {
             // TODO : Need to investigate later whether ToLower method is safe to remove for Windows OS
-            info = new DirectoryInfo(OperatingSystem.IsLinux() ? path :  path.ToLowerInvariant());
+            info = new DirectoryInfo(path.ToLowerInvariant());
         }
         else
         {
@@ -319,7 +319,7 @@ public partial class DirectoryWatcher
         public DirectoryWatcherItem(DirectoryInfo path)
         {
             // TODO : Need to investigate later whether ToLower method is safe to remove for Windows OS
-            Path = OperatingSystem.IsLinux() ? path.FullName : path.FullName.ToLowerInvariant();
+            Path = path.FullName.ToLowerInvariant();
         }
 
         public DirectoryWatcherItem? Parent;

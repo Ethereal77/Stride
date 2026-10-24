@@ -31,5 +31,4 @@ dotnet/
   win-x64/        Windows x64
   win-x86/        Windows x86
   win-arm64/      Windows ARM64
-  linux-x64/      Linux x64
 ```

@@ -47,17 +47,6 @@ namespace Stride.Assets
             };
             solutionPlatforms.Add(windowsPlatform);
 
-            // Linux
-            var linuxPlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.Linux.ToString(),
-                IsAvailable = true,
-                TargetFramework = "net10.0",
-                RuntimeIdentifier = "linux-x64",
-                Type = PlatformType.Linux,
-            };
-            solutionPlatforms.Add(linuxPlatform);
-
             AssetRegistry.RegisterSupportedPlatforms(solutionPlatforms);
         }
 

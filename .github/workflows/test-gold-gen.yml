@@ -30,10 +30,6 @@ on:
         description: Windows (Direct3D11 / Direct3D12 / Vulkan)
         type: boolean
         default: true
-      linux:
-        description: Linux (Vulkan / Lavapipe)
-        type: boolean
-        default: true
       graphics-api:
         description: Windows graphics API (blank = all three)
         type: choice
@@ -96,7 +92,7 @@ jobs:
   # dispatch) via the run summary + a notice annotation: whether the promote job lands it
   # automatically (per update-gold), plus the local promote/review command either way.
   info:
-    if: ${{ inputs.windows || inputs.linux }}
+    if: ${{ inputs.windows }}
     runs-on: ubuntu-latest
     steps:
       - name: Show gold landing info
@@ -147,25 +143,12 @@ jobs:
       # the run stays green and doesn't email. Build failures still fail (the Build step isn't gated).
       tolerate-test-failures: true
 
-  linux:
-    if: ${{ inputs.linux }}
-    uses: ./.github/workflows/test-linux-game.yml
-    secrets: inherit
-    with:
-      build-type: ${{ inputs.build-type }}
-      test-filter: ${{ inputs.test-filter }}
-      projects: ${{ inputs.projects }}
-      upload-binlog: ${{ inputs.upload-binlog }}
-      commit-sha: ${{ inputs.commit-sha }}
-      # Generating new gold makes tests "fail" (missing/changed reference) — expected; tolerate it so
-      # the run stays green and doesn't email. Build failures still fail (the Build step isn't gated).
-      tolerate-test-failures: true
 
   # Merge every platform's tests/local/ output into one downloadable zip. Review + promotion
   # happen in CompareGold (per-pixel compare, visual diff, dedup-aware promote), not here.
   gather:
-    needs: [windows, linux]
-    if: ${{ always() && (inputs.windows || inputs.linux) }}
+    needs: [windows]
+    if: ${{ always() && (inputs.windows) }}
     runs-on: ubuntu-latest
     steps:
       - name: Download generated images

@@ -284,40 +284,15 @@ namespace Stride.Graphics
             if (!availableExtensionNames.Contains(VK_KHR_SURFACE_EXTENSION_NAME))
                 throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_KHR_SURFACE_EXTENSION_NAME)} is not available");
 
-            if (Platform.Type == PlatformType.Windows)
-            {
-                if (!availableExtensionNames.Contains(VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
-                    throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_KHR_WIN32_SURFACE_EXTENSION_NAME)} is not available");
-            }
-            else if (Platform.Type == PlatformType.Linux)
-            {
-                if (!availableExtensionNames.Contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME)
-                    && !availableExtensionNames.Contains(VK_KHR_XCB_SURFACE_EXTENSION_NAME))
-                {
-                    throw new InvalidOperationException("None of the supported surface extensions VK_KHR_xcb_surface or VK_KHR_xlib_surface is available");
-                }
-            }
+            if (!availableExtensionNames.Contains(VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
+                throw new InvalidOperationException($"Required extension {Encoding.UTF8.GetString(VK_KHR_WIN32_SURFACE_EXTENSION_NAME)} is not available");
         }
 
         private static VkUtf8String GetPlatformRelatedSurfaceExtensionName(HashSet<VkUtf8String> availableExtensionNames)
         {
             VkUtf8String surfaceExtensionName = VK_KHR_SURFACE_EXTENSION_NAME;
 
-            if (Platform.Type == PlatformType.Windows)
-            {
-                surfaceExtensionName = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-            }
-            else if (Platform.Type == PlatformType.Linux)
-            {
-                if (availableExtensionNames.Contains(VK_KHR_XLIB_SURFACE_EXTENSION_NAME))
-                {
-                    surfaceExtensionName = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-                }
-                else if (availableExtensionNames.Contains(VK_KHR_XCB_SURFACE_EXTENSION_NAME))
-                {
-                    surfaceExtensionName = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-                }
-            }
+            surfaceExtensionName = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 
             return surfaceExtensionName;
         }

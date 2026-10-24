@@ -1,13 +1,12 @@
 # Cross-platform notes
 
-The launcher is in the middle of a Windows → Avalonia cross-platform port (`xplat-launcher` stream). It targets `net10.0` with RIDs `linux-x64` and `win-x64`; WPF has been fully replaced by Avalonia 12. This file lists the code paths that still behave differently per OS and what the remaining gaps are.
+The launcher is in the middle of a Windows → Avalonia cross-platform port (`xplat-launcher` stream). It targets `net10.0` with RIDs `win-x64`; WPF has been fully replaced by Avalonia 12. This file lists the code paths that still behave differently per OS and what the remaining gaps are.
 
 ## Executable shape
 
 | Platform | Game Studio file | How it is started |
 |---|---|---|
 | Windows | `Stride.GameStudio.Avalonia.Desktop.exe` (with fallback to `Stride.GameStudio.exe`) | `Process.Start(exe, args)` |
-| Linux | `Stride.GameStudio.Avalonia.Desktop.dll` | `Process.Start("dotnet", $"{dll} {args}")` |
 
 The choice is in `StrideVersionViewModel.UpdateAvailableEditors` and `DotNetHostSelector.NativeStartInfo`, which invokes `dotnet` when there is no apphost next to the dll.
 
@@ -21,11 +20,11 @@ Searching for `OperatingSystem.IsWindows()` in the launcher shows the remaining 
 
 ### Visual Studio integration
 
-`VsixVersionViewModel` relies on `Stride.Core.CodeEditorSupport.VisualStudio.VisualStudioVersions` to find installed VS instances. This uses `vswhere` internally and returns nothing on Linux, so the VSIX entries are effectively hidden. The code does not branch explicitly — it just finds no targets and the command stays disabled.
+`VsixVersionViewModel` relies on `Stride.Core.CodeEditorSupport.VisualStudio.VisualStudioVersions` to find installed VS instances. This uses `vswhere` internally.
 
 ### Installers
 
-Advanced Installer projects ([Prerequisites/](../../sources/launcher/Prerequisites/), [Setup/](../../sources/launcher/Setup/)) are Windows-only by construction. The MSBuild `PackageInstaller` target silently skips when `AdvancedInstaller.com` is not on `PATH`. On Linux, distribute the launcher via `dotnet publish -r {rid} --self-contained`. See [packaging.md](packaging.md).
+Advanced Installer projects ([Prerequisites/](../../sources/launcher/Prerequisites/), [Setup/](../../sources/launcher/Setup/)) are Windows-only by construction. The MSBuild `PackageInstaller` target silently skips when `AdvancedInstaller.com` is not on `PATH`. See [packaging.md](packaging.md).
 
 ## Telemetry and privacy policy
 
@@ -38,7 +37,6 @@ When `AutoCloseLauncher` is on, the launcher passes IPC information to Game Stud
 | Platform | Argument | Mechanism |
 |---|---|---|
 | Windows | `/LauncherWindowHandle <hwnd>` | Game Studio sends a Win32 `WM_CLOSE` message to the launcher's HWND. `MainWindow.OnOpened` captures the HWND via `TryGetPlatformHandle()`. |
-| Linux (and other non-Windows) | `/LauncherPipe <pipeName>` | The launcher starts a `NamedPipeServerStream` and waits for a connection (up to 2 minutes). Game Studio connects via `NamedPipeClientStream` once its main window is loaded and writes one byte. The launcher raises `CloseRequested` and the window closes gracefully. |
 
 Both paths are implemented:
 - **Launcher side:** `MainViewModel.StartStudio` — branches on `OperatingSystem.IsWindows()`. Non-Windows path starts `WaitForGameStudioPipeSignalAsync` and injects `/LauncherPipe <name>`. `MainWindow.axaml.cs` wires `CloseRequested → OnClosingAsync`.
@@ -49,7 +47,6 @@ Both paths are implemented:
 All config paths go through `EditorPath` (linked file from `Stride.Core.Assets.Editor`). `EditorPath.UserDataPath` resolves to:
 
 - `%LocalAppData%\Stride\` on Windows
-- `$XDG_DATA_HOME/Stride/` (or `~/.local/share/Stride/`) on Linux
 
 The launcher writes `LauncherSettings.conf` and the `launcher.lock` single-instance marker under these paths. No OS-specific branching is needed.
 
@@ -62,16 +59,13 @@ Window icons (`Launcher.ico`) are served through Avalonia's resource system. The
 `RecentProjectViewModel.Explore` reveals the selected recent project in the platform's native file manager:
 
 - **Windows:** `explorer.exe /select,{path}` (unchanged from master).
-- **Linux:** `dbus-send` invocation of `org.freedesktop.FileManager1.ShowItems` on the session bus (implemented by GNOME Nautilus, KDE Dolphin, Cinnamon Nemo, XFCE Thunar, LXDE PCManFM, and others). Falls back to `xdg-open {parent-dir}` when the DBus call fails — e.g. on minimal WMs without an `org.freedesktop.FileManager1` implementer, or headless environments without a session bus.
 
 All failures are swallowed silently (no dialog, no crash) since they are not actionable from inside the launcher.
 
 ## Testing surface
 
-When exercising changes, run the launcher on both Windows and Linux. Known gaps that will not reproduce on Linux:
+When exercising changes, run the launcher on Windows.
 
 - Self-update through a reinstall (`reinstall-below`: downloads a `StrideSetup.exe`, Windows only).
 - First-install VSIX prompt (no VS instances).
 - Prerequisites installer on first run.
-
-Conversely, on Windows the `dotnet` launch path (the `.dll` branch in `StartStudio`) is unreachable unless a Linux-built package is opened.

@@ -31,6 +31,5 @@ internal sealed class RiderLocatorEnvironment : IRiderLocatorEnvironment
 
     public OS CurrentOS =>
         OperatingSystem.IsWindows() ? OS.Windows :
-        OperatingSystem.IsLinux() ? OS.Linux :
         OS.Other;
 }

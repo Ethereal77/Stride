@@ -1,2 +1,2 @@
-set StridePlatforms=Windows;Linux
+set StridePlatforms=Windows
 Stride.slnx

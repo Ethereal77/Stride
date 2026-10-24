@@ -10,7 +10,7 @@ User-facing entry points to a Stride install:
 
 The launcher is the entry point that end users run after installing Stride. It manages the installed Stride versions (download, update, uninstall), exposes recent projects, VSIX extensions for Visual Studio, release notes, news, and documentation, and finally starts the selected version of Game Studio.
 
-It is an [Avalonia](https://avaloniaui.net/) MVVM application, targeting `net10.0` with runtime identifiers `linux-x64` and `win-x64`. On Windows it ships as a self-contained single-file exe (no .NET install needed), distributed as a NuGet package (`Stride.Launcher`, for its self-updates) and wrapped by an [Advanced Installer](https://www.advancedinstaller.com/) setup (`StrideSetup`, for first installs).
+It is an [Avalonia](https://avaloniaui.net/) MVVM application, targeting `net10.0` with runtime identifiers `win-x64`. On Windows it ships as a self-contained single-file exe (no .NET install needed), distributed as a NuGet package (`Stride.Launcher`, for its self-updates) and wrapped by an [Advanced Installer](https://www.advancedinstaller.com/) setup (`StrideSetup`, for first installs).
 
 ## Project layout
 
@@ -47,12 +47,6 @@ To publish the Windows exe as released (self-contained single file, in `bin\Rele
 
 ```
 dotnet publish sources/launcher/Stride.Launcher/Stride.Launcher.csproj -r win-x64 -p:PublishProfile=FolderProfile
-```
-
-To publish a self-contained Linux build:
-
-```
-dotnet publish sources/launcher/Stride.Launcher/Stride.Launcher.csproj -c Release -r linux-x64 --self-contained
 ```
 
 ## From Visual Studio / Rider

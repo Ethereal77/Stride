@@ -30,10 +30,6 @@
     #define OVR_OS_WIN32
 #endif
 
-#if !defined(OVR_OS_LINUX) && defined(__linux__)
-    #define OVR_OS_LINUX
-#endif
-
 
 
 //-----------------------------------------------------------------------------------
@@ -429,7 +425,7 @@ typedef enum ovrTrackingOrigin_
     /// to make sure the user is in a comfortable pose, facing a comfortable
     /// direction.
     ovrTrackingOrigin_EyeLevel = 0,
-    
+
     /// \brief Tracking system origin reported at floor height
     /// \details Prefer using this origin when your application requires the
     /// physical floor height to match the virtual floor height, such as
@@ -439,7 +435,7 @@ typedef enum ovrTrackingOrigin_
     /// will recenter the X & Z axes as well as yaw, but the Y-axis (i.e. height) will continue
     /// to be reported using the floor height as the origin for all poses.
     ovrTrackingOrigin_FloorLevel = 1,
-    
+
     ovrTrackingOrigin_Count = 2,            ///< \internal Count of enumerated elements.
     ovrTrackingOrigin_EnumSize = 0x7fffffff ///< \internal Force type int32_t.
 } ovrTrackingOrigin;
@@ -684,7 +680,7 @@ typedef enum ovrTextureFormat_
     OVR_FORMAT_BC6H_SF16            = 22,
     OVR_FORMAT_BC7_UNORM            = 23,
     OVR_FORMAT_BC7_UNORM_SRGB       = 24,
-    
+
     OVR_FORMAT_ENUMSIZE = 0x7fffffff  ///< \internal Force type int32_t.
 } ovrTextureFormat;
 
@@ -778,7 +774,7 @@ typedef enum ovrButton_
     ovrButton_VolUp     = 0x00400000,  /// Volume button on Oculus Remote. Not present on XBox or Touch controllers.
     ovrButton_VolDown   = 0x00800000,  /// Volume button on Oculus Remote. Not present on XBox or Touch controllers.
     ovrButton_Home      = 0x01000000,  /// Home button on XBox controllers. Oculus button on Touch controllers and Oculus Remote.
-    
+
     // Bit mask of all buttons that are for private usage by Oculus
     ovrButton_Private   = ovrButton_VolUp | ovrButton_VolDown | ovrButton_Home,
 
@@ -925,13 +921,13 @@ typedef struct ovrBoundaryTestResult_
 {
     // True if the boundary system is being triggered. Note that due to fade in/out effects this may not exactly match visibility.
     ovrBool IsTriggering;
-    
+
     // Distance to the closest play area or outer boundary surface.
     float ClosestDistance;
-    
+
     // Closest point on the boundary surface.
     ovrVector3f ClosestPoint;
-    
+
     // Unit surface normal of the closest boundary surface.
     ovrVector3f ClosestPointNormal;
 } ovrBoundaryTestResult;
@@ -1018,9 +1014,9 @@ typedef enum ovrInitFlags_
     ovrInit_Debug          = 0x00000001,
 
     /// When a version is requested, the LibOVR runtime respects the RequestedMinorVersion
-    /// field and verifies that the RequestedMinorVersion is supported. Normally when you 
+    /// field and verifies that the RequestedMinorVersion is supported. Normally when you
     /// specify this flag you simply use OVR_MINOR_VERSION for ovrInitParams::RequestedMinorVersion,
-    /// though you could use a lower version than OVR_MINOR_VERSION to specify previous 
+    /// though you could use a lower version than OVR_MINOR_VERSION to specify previous
     /// version behavior.
     ovrInit_RequestVersion = 0x00000004,
 
@@ -1066,7 +1062,7 @@ typedef struct OVR_ALIGNAS(8) ovrInitParams_
     uint32_t       Flags;
 
     /// Requests a specific minor version of the LibOVR runtime.
-    /// Flags must include ovrInit_RequestVersion or this will be ignored and OVR_MINOR_VERSION 
+    /// Flags must include ovrInit_RequestVersion or this will be ignored and OVR_MINOR_VERSION
     /// will be used. If you are directly calling the LibOVRRT version of ovr_Initialize
     /// in the LibOVRRT DLL then this must be valid and include ovrInit_RequestVersion.
     uint32_t       RequestedMinorVersion;
@@ -1557,7 +1553,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetControllerVibrationState(ovrSession sessio
 ///
 /// \see ovrBoundaryTestResult
 ///
-OVR_PUBLIC_FUNCTION(ovrResult) ovr_TestBoundary(ovrSession session, ovrTrackedDeviceType deviceBitmask, 
+OVR_PUBLIC_FUNCTION(ovrResult) ovr_TestBoundary(ovrSession session, ovrTrackedDeviceType deviceBitmask,
                                                 ovrBoundaryType boundaryType, ovrBoundaryTestResult* outTestResult);
 
 /// Tests collision/proximity of a 3D point against the Boundary System.
@@ -1573,7 +1569,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovr_TestBoundary(ovrSession session, ovrTrackedDe
 ///
 /// \see ovrBoundaryTestResult
 ///
-OVR_PUBLIC_FUNCTION(ovrResult) ovr_TestBoundaryPoint(ovrSession session, const ovrVector3f* point, 
+OVR_PUBLIC_FUNCTION(ovrResult) ovr_TestBoundaryPoint(ovrSession session, const ovrVector3f* point,
                                                      ovrBoundaryType singleBoundaryType, ovrBoundaryTestResult* outTestResult);
 
 /// Sets the look and feel of the Boundary System.
@@ -1619,8 +1615,8 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetBoundaryGeometry(ovrSession session, ovrBo
 OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetBoundaryDimensions(ovrSession session, ovrBoundaryType boundaryType, ovrVector3f* outDimensions);
 
 /// Returns if the boundary is currently visible.
-/// Note: visibility is false if the user has turned off boundaries, otherwise, it's true if the app has requested 
-/// boundaries to be visible or if any tracked device is currently triggering it. This may not exactly match rendering 
+/// Note: visibility is false if the user has turned off boundaries, otherwise, it's true if the app has requested
+/// boundaries to be visible or if any tracked device is currently triggering it. This may not exactly match rendering
 /// due to fade-in and fade-out effects.
 ///
 /// \param[in] session Specifies an ovrSession previously returned by ovr_Create.
@@ -1630,7 +1626,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetBoundaryDimensions(ovrSession session, ovr
 ///     - ovrSuccess: Result was successful and a result was returned.
 ///     - ovrSuccess_BoundaryInvalid: The call succeeded but the result is not a valid boundary due to not being set up.
 ///
-OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetBoundaryVisible(ovrSession session, ovrBool* outIsVisible); 
+OVR_PUBLIC_FUNCTION(ovrResult) ovr_GetBoundaryVisible(ovrSession session, ovrBool* outIsVisible);
 
 /// Requests boundary to be visible.
 ///
@@ -2095,26 +2091,26 @@ typedef struct OVR_ALIGNAS(4) ovrPerfStatsPerCompositorFrame_
 
     /// Index that increments with each successive ovr_SubmitFrame call
     int     AppFrameIndex;
-    
+
     /// If the app fails to call ovr_SubmitFrame on time, then expect this value to increment with each missed frame
     int     AppDroppedFrameCount;
-    
+
     /// Motion-to-photon latency for the application
     /// This value is calculated by either using the SensorSampleTime provided for the ovrLayerEyeFov or if that
     /// is not available, then the call to ovr_GetTrackingState which has latencyMarker set to ovrTrue
     float   AppMotionToPhotonLatency;
-    
+
     /// Amount of queue-ahead in seconds provided to the app based on performance and overlap of CPU & GPU utilization
     /// A value of 0.0 would mean the CPU & GPU workload is being completed in 1 frame's worth of time, while
     /// 11 ms (on the CV1) of queue ahead would indicate that the app's CPU workload for the next frame is
     /// overlapping the app's GPU workload for the current frame.
     float   AppQueueAheadTime;
-    
+
     /// Amount of time in seconds spent on the CPU by the app's render-thread that calls ovr_SubmitFrame
     /// Measured as elapsed time between from when app regains control from ovr_SubmitFrame to the next time the app
     /// calls ovr_SubmitFrame.
     float   AppCpuElapsedTime;
-    
+
     /// Amount of time in seconds spent on the GPU by the app
     /// Measured as elapsed time between each ovr_SubmitFrame call using GPU timing queries.
     float   AppGpuElapsedTime;
@@ -2127,31 +2123,31 @@ typedef struct OVR_ALIGNAS(4) ovrPerfStatsPerCompositorFrame_
     /// Since the compositor operates asynchronously, even if the app calls ovr_SubmitFrame too late,
     /// the compositor will kick off for each vsync.
     int     CompositorFrameIndex;
-    
+
     /// Increments each time the SDK compositor fails to complete in time
     /// This is not tied to the app's performance, but failure to complete can be tied to other factors
     /// such as OS capabilities, overall available hardware cycles to execute the compositor in time
     /// and other factors outside of the app's control.
     int     CompositorDroppedFrameCount;
-    
+
     /// Motion-to-photon latency of the SDK compositor in seconds
     /// This is the latency of timewarp which corrects the higher app latency as well as dropped app frames.
     float   CompositorLatency;
-    
+
     /// The amount of time in seconds spent on the CPU by the SDK compositor. Unless the VR app is utilizing
     /// all of the CPU cores at their peak performance, there is a good chance the compositor CPU times
     /// will not affect the app's CPU performance in a major way.
     float   CompositorCpuElapsedTime;
-    
+
     /// The amount of time in seconds spent on the GPU by the SDK compositor. Any time spent on the compositor
     /// will eat away from the available GPU time for the app.
     float   CompositorGpuElapsedTime;
-    
+
     /// The amount of time in seconds spent from the point the CPU kicks off the compositor to the point in time
     /// the compositor completes the distortion & timewarp on the GPU. In the event the GPU time is not
     /// available, expect this value to be -1.0f
     float   CompositorCpuStartToGpuEndElapsedTime;
-    
+
     /// The amount of time in seconds left after the compositor is done on the GPU to the associated V-Sync time.
     /// In the event the GPU time is not available, expect this value to be -1.0f
     float   CompositorGpuEndToVsyncElapsedTime;
@@ -2192,7 +2188,7 @@ enum { ovrMaxProvidedFrameStats = 5 };
 /// Since AdaptiveGpuPerformanceScale is edge-filtered and does not change rapidly
 /// (i.e. reports non-1.0 values once every couple of seconds) the app can make the
 /// necessary adjustments and then keep watching the value to see if it has been satisfied.
-/// 
+///
 /// \see ovr_GetPerfStats, ovrPerfStatsPerCompositorFrame
 typedef struct OVR_ALIGNAS(4) ovrPerfStats_
 {

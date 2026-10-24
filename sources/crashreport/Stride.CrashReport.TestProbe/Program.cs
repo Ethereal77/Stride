@@ -111,9 +111,6 @@ internal static partial class Trigger
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     private static partial IntPtr MemsetWindows(IntPtr dest, int c, IntPtr count);
 
-    [LibraryImport("libc", EntryPoint = "memset")]
-    private static partial IntPtr MemsetUnix(IntPtr dest, int c, IntPtr count);
-
     [LibraryImport("kernel32.dll")]
     private static partial void RaiseException(uint dwExceptionCode, uint dwExceptionFlags, uint nNumberOfArguments, IntPtr lpArguments);
 
@@ -129,7 +126,7 @@ internal static partial class Trigger
     }
 
     private static IntPtr Memset(IntPtr dest, int c, IntPtr count)
-        => OperatingSystem.IsWindows() ? MemsetWindows(dest, c, count) : MemsetUnix(dest, c, count);
+        => MemsetWindows(dest, c, count);
 
     // A write to a high unmapped address, faulting with the instruction pointer inside libc/ucrtbase.
     public static void NativeAccessViolation() => Memset(unchecked((IntPtr)0x00007FFFDEADBEEF), 0, 64);

@@ -70,10 +70,10 @@
     <None Include="UI\StrideUILibrary.sduilib" />
   </ItemGroup>
   <ItemGroup>
-    <StrideNativeLib Include="..\..\..\deps\VHACD\Release\**\*.dll;..\..\..\deps\VHACD\Release\**\*.so">
+    <StrideNativeLib Include="..\..\..\deps\VHACD\Release\**\*.dll">
       <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
     </StrideNativeLib>
-    <StrideNativeLib Include="..\..\..\deps\msdfgen\Release\**\*.dll;..\..\..\deps\msdfgen\Release\**\*.so">
+    <StrideNativeLib Include="..\..\..\deps\msdfgen\Release\**\*.dll">
       <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
     </StrideNativeLib>
     <!-- Asset compiler ffmpeg CLI — one native per RID under runtimes/<rid>/native/, deployed through the

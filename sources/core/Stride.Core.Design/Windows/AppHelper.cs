@@ -101,18 +101,6 @@ public static class AppHelper
                 using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0");
                 return (key?.GetValue("ProcessorNameString") as string)?.Trim();
             }
-            if (OperatingSystem.IsLinux())
-            {
-                foreach (var line in File.ReadLines("/proc/cpuinfo"))
-                {
-                    if (line.StartsWith("model name", StringComparison.Ordinal))
-                    {
-                        var separator = line.IndexOf(':');
-                        if (separator >= 0)
-                            return line[(separator + 1)..].Trim();
-                    }
-                }
-            }
         }
         catch (Exception)
         {

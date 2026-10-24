@@ -56,7 +56,7 @@ Common parameters (template-dependent):
 | Parameter | Values | Meaning |
 |---|---|---|
 | `-n` / `--name` | string | Project name; substitutes `MyTemplate` literal throughout |
-| `--platforms` | `host` / `windows` / `linux` (pipe-joined for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
+| `--platforms` | `host` / `windows` (pipe-joined for multiple) | Per-platform exec projects to include. `host` auto-detects current OS. |
 | `--HDR` | `true` / `false` | HDR rendering pipeline (requires `graphicsProfile >= 10.0`) |
 | `--graphicsProfile` | `9.0` / `10.0` / `11.0` | Shader feature level |
 | `--orientation` | `Default` / `LandscapeLeft` / `LandscapeRight` / `Portrait` | Display orientation |
@@ -186,7 +186,7 @@ and instantiates each selected pack into the generated game library.
 
 ## Future work
 
-- **One-click CLI registration on Windows** — on Linux the manual `dotnet new install` step in [End-user usage](#end-user-usage-cli) is the canonical path (no editor to integrate with). On Windows, GameStudio bundles `Stride.Templates.Games.<version>.nupkg` and could expose a settings toggle ("Register Stride templates for CLI") that runs the install on the user's behalf. Opt-in to respect user intent and avoid multi-version conflicts when 4.4 + 4.5 GameStudios coexist. GameStudio's own New-Project dialog is unaffected either way — it installs into an isolated TemplateEngine profile, not the global `dotnet new` registry.
+- **One-click CLI registration on Windows** — On Windows, GameStudio bundles `Stride.Templates.Games.<version>.nupkg` and could expose a settings toggle ("Register Stride templates for CLI") that runs the install on the user's behalf. Opt-in to respect user intent and avoid multi-version conflicts when 4.4 + 4.5 GameStudios coexist. GameStudio's own New-Project dialog is unaffected either way — it installs into an isolated TemplateEngine profile, not the global `dotnet new` registry.
 - **Asset packs as referenced packages** — today a pack is a copy the user owns: GameStudio's New Game checkboxes (or, on the CLI, a `stride-pack-*` command run in the game library after creating the game — packs can't be a `stride-game` parameter because a template can't pull content from another package) drop the assets into the project. Later, packs could become real NuGet asset packages added as a `PackageReference` (enabled by asset URL namespacing): assets stay in the package, update with version bumps, third parties can publish their own. The dialog UX stays; only the checkbox action changes from copy to reference, and the item templates phase out with no migration (created games keep their copied assets).
 - **Template store UI** — browse `Stride.Templates.Games.Starters` / `Stride.Templates.Samples` from nuget.org inside the New-Project dialog, install on-demand without manual CLI.
 - **HTTP Range fetch of `templates.sdtpls`** — load just the aggregated metadata (Name/Description/Icon/Screenshots) before downloading a multi-MB nupkg, so the store UI can show rich preview cards without paying full download cost upfront.

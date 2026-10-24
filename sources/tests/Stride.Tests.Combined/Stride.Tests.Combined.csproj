@@ -7,7 +7,7 @@
     <AssemblyName>Stride.Tests.Combined</AssemblyName>
     <RootNamespace>Stride.Tests.Combined</RootNamespace>
     <!-- StrideTestPlatforms defaults from StridePlatforms via the MultiPlatform Tests SDK; pass
-         -p:StridePlatforms=<Windows|Linux> to target a different platform. -->
+         -p:StridePlatforms=<Windows|other> to target a different platform. -->
     <StrideCompileAssets>false</StrideCompileAssets>
     <StrideGraphicsRegression>true</StrideGraphicsRegression>
     <!-- Forwarded to each suite ref: drop its launcher/entry point but keep asset compile +

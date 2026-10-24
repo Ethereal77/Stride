@@ -22,18 +22,7 @@ internal static class HostEnvironment
     {
         try
         {
-            if (OperatingSystem.IsLinux())
-            {
-                foreach (var line in File.ReadAllLines("/proc/cpuinfo"))
-                {
-                    var idx = line.IndexOf(':');
-                    if (idx < 0) continue;
-                    var key = line[..idx].Trim();
-                    if (key == "model name" || key == "Hardware" || key == "Processor")
-                        return line[(idx + 1)..].Trim();
-                }
-            }
-            else if (OperatingSystem.IsWindows())
+            if (OperatingSystem.IsWindows())
             {
                 // ProcessorNameString registry value is what Task Manager / dxdiag show.
                 using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(

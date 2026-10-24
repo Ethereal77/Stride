@@ -10,9 +10,8 @@ name: "Dep: Build & Deploy SPIRV-Tools"
 #
 # Output per OS — one DLL to ship per RID:
 #   Windows:  stride_spirv_tools.dll
-#   Linux:    libstride_spirv_tools.so
 #
-# RIDs covered: win-x64, win-arm64, linux-x64.
+# RIDs covered: win-x64, win-arm64.
 
 on:
   workflow_dispatch:
@@ -111,42 +110,6 @@ jobs:
         with: { name: spirv-tools-win-arm64, path: spirv-tools-out/ }
 
   # ---------------------------------------------------------------------------
-  # Linux x64
-  # ---------------------------------------------------------------------------
-  build-linux-x64:
-    name: Build SPIRV-Tools (Linux x64)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-        with: { path: stride-src, sparse-checkout: build/deps/spirv-tools }
-
-      - name: Clone SPIRV-Tools
-        run: |
-          git init spirv-tools-src
-          git -C spirv-tools-src remote add origin "${{ github.event.inputs.repository || 'https://github.com/KhronosGroup/SPIRV-Tools.git' }}"
-          git -C spirv-tools-src fetch --depth 1 origin "${{ github.event.inputs.ref || 'main' }}"
-          git -C spirv-tools-src checkout FETCH_HEAD
-          python3 spirv-tools-src/utils/git-sync-deps
-
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build cmake
-
-      - name: Configure & build stride_spirv_tools
-        run: |
-          cmake -S stride-src/build/deps/spirv-tools -B _build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DSPIRV_TOOLS_SOURCE_DIR=$PWD/spirv-tools-src
-          cmake --build _build --target stride_spirv_tools
-
-      - name: Collect output
-        run: |
-          mkdir -p spirv-tools-out
-          cp _build/libstride_spirv_tools.so spirv-tools-out/
-
-      - uses: actions/upload-artifact@v7
-        with: { name: spirv-tools-linux-x64, path: spirv-tools-out/ }
-
-  # ---------------------------------------------------------------------------
   # Pack NuGet from all artifacts.
   # ---------------------------------------------------------------------------
   pack:
@@ -154,7 +117,6 @@ jobs:
     needs:
       - build-windows-x64
       - build-windows-arm64
-      - build-linux-x64
     runs-on: windows-2025-vs2026
     steps:
       - uses: actions/checkout@v7
@@ -175,7 +137,7 @@ jobs:
         shell: pwsh
         run: |
           $destRoot = "build/deps/spirv-tools/runtimes"
-          $rids = 'win-x64','win-arm64','linux-x64'
+          $rids = 'win-x64','win-arm64'
           foreach ($rid in $rids) {
             $native = "$destRoot/$rid/native"
             New-Item -Path $native -ItemType Directory -Force | Out-Null

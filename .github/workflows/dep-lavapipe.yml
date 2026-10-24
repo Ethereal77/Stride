@@ -10,7 +10,6 @@ name: "Dep: Build & Deploy Lavapipe"
 #
 # Outputs (per OS):
 #   Windows:  vulkan_lvp.dll        + lvp_icd.x86_64.json (or lvp_icd.json)
-#   Linux:    libvulkan_lvp.so      + lvp_icd.x86_64.json
 # The ICD JSON's `library_path` may need rewriting to a side-by-side path.
 
 on:
@@ -282,72 +281,9 @@ jobs:
           name: lavapipe-win-arm64
           path: lavapipe-out/
 
-  build-linux:
-    name: Build Lavapipe (Linux x64)
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Stride
-        uses: actions/checkout@v7
-        with:
-          path: stride-src
-          sparse-checkout: build/deps/lavapipe
-
-      - name: Clone Mesa
-        run: |
-          url="${{ github.event.inputs.repository || 'https://gitlab.freedesktop.org/mesa/mesa.git' }}"
-          ref="${{ github.event.inputs.ref || 'main' }}"
-          git init mesa-src
-          git -C mesa-src remote add origin "$url"
-          git -C mesa-src fetch --depth 1 origin "$ref"
-          git -C mesa-src checkout FETCH_HEAD
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          # Build with x11,wayland Vulkan WSI so swapchains work under Xvfb/WSLg/etc.
-          # libxcb/libwayland are dlopen'd lazily — headless callers never pay the cost.
-          # llvm-dev + libpolly-*-dev because llvm-config emits -lPolly -lPollyISL.
-          sudo apt-get install -y ninja-build pkg-config bison flex glslang-tools \
-            llvm-dev libpolly-18-dev libelf-dev libdrm-dev \
-            libx11-xcb-dev libxrandr-dev libxext-dev libxfixes-dev libxxf86vm-dev libxdamage-dev \
-            libxcb-randr0-dev libxcb-shm0-dev libxcb-present-dev \
-            libxcb-dri3-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-sync-dev \
-            libxshmfence-dev \
-            libwayland-dev wayland-protocols libwayland-egl-backend-dev
-          # Ubuntu 24.04 ships meson 1.3.2; Mesa requires >= 1.4.0 — use pip.
-          python3 -m pip install --user --upgrade meson mako packaging pyyaml
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Configure & build
-        working-directory: mesa-src
-        run: |
-          meson setup _build \
-            -Dvulkan-drivers=swrast -Dgallium-drivers=llvmpipe \
-            -Dplatforms=x11,wayland \
-            -Dglx=disabled -Degl=disabled \
-            -Dopengl=false -Dgles1=disabled -Dgles2=disabled \
-            -Dgallium-extra-hud=false -Dvideo-codecs= \
-            -Dllvm=enabled -Dshared-llvm=disabled \
-            -Dbuildtype=release
-          ninja -C _build src/gallium/targets/lavapipe/libvulkan_lvp.so
-
-      - name: Collect output
-        run: |
-          mkdir -p lavapipe-out
-          find mesa-src/_build -name "libvulkan_lvp.so*" -exec cp {} lavapipe-out/ \;
-          # ICD manifest with relative library_path
-          printf '%s' '{"file_format_version":"1.0.0","ICD":{"library_path":"./libvulkan_lvp.so","api_version":"1.3.0"}}' > lavapipe-out/lvp_icd.json
-          ls -la lavapipe-out/
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: lavapipe-linux-x64
-          path: lavapipe-out/
-
   pack:
     name: Pack & Publish NuGet
-    needs: [build-windows, build-windows-arm64, build-linux]
+    needs: [build-windows, build-windows-arm64]
     runs-on: windows-2025-vs2026
     steps:
       - name: Checkout
@@ -371,15 +307,11 @@ jobs:
         uses: actions/download-artifact@v8
         with: { name: lavapipe-win-arm64, path: artifacts/win-arm64 }
 
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v8
-        with: { name: lavapipe-linux-x64, path: artifacts/linux-x64 }
-
       - name: Stage native payload into csproj
         shell: pwsh
         run: |
           $destRoot = "build/deps/lavapipe/runtimes"
-          foreach ($rid in 'win-x64','win-arm64','linux-x64') {
+          foreach ($rid in 'win-x64','win-arm64') {
             $native = "$destRoot/$rid/native"
             New-Item -Path $native -ItemType Directory -Force | Out-Null
             Copy-Item -Recurse artifacts/$rid/* $native

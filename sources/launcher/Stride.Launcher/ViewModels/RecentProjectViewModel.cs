@@ -191,27 +191,10 @@ public sealed class RecentProjectViewModel : DispatcherViewModel
 
         try
         {
-            if (OperatingSystem.IsWindows())
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{FullPath}\"")
             {
-                Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{FullPath}\"")
-                {
-                    UseShellExecute = true,
-                });
-            }
-            else // Linux and any other Unix
-            {
-                if (!TryRevealFileDBus(FullPath))
-                {
-                    var parent = Path.GetDirectoryName(FullPath);
-                    if (parent is not null)
-                    {
-                        Process.Start(new ProcessStartInfo("xdg-open", parent)
-                        {
-                            UseShellExecute = false,
-                        });
-                    }
-                }
-            }
+                UseShellExecute = true,
+            });
         }
         catch
         {

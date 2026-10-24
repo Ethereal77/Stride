@@ -19,9 +19,9 @@ namespace Stride.Assets.Tests
         }
 
         // Core families resolve on every platform: present natively on Windows, and via the
-        // metric-compatible Liberation (or DejaVu) fallback on Linux. Includes a Windows-only font
-        // (Segoe UI), a Linux font (Liberation Sans) and a non-Windows font (Helvetica) to exercise
-        // the fallback in both directions.
+        // metric-compatible Liberation (or DejaVu) fallback on other platforms.
+        // Includes a Windows-only font (Segoe UI), a Linux font (Liberation Sans) and a
+        // non-Windows font (Helvetica) to exercise the fallback in both directions.
         [Theory]
         [InlineData("Arial")]
         [InlineData("Helvetica")]

@@ -16,8 +16,8 @@ public static class Platform
     /// </summary>
     public static readonly PlatformType Type
         = OperatingSystem.IsWindows() ? PlatformType.Windows
-        : OperatingSystem.IsLinux()  ? PlatformType.Linux
-        : PlatformType.Windows; // For now we use Windows as fallback, but it might be better to throw an exception?
+        // For now we use Windows as fallback, but it might be better to throw an exception?
+        : PlatformType.Windows;
 
     /// <summary>
     /// Gets a value indicating whether the running platform is windows desktop.

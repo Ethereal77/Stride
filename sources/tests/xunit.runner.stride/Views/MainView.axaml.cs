@@ -492,7 +492,7 @@ public partial class MainView : UserControl
         try
         {
             // UseShellExecute lets the OS pick the default app for the extension
-            // (image viewer for .png on Windows, xdg-open on Linux).
+            // (Image Viewer for .png on Windows).
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
         }
         catch (System.Exception ex)

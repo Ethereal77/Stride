@@ -574,16 +574,8 @@ public sealed class DotNetInstall
         yield return Environment.GetEnvironmentVariable("DOTNET_ROOT");
         foreach (var directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
             yield return directory;
-        if (OperatingSystem.IsWindows())
-        {
-            yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet");
-        }
-        else
-        {
-            yield return "/usr/share/dotnet";
-            yield return "/usr/lib/dotnet";
-            yield return "/usr/lib64/dotnet";
-        }
+
+        yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet");
     }
 
     /// <summary>Newest installed version of <paramref name="framework"/> within <paramref name="major"/>, or null.</summary>

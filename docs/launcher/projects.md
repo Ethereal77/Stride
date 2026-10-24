@@ -25,7 +25,7 @@ sources/launcher/
 │   │   ├── Images/                Icons, banners, social links
 │   │   └── Localization/          Strings.resx, Urls.resx and .ja-JP variants
 │   ├── Properties/PublishProfiles/ dotnet publish profiles
-│   ├── Stride.Launcher.csproj      net10.0, linux-x64 + win-x64
+│   ├── Stride.Launcher.csproj      net10.0, win-x64
 │   └── Stride.Launcher.nuspec      NuGet package definition (single source of truth for version)
 ├── Prerequisites/
 │   └── launcher-prerequisites.aip  Advanced Installer project → launcher-prerequisites.exe
@@ -77,4 +77,3 @@ Pulled in via `Directory.Packages.props`:
 - **A new command-line action** → add to `LauncherArguments.ActionType`, wire it through `Launcher.ProcessAction` / `AppMainAsync`. See [lifecycle.md](lifecycle.md#command-line-arguments).
 - **A new user preference** → new `SettingsKey<T>` in [LauncherSettings.cs](../../sources/launcher/Stride.Launcher/Services/LauncherSettings.cs). See [settings.md](settings.md).
 - **A new localized string** → add to `Strings.resx` and every locale sibling (`Strings.ja-JP.resx`, …). See [localization.md](localization.md).
-- **A Windows-only code path** → wrap in `OperatingSystem.IsWindows()` and, for new features, open a FIXME noting the Linux equivalent. See [cross-platform.md](cross-platform.md).

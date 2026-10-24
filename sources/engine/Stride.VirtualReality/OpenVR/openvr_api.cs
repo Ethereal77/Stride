@@ -2183,19 +2183,6 @@ public class CVRSystem
 	}
 	public bool PollNextEvent(ref VREvent_t pEvent,uint uncbVREvent)
 	{
-#if !UNITY_METRO
-		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-		{
-			PollNextEventUnion u;
-			VREvent_t_Packed event_packed = new VREvent_t_Packed();
-			u.pPollNextEventPacked = null;
-			u.pPollNextEvent = FnTable.PollNextEvent;
-			bool packed_result = u.pPollNextEventPacked(ref event_packed,(uint)Marshal.SizeOf<VREvent_t_Packed>());
-
-			event_packed.Unpack(ref pEvent);
-			return packed_result;
-		}
-#endif
 		bool result = FnTable.PollNextEvent(ref pEvent,uncbVREvent);
 		return result;
 	}
@@ -2228,19 +2215,6 @@ public class CVRSystem
 	}
 	public bool GetControllerState(uint unControllerDeviceIndex,ref VRControllerState_t pControllerState,uint unControllerStateSize)
 	{
-#if !UNITY_METRO
-		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-		{
-			GetControllerStateUnion u;
-			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
-			u.pGetControllerStatePacked = null;
-			u.pGetControllerState = FnTable.GetControllerState;
-			bool packed_result = u.pGetControllerStatePacked(unControllerDeviceIndex,ref state_packed,(uint)Marshal.SizeOf<VRControllerState_t_Packed>());
-
-			state_packed.Unpack(ref pControllerState);
-			return packed_result;
-		}
-#endif
 		bool result = FnTable.GetControllerState(unControllerDeviceIndex,ref pControllerState,unControllerStateSize);
 		return result;
 	}
@@ -2258,19 +2232,6 @@ public class CVRSystem
 	}
 	public bool GetControllerStateWithPose(ETrackingUniverseOrigin eOrigin,uint unControllerDeviceIndex,ref VRControllerState_t pControllerState,uint unControllerStateSize,ref TrackedDevicePose_t pTrackedDevicePose)
 	{
-#if !UNITY_METRO
-		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-		{
-			GetControllerStateWithPoseUnion u;
-			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
-			u.pGetControllerStateWithPosePacked = null;
-			u.pGetControllerStateWithPose = FnTable.GetControllerStateWithPose;
-			bool packed_result = u.pGetControllerStateWithPosePacked(eOrigin,unControllerDeviceIndex,ref state_packed,(uint)Marshal.SizeOf<VRControllerState_t_Packed>(), ref pTrackedDevicePose);
-
-			state_packed.Unpack(ref pControllerState);
-			return packed_result;
-		}
-#endif
 		bool result = FnTable.GetControllerStateWithPose(eOrigin,unControllerDeviceIndex,ref pControllerState,unControllerStateSize,ref pTrackedDevicePose);
 		return result;
 	}
@@ -3341,19 +3302,6 @@ public class CVROverlay
 	}
 	public bool PollNextOverlayEvent(ulong ulOverlayHandle,ref VREvent_t pEvent,uint uncbVREvent)
 	{
-#if !UNITY_METRO
-		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-		{
-			PollNextOverlayEventUnion u;
-			VREvent_t_Packed event_packed = new VREvent_t_Packed();
-			u.pPollNextOverlayEventPacked = null;
-			u.pPollNextOverlayEvent = FnTable.PollNextOverlayEvent;
-			bool packed_result = u.pPollNextOverlayEventPacked(ulOverlayHandle,ref event_packed,(uint)Marshal.SizeOf<VREvent_t_Packed>());
-
-			event_packed.Unpack(ref pEvent);
-			return packed_result;
-		}
-#endif
 		bool result = FnTable.PollNextOverlayEvent(ulOverlayHandle,ref pEvent,uncbVREvent);
 		return result;
 	}
@@ -3745,20 +3693,8 @@ public class CVRRenderModels
 	public bool GetComponentState(string pchRenderModelName,string pchComponentName,ref VRControllerState_t pControllerState,ref RenderModel_ControllerMode_State_t pState,ref RenderModel_ComponentState_t pComponentState)
 	{
 		IntPtr pchRenderModelNameUtf8 = Utils.ToUtf8(pchRenderModelName);
-		IntPtr pchComponentNameUtf8 = Utils.ToUtf8(pchComponentName);
-#if !UNITY_METRO
-		if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-		{
-			GetComponentStateUnion u;
-			VRControllerState_t_Packed state_packed = new VRControllerState_t_Packed(pControllerState);
-			u.pGetComponentStatePacked = null;
-			u.pGetComponentState = FnTable.GetComponentState;
-			bool packed_result = u.pGetComponentStatePacked(pchRenderModelNameUtf8,pchComponentNameUtf8,ref state_packed,ref pState,ref pComponentState);
+        IntPtr pchComponentNameUtf8 = Utils.ToUtf8(pchComponentName);
 
-			state_packed.Unpack(ref pControllerState);
-			return packed_result;
-		}
-#endif
 		bool result = FnTable.GetComponentState(pchRenderModelNameUtf8,pchComponentNameUtf8,ref pControllerState,ref pState,ref pComponentState);
 		Marshal.FreeHGlobal(pchRenderModelNameUtf8);
 		Marshal.FreeHGlobal(pchComponentNameUtf8);

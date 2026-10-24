@@ -22,7 +22,7 @@ Both `.resx` files are `EmbeddedResource`; the `.Designer.cs` files are regenera
 1. Open `Strings.resx` in Visual Studio (or edit the XML directly).
 2. Add the new entry with a descriptive key and English value.
 3. Add the **same key** to every sibling file (`Strings.ja-JP.resx`, …). Leave the value in English if no translation is available; Crowdin (see below) will pick it up.
-4. Rebuild to regenerate `Strings.Designer.cs` (or edit both the `.resx` and the designer by hand on Linux).
+4. Rebuild to regenerate `Strings.Designer.cs`.
 5. Use `Strings.MyNewKey` in code.
 
 For format strings, include named or positional placeholders (`{0}`, `{1}`) and use `string.Format(Strings.MyFormat, value1, value2)` in code.

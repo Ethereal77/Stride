@@ -3,10 +3,6 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      platform-linux:
-        description: Include Linux
-        default: true
-        type: boolean
       sign:
         description: Code sign packages
         default: true
@@ -96,7 +92,6 @@ jobs:
       - name: Build Package
         run: |
           $platforms = "Windows"
-          if ("${{ inputs.platform-linux }}" -eq "true") { $platforms += ";Linux" }
           echo "Building for platforms: $platforms"
           # --no-restore: Stride.build's targets restore their own solutions (same as the
           # previous desktop msbuild invocation, which never passed /restore).

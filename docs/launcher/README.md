@@ -2,7 +2,7 @@
 
 The Stride Launcher is the entry point end users run after installing Stride. It is an Avalonia MVVM application that manages the locally installed Stride versions (download, update, uninstall), exposes recent projects and VSIX extensions for Visual Studio, surfaces release notes, news and documentation, and finally starts the selected version of Game Studio.
 
-The launcher's sources live in [sources/launcher/](../../sources/launcher/). The application itself is [Stride.Launcher](../../sources/launcher/Stride.Launcher/), built against `net10.0` with RIDs `linux-x64` and `win-x64`. It is distributed as a NuGet package (`Stride.Launcher`) and wrapped by an Advanced Installer setup on Windows.
+The launcher's sources live in [sources/launcher/](../../sources/launcher/). The application itself is [Stride.Launcher](../../sources/launcher/Stride.Launcher/), built against `net10.0` with RIDs `win-x64`. It is distributed as a NuGet package (`Stride.Launcher`) and wrapped by an Advanced Installer setup on Windows.
 
 ## Big picture
 
@@ -78,9 +78,6 @@ See [projects.md](projects.md) for the full layout and each file's role.
 >
 > - Working on the Windows installer or prerequisites bundle?
 >   → **Advanced Installer projects under `Prerequisites/` and `Setup/`.** See [packaging.md](packaging.md).
->
-> - Running/debugging on Linux and something behaves differently?
->   → **Platform-specific code paths.** See [cross-platform.md](cross-platform.md).
 
 ## Spoke files
 
@@ -95,5 +92,5 @@ See [projects.md](projects.md) for the full layout and each file's role.
 | [settings.md](settings.md) | `LauncherSettings`, `GameStudioSettings`, config file locations |
 | [localization.md](localization.md) | `Strings.resx` / `Urls.resx`, designer classes, adding a new language |
 | [packaging.md](packaging.md) | `Stride.Launcher.nuspec`, Advanced Installer projects, `StrideSetup.exe`, versioning |
-| [cross-platform.md](cross-platform.md) | Windows-only code paths, Registry usage, Linux porting status (xplat-launcher) |
+| [cross-platform.md](cross-platform.md) | Windows-only code paths, Registry usage, cross-platform porting status (xplat-launcher) |
 | [port-status.md](port-status.md) | Full delta vs the WPF launcher on `master` — including silent regressions — and a phased roadmap to close the gap |

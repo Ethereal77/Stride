@@ -6,7 +6,7 @@ The Avalonia port is functionally complete and ready for review. This page captu
 
 ## What's ported
 
-All core features are in place and working on both Windows and Linux:
+All core features are in place and working on Windows:
 
 - Avalonia 12 MVVM app with `x:DataType` compiled bindings.
 - `NugetStore`-backed version discovery, install, uninstall, and update.
@@ -15,9 +15,9 @@ All core features are in place and working on both Windows and Linux:
 - `MarkView.Avalonia` markdown rendering (release notes, news, docs, announcements) with Mermaid + SVG + TextMate highlighting.
 - Self-update flow (NuGet probe → download → file swap → restart); the reinstall (`reinstall-below`) is Windows only.
 - Recent projects + MRU integration with Game Studio; *Show in Explorer* is cross-platform.
-- VSIX discovery via `VisualStudioVersions` (no-op on Linux, by design).
+- VSIX discovery via `VisualStudioVersions`.
 - Preferred-editor selector (`Stride.GameStudio.Avalonia.Desktop` vs `Stride.GameStudio`), persisted as `PreferredEditor`.
-- Cross-platform launcher ↔ Game Studio IPC: Win32 HWND on Windows, named pipe on Linux. See [cross-platform.md](cross-platform.md).
+- Cross-platform launcher ↔ Game Studio IPC: Win32 HWND on Windows. See [cross-platform.md](cross-platform.md).
 - Alternate patch-version sub-list, announcement overlay and release-notes panel with slide animations.
 - `HasDoneTask` / `SaveTaskAsDone` persisted under `EditorPath.UserDataPath`.
 - Unit tests (`Stride.Launcher.Tests`, 6 passing view-model tests).
@@ -30,7 +30,7 @@ Captured here so reviewers don't try to "revert" them:
 |---|---|---|---|
 | Single-instance | `WindowsMutex` + `Process.GetProcessesByName` | `FileLock` under `EditorPath.DefaultTempPath` | Cross-platform |
 | Entry point | `[STAThread] Main` → `LauncherInstance().Run()` (WPF, `ShutdownMode.OnExplicitShutdown`) | `Program.Main` → `RunNewApp<App>(AppMain)` (Avalonia classical desktop) | Avalonia lifecycle |
-| TFM / RIDs | `net10.0-windows`, `win-x64` | `net10.0`, `linux-x64;win-x64` | Cross-platform |
+| TFM / RIDs | `net10.0-windows`, `win-x64` | `net10.0`, `win-x64` | Cross-platform |
 | Presentation lib | `Stride.Core.Presentation.Wpf` | `Stride.Core.Presentation.Avalonia` | Avalonia port |
 | Markdown | Markdig via WPF renderer | `MarkView.Avalonia` | Avalonia port |
 | Telemetry | `Stride.Metrics` / `MetricsClient` wrapping the run, `MetricsHelper.NotifyDownload*` around every package op | Removed | **Intentional, permanent** — the xplat launcher does not ship telemetry |
@@ -51,8 +51,6 @@ The old `PrerequisitesValidator` has no replacement. On a Windows machine withou
 
 ### Future work (post-merge)
 
-- **Linux packaging.** `dotnet publish -r linux-x64 --self-contained` works today. Decide on distribution format (tarball, AppImage, Flatpak, `.deb`/`.rpm`) and document in [packaging.md](packaging.md).
-- **Self-update reinstall on Linux.** The reinstall path (`reinstall-below`) is Windows-only: on Linux, a package that needs one isn't taken. A full breaking-change upgrade on Linux has no equivalent yet — options are a Linux-specific download path or "update via package manager". See [self-update.md](self-update.md).
 - **Integration tests.** The existing unit tests cover view-model logic only. Avalonia headless-platform tests for the real `MainWindow` + `MainView` (close-confirmation dialog, tab persistence, HWND capture) are still missing, as is CI wiring on `ubuntu-latest`.
 - **Persist the selected alternate version.** `ActiveVersion` stores only `"Stride <major>.<minor>"`; the active patch build is not remembered across restarts. Extend the setting or add `ActiveAlternateVersion` and update the restore logic in `MainViewModel.RetrieveLocalStrideVersions`.
 

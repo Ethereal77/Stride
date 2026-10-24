@@ -8,9 +8,7 @@ namespace Stride.CrashReport
     /// <summary>
     /// Minimal post-mortem reader for the two minidump streams a native-crash signature needs: the exception
     /// record (the faulting address) and the module list (to turn that address into <c>module+0x&lt;rva&gt;</c>).
-    /// Used to derive a signature from a dump written by the runtime's <c>createdump</c> on Linux, where —
-    /// unlike the Windows vectored handler — nothing computes it at fault time. The dump is a Windows-format
-    /// minidump on every platform (that is what <c>createdump --minidump</c> writes), so the layout is the same.
+    /// The dump is a Windows-format minidump on every platform (that is what <c>createdump --minidump</c> writes).
     /// </summary>
     internal static class MinidumpReader
     {
@@ -82,7 +80,7 @@ namespace Stride.CrashReport
 
         /// <summary>
         /// The OS id of the faulting thread, from the dump's exception stream, or null when the dump has none.
-        /// Present in <c>createdump</c> dumps on Linux (and Windows once dotnet/runtime#133065 ships), so the
+        /// Present in <c>createdump</c> dumps on Windows (once dotnet/runtime#133065 ships), so the
         /// dump walk can pick the crashing thread exactly there; absent on Windows <c>createdump</c> today.
         /// </summary>
         public static uint? FaultingThreadId(string dumpPath)

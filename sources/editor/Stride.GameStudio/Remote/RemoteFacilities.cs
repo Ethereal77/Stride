@@ -56,7 +56,7 @@ namespace Stride.GameStudio.Remote
                     {
                         // Due to lack of Dllmap config for CoreCLR, we have to ensure that our native libraries
                         // are copied next to the executable. The CoreCLRSetup script will check the 32-bit vs 64-bit
-                        // of the `dotnet` runner and copy the .so files from the proper x86 or x64 directory.
+                        // of the `dotnet` runner and copy the .dll files from the proper x86 or x64 directory.
                         string cmdString = "bash -c 'source /etc/profile ; cd " + location + "/" + exePath.GetFileNameWithoutExtension() + ";" + "sh ./CoreCLRSetup.sh'";
                         SshCommand cmd = sshClient.CreateCommand(cmdString);
                         cmd.Execute();

@@ -114,7 +114,7 @@ namespace Stride.Core.Assets
 
                     // Resolve MSBuild-style properties. The graphicsApi arg drives the first probe
                     // (Direct3D11 by default on the editor path); fall back to other APIs whose
-                    // dev DLL exists, so a Linux build using Vulkan still resolves.
+                    // dev DLL exists.
                     hintPath = hintPath
                         .Replace("$(StrideDevRoot)", devRoot)
                         .Replace("$(StrideDevConfiguration)", devConfig);
@@ -173,15 +173,12 @@ namespace Stride.Core.Assets
 
             static bool IsValidNativeLibraryFile(string path)
             {
-                if (path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
-                    || path.EndsWith(".so", StringComparison.OrdinalIgnoreCase)
-                    || path.IndexOf(".so.", StringComparison.OrdinalIgnoreCase) >= 0)    // Linux allows for files like 'libnativedep.so.6'
+                if (path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
                 // Also handle executables shipped as native deps
-                if (path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
-                    || path.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+                if (path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }

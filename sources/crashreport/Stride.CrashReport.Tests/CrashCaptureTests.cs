@@ -9,8 +9,7 @@ namespace Stride.CrashReport.Tests;
 /// Pins the native-crash capture truth table by crashing a probe process per exception class and asserting
 /// what got captured. The capture depends on runtime internals (corrupted-state fast-fail, vectored handler
 /// ordering, the managed null-check range), so a .NET upgrade can silently change it — these tests turn that
-/// into a red build. Expectations are per-platform: native capture is Windows-only today and the rows flip
-/// as Linux support lands.
+/// into a red build.
 /// </summary>
 public class CrashCaptureTests
 {
@@ -54,9 +53,7 @@ public class CrashCaptureTests
             {
                 var markerFrame = File.ReadAllLines(markerPath).ElementAtOrDefault(1) ?? "";
                 Assert.Equal(expectExceptionStream, markerFrame.Contains("+0x"));
-                // Post-mortem parse of the dump must recover the same faulting frame the live handler wrote. This is
-                // the Linux signature path (there createdump leaves only the dump, with no live computation),
-                // validated here on Windows against the vectored handler's live value.
+                // Post-mortem parse of the dump must recover the same faulting frame the live handler wrote.
                 if (expectExceptionStream && dumps.Length > 0)
                     Assert.Equal(markerFrame, NativeCrashReporting.FaultingFrameFromDump(dumps[0]));
             }

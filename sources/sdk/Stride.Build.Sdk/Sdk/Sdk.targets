@@ -354,7 +354,7 @@
        races with sibling projects re-evaluating the <Import> in Stride.Platform.props
        (MSB4024: "file is being used by another process"). _StrideAtomicCopyIfMissing
        writes to a unique temp file then File.Move's it into place — atomic via
-       MoveFileEx on NTFS / rename(2) on Unix. Losers of the race clean up their temp. -->
+       MoveFileEx on NTFS. Losers of the race clean up their temp. -->
   <UsingTask TaskName="_StrideAtomicCopyIfMissing"
              TaskFactory="RoslynCodeTaskFactory"
              AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">

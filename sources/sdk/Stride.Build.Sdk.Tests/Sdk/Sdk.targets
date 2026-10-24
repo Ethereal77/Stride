@@ -13,7 +13,7 @@
   <!-- Test projects build for a single graphics API at a time.         -->
   <!-- ================================================================ -->
   <!-- Disable cross-targeting dispatch — test projects use StrideGraphicsApi (singular)
-       for output path and engine DLL selection. On Windows/Linux, build per-API via command
+       for output path and engine DLL selection. On Windows, build per-API via command
        line:
          dotnet build -p:StrideGraphicsApi=Direct3D11
          dotnet build -p:StrideGraphicsApi=Vulkan
@@ -34,10 +34,10 @@
     <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkWindows)'))">$(StrideFrameworkWindows)</StrideTargetFramework>
     <!-- net10.0 + Game in test platforms: tag StridePlatform=Game so the host-loadable
          library TFM gets its own output folder (bin/Tests/.../Game-Vulkan/).
-         Game is suppressed when a runnable host (Linux/Windows) is also in the list:
+         Game is suppressed when a runnable host (Windows) is also in the list:
          the runnable's net10.0 .dll is already host-loadable by CompilerApp, so Game would be
          redundant and would clobber the runnable's StridePlatform identity. -->
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' And $(_StrideTestPlatforms.Contains(';Game;')) And !$(_StrideTestPlatforms.Contains(';Linux;')) And !($(_StrideTestPlatforms.Contains(';Windows;'))) ">Game</StridePlatform>
+    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' And $(_StrideTestPlatforms.Contains(';Game;')) And !($(_StrideTestPlatforms.Contains(';Windows;'))) ">Game</StridePlatform>
   </PropertyGroup>
 
   <!-- Game is a host-loadable library shadow with no runner / no entry point. Override the
@@ -94,14 +94,14 @@
   <!-- ================================================================ -->
   <!-- xUnit Startup Configuration -->
   <!-- ================================================================ -->
-  <PropertyGroup Condition="('$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows') And '$(IncludeXunitLauncher)' != 'false'">
+  <PropertyGroup Condition="('$(StridePlatform)' == 'Windows') And '$(IncludeXunitLauncher)' != 'false'">
     <StartupObject Condition="'$(StartupObject)' == ''">xunit.runner.stride.Program</StartupObject>
   </PropertyGroup>
 
   <!-- ================================================================ -->
   <!-- Include xUnit Launcher Code -->
   <!-- ================================================================ -->
-  <ItemGroup Condition="'$(StridePlatform)' == 'Linux' Or '$(StridePlatform)' == 'Windows'">
+  <ItemGroup Condition="'$(StridePlatform)' == 'Windows'">
     <!-- Launcher code depends on whether this is a graphics regression test -->
     <Compile Include="$(MSBuildThisFileDirectory)LauncherSimple.Desktop.cs"
              Condition="'$(StrideGraphicsRegression)' != 'true' And '$(IncludeXunitLauncher)' != 'false'">

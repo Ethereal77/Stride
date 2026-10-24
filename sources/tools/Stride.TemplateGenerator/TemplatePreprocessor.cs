@@ -264,7 +264,7 @@ internal class TemplatePreprocessor
             SubstituteEngineVersion(logger);
 
         // Normalize line endings so the nupkg is byte-identical regardless of build host
-        // (Windows checkout = CRLF, Linux CI = LF) and regardless of which step wrote each
+        // (Windows checkout = CRLF) and regardless of which step wrote each
         // file. Binary files are excluded via the TextExtensions whitelist.
         NormalizeLineEndings(logger);
 
@@ -601,7 +601,7 @@ internal class TemplatePreprocessor
 
                 // .csproj files conventionally use backslash separators (Windows convention) even
                 // when authored cross-platform. Normalize to the current platform so Path.Combine
-                // resolves them correctly on Linux.
+                // resolves them correctly on every platform.
                 var normalizedInclude = include.Replace('\\', Path.DirectorySeparatorChar);
                 // Resolve relative to the ORIGINAL csproj location, not the staged one. The
                 // staged copy strips parent dirs, so a sample's "..\..\..\..\Packs\Foo" reference
@@ -661,18 +661,16 @@ internal class TemplatePreprocessor
     /// </summary>
     private static readonly Dictionary<string, string> PlatformActiveSymbol = new(StringComparer.Ordinal)
     {
-        { "Windows", "WindowsActive" },
-        { "Linux",   "LinuxActive"   }
+        { "Windows", "WindowsActive" }
     };
 
     // Default-startup priority: desktop platforms. The highest-priority platform the
     // user keeps gets the .slnx DefaultStartup. PlatformType (not strings) so the names stay
     // compile-checked; covers every PlatformActiveSymbol platform.
     private static readonly PlatformType[] StartupPlatformPriority =
-    [
-        PlatformType.Windows,
-        PlatformType.Linux
-    ];
+    {
+        PlatformType.Windows
+    };
 
     /// <summary>
     /// Synthesizes a <c>MyTemplate.slnx</c> at the staged root when no solution is already present.
@@ -755,7 +753,7 @@ internal class TemplatePreprocessor
     }
 
     /// <summary>
-    /// Copies any platform exec-project folder (<c>MyTemplate.{Linux,Windows}</c>)
+    /// Copies any platform exec-project folder (<c>MyTemplate.Windows</c>)
     /// from <see cref="PlatformTemplatePath"/> into the staged output when the sample didn't ship
     /// its own. Verbatim copy — the reference template (NewGame) and samples both use
     /// <c>MyTemplate.Game/</c> as the shared-library dir name, so injected csprojs reference the
@@ -783,7 +781,7 @@ internal class TemplatePreprocessor
         foreach (var srcDir in Directory.EnumerateDirectories(PlatformTemplatePath, "MyTemplate.*", SearchOption.TopDirectoryOnly))
         {
             var dirName = Path.GetFileName(srcDir);
-            // Only inject directories that match a known platform suffix (Linux/Windows).
+            // Only inject directories that match a known platform suffix (Windows).
             if (!dirName.StartsWith("MyTemplate.", StringComparison.Ordinal))
                 continue;
             var suffix = dirName["MyTemplate.".Length..];
@@ -897,7 +895,7 @@ internal class TemplatePreprocessor
 
     /// <summary>
     /// Reads the first <c>.sdpkg</c>'s <c>Name:</c> field and strips a trailing <c>.Game</c> /
-    /// <c>.Windows</c> / <c>.Linux</c> suffix.
+    /// <c>.Windows</c> suffix.
     /// Stride convention is <c>SampleName.Game</c> for the library package; the base name is
     /// what gets referenced in code namespaces.
     /// </summary>
@@ -913,7 +911,7 @@ internal class TemplatePreprocessor
             return null;
 
         var name = nameLine.Substring(nameLine.IndexOf(':') + 1).Trim();
-        foreach (var suffix in new[] { ".Game", ".Windows", ".Linux" })
+        foreach (var suffix in new[] { ".Game", ".Windows" })
         {
             if (name.EndsWith(suffix, StringComparison.Ordinal))
                 return name.Substring(0, name.Length - suffix.Length);
@@ -1130,8 +1128,7 @@ internal class TemplatePreprocessor
 
     private static void InjectCameraScriptInto(string scenePath, ILogger logger)
     {
-        // Normalize CRLF → LF so the LF-only markers below work uniformly on both Windows
-        // (autocrlf checkouts) and Unix sources.
+        // Normalize CRLF → LF so the LF-only markers below work uniformly on any platform.
         var content = File.ReadAllText(scenePath).Replace("\r\n", "\n");
 
         // Find "Name: Camera" at the canonical entity-field indent (16 spaces) inside Parts.
@@ -1240,7 +1237,7 @@ internal class TemplatePreprocessor
         // gets replaced with the user's -n value at instantiation. The source tree uses
         // MyTemplate.Game/ for the shared lib and MyTemplate.{Platform}/ for exec projects, so
         // a user running e.g. `dotnet new stride-game -n JumpyClone` lands JumpyClone.Game/ +
-        // JumpyClone.Windows/ + JumpyClone.Linux/ — the .Game suffix on the shared lib is
+        // JumpyClone.Windows/ — the .Game suffix on the shared lib is
         // preserved to mirror what samples already use.
         sb.AppendLine("  \"sourceName\": \"MyTemplate\",");
         EmitCompactNameForm(sb);
@@ -1340,8 +1337,7 @@ internal class TemplatePreprocessor
                   "defaultValue": "host",
                   "choices": [
                     { "choice": "host",    "description": "Detect host OS automatically" },
-                    { "choice": "windows", "description": "Windows x64 desktop" },
-                    { "choice": "linux",   "description": "Linux x64 desktop" }
+                    { "choice": "windows", "description": "Windows x64 desktop" }
                   ]
                 },
                 "updateOnly": {
@@ -1359,10 +1355,8 @@ internal class TemplatePreprocessor
                 "envOS":     { "type": "bind", "binding": "env:OS",     "defaultValue": "" },
                 "envOSTYPE": { "type": "bind", "binding": "env:OSTYPE", "defaultValue": "" },
                 "envHOME":   { "type": "bind", "binding": "env:HOME",   "defaultValue": "" },
-                "IsLinux":   { "type": "computed", "value": "(envHOME != \"\" && envOS != \"Windows_NT\")" },
-                "IsWindows": { "type": "computed", "value": "(!IsLinux)" },
+                "IsWindows":   { "type": "computed", "value": "envOS == \"Windows_NT\"" },
                 "WindowsActive": { "type": "computed", "value": "(platforms == \"windows\") || ((platforms == \"host\") && IsWindows)" },
-                "LinuxActive":   { "type": "computed", "value": "(platforms == \"linux\")   || ((platforms == \"host\") && IsLinux)"   },
         """);
     }
 
@@ -1433,7 +1427,6 @@ internal class TemplatePreprocessor
             {
               "modifiers": [
                 { "condition": "(!WindowsActive)", "exclude": [ "MyTemplate.Windows/**" ] },
-                { "condition": "(!LinuxActive)",   "exclude": [ "MyTemplate.Linux/**"   ] },
                 { "condition": "(updateOnly)",     "exclude": [ "MyTemplate.Game/**", "*.slnx" ] },
                 { "condition": "(skipSolution)",   "exclude": [ "*.slnx" ] },
                 { "exclude": [ ".sdtpl/**" ] }

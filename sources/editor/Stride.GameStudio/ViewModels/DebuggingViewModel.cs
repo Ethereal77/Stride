@@ -525,11 +525,6 @@ namespace Stride.GameStudio.ViewModels
                             extraProperties.Add("SolutionPlatform", "Any CPU");
                             break;
 
-                        case PlatformType.Linux:
-                            platformName = "Linux";
-                            extraProperties.Add("SolutionPlatform", "Linux");
-                            break;
-
                         default:
                             logger.Error(string.Format(Tr._p("Message", "Platform {0} isn't supported for execution."), Session.CurrentProject.Platform));
                             return (false, null);
@@ -589,41 +584,6 @@ namespace Stride.GameStudio.ViewModels
                                 startedProcess = process;
                             }
                             break;
-
-                        case PlatformType.Linux:
-                            {
-                                // Sanity check to verify executable was compiled properly
-                                if (string.Equals(Path.GetExtension(assemblyPath), ".exe", StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    if (!File.Exists(assemblyPath))
-                                    {
-                                        logger.Error(Tr._p("Message", "Unable to reach to output executable: {0}"));
-                                        return (false, null);
-                                    }
-                                }
-
-                                // Ask for credentials if requested, otherwise we use what we have stored.
-                                if (StrideEditorSettings.AskForCredentials.GetValue())
-                                {
-                                    var prompt = ServiceProvider.Get<IStrideDialogService>().CreateCredentialsDialog();
-                                    await prompt.ShowModal();
-                                    if (!prompt.AreCredentialsValid)
-                                    {
-                                        logger.Error(string.Format(Tr._p("Message", "No credentials provided. To allow deployment, add your credentials.")));
-                                        return (false, null);
-                                    }
-                                }
-
-                                // Launch game on remote host
-                                var launchApp = await Task.Run(() => RemoteFacilities.Launch(logger, new UFile(assemblyPath)));
-                                if (!launchApp)
-                                {
-                                    logger.Error(string.Format(Tr._p("Message", "Unable to launch project {0}"), new UFile(assemblyPath).GetFileName()));
-                                    return (false, null);
-                                }
-
-                                break;
-                            }
                     }
 
                     logger.Info(string.Format(Tr._p("Message", "Deployment of {0} successful."), projectViewModel.Name));

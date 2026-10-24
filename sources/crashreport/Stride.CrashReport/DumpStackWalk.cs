@@ -49,9 +49,9 @@ public static class DumpStackWalk
     /// <summary>
     /// Enriches <paramref name="crash"/> by walking a saved minidump at <paramref name="dumpPath"/> (the runtime's
     /// <c>createdump</c> output, which carries the CLR memory a managed walk needs). The crashing thread is taken
-    /// from the dump's exception stream when present (Linux createdump), else from the CLR's fault marker or
+    /// from the dump's exception stream when present, else from the CLR's fault marker or
     /// the in-flight exception the runtime left on the faulting thread -- which is set for native-code access
-    /// violations too, so the crasher is named even on Windows (no exception stream until dotnet/runtime#133065).
+    /// violations too, so the crasher is named (no exception stream until dotnet/runtime#133065).
     /// <paramref name="faultingFrame"/>, when known, is prepended as the native fault location.
     /// </summary>
     public static void EnrichFromDump(StoredCrash crash, string dumpPath, string faultingFrame)

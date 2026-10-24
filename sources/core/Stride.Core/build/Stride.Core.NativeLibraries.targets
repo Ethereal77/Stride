@@ -67,7 +67,7 @@
     </Task>
   </UsingTask>
 
-  <!-- Same .a (libNativePath.a, libCelt.a) often appears in multiple consuming projects' .ssdeps -->
+  <!-- Same file (NativePath.dll, Celt.dll) often appears in multiple consuming projects' .ssdeps -->
   <UsingTask TaskName="_StrideDistinctByFilename" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />

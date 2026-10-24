@@ -14,12 +14,9 @@ namespace Stride.Core
     {
         private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        // Windows executables carry ".exe"; .NET apphosts on Linux have no extension.
-        private static readonly string ExeExtension = IsWindows ? ".exe" : string.Empty;
-
         internal static string GetExecutable(string assemblyLocation)
         {
-            // Already an executable (Windows .exe, or Unix apphost with no extension)
+            // Already an executable (Windows .exe)
             var inputExt = Path.GetExtension(assemblyLocation);
             if (IsWindows)
             {
@@ -33,7 +30,7 @@ namespace Stride.Core
 
             // Same folder (dev or old layout in nuget package): swap .dll for the platform executable form
             {
-                var exeLocation = Path.ChangeExtension(assemblyLocation, ExeExtension);
+                var exeLocation = Path.ChangeExtension(assemblyLocation, ".exe");
                 if (File.Exists(exeLocation))
                     return exeLocation;
             }
@@ -49,7 +46,7 @@ namespace Stride.Core
                     if (packageRoot != null)
                     {
                         var tfm = Path.GetFileName(tfmPath);
-                        var exeName = Path.GetFileNameWithoutExtension(assemblyLocation) + ExeExtension;
+                        var exeName = Path.GetFileNameWithoutExtension(assemblyLocation) + ".exe";
                         var exeLocation = Path.Combine(packageRoot, "tools", tfm, exeName);
                         if (File.Exists(exeLocation))
                             return exeLocation;

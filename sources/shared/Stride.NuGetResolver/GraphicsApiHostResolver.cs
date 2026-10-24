@@ -110,9 +110,7 @@ public static class GraphicsApiHostResolver
 
     static string[] NativeCandidates(string apiDir, string libraryName)
     {
-        // Probe the API subfolder for the native module under the common OS name variants.
-        if (OperatingSystem.IsWindows())
-            return [Path.Combine(apiDir, libraryName + ".dll"), Path.Combine(apiDir, libraryName)];
-        return [Path.Combine(apiDir, "lib" + libraryName + ".so"), Path.Combine(apiDir, libraryName)];
+        // Probe the API subfolder for the native module under the common OS name variants
+        return [Path.Combine(apiDir, libraryName + ".dll"), Path.Combine(apiDir, libraryName)];
     }
 }

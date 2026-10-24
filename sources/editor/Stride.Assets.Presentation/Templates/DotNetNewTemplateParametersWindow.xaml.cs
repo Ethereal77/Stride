@@ -221,7 +221,7 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
             if (p.AllowMultipleValues)
             {
                 // Multi-choice: render as a vertical list of checkboxes, one per choice. The
-                // dotnet new wire format joins selected values with '|' (e.g. "windows|linux").
+                // dotnet new wire format joins selected values with '|' (e.g. "windows|other").
                 // "host" is a CLI convenience (auto-detect host OS); inside GameStudio that
                 // sentinel is meaningless — we already know the host — so hide it from the UI
                 // and substitute the current OS name into the defaults so something is pre-
@@ -290,7 +290,6 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
         PlatformType? platform = choiceKey switch
         {
             "windows" => PlatformType.Windows,
-            "linux"   => PlatformType.Linux,
             _         => null
         };
         if (!platform.HasValue)
@@ -353,12 +352,11 @@ public partial class DotNetNewTemplateParametersWindow : ModalWindow
 
     /// <summary>
     /// Maps the OS the editor is running on to the matching <c>platforms</c> choice value
-    /// (windows / linux). Used to substitute for "host" when the dialog hides it.
+    /// (windows / other). Used to substitute for "host" when the dialog hides it.
     /// </summary>
     private static string CurrentHostPlatformChoice()
     {
         if (System.OperatingSystem.IsWindows()) return "windows";
-        if (System.OperatingSystem.IsLinux())   return "linux";
         return "windows"; // last-resort fallback for GameStudio, which today is Windows-only
     }
 

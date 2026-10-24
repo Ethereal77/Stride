@@ -9,9 +9,8 @@ name: "Dep: Build VHACD"
 #
 # Output per OS — one self-contained shared lib per RID:
 #   Windows: stride_vhacd.dll (+ stride_vhacd.pdb)
-#   Linux:   stride_vhacd.so
 #
-# RIDs covered: win-x64, win-arm64, linux-x64.
+# RIDs covered: win-x64, win-arm64.
 
 on:
   workflow_dispatch:
@@ -66,46 +65,9 @@ jobs:
           name: stride_vhacd-${{ matrix.rid }}
           path: out/${{ matrix.rid }}/
 
-  build-linux:
-    name: Build VHACD (Linux x64)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          path: stride-src
-          sparse-checkout: sources/tools/Stride.Assets.Wrappers/VhacdWrapper
-
-      - name: Checkout V-HACD
-        uses: actions/checkout@v7
-        with:
-          repository: kmammou/v-hacd
-          ref: ${{ github.event.inputs.vhacd-version }}
-          path: vhacd-src
-
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
-
-      - name: Configure & build wrapper
-        run: |
-          cmake -S stride-src/sources/tools/Stride.Assets.Wrappers/VhacdWrapper -B _build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-            -DVHACD_SRC=$PWD/vhacd-src
-          cmake --build _build
-
-      - name: Collect output
-        run: |
-          mkdir -p out/linux-x64
-          cp _build/stride_vhacd.so out/linux-x64/
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: stride_vhacd-linux-x64
-          path: out/linux-x64/
-
   collect:
     name: Collect all platforms
-    needs: [build-windows, build-linux]
+    needs: [build-windows]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout V-HACD (for commit hash)
@@ -124,7 +86,7 @@ jobs:
       - name: Organize into Release/ layout
         run: |
           OUT=stride_vhacd-out
-          for rid in win-x64 win-arm64 linux-x64; do
+          for rid in win-x64 win-arm64; do
             mkdir -p $OUT/Release/$rid
             cp artifacts/stride_vhacd-$rid/* $OUT/Release/$rid/ 2>/dev/null || true
           done

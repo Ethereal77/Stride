@@ -7,7 +7,7 @@ namespace Stride.Core.Tests;
 
 public class NativeLibraryHelperTests
 {
-    private static readonly string LibraryExtension = OperatingSystem.IsWindows() ? ".dll" : ".so";
+    private static readonly string LibraryExtension = ".dll";
 
     [Fact]
     public void NativeLibrariesFlattenedNextToTheAssembliesAreRegistered()

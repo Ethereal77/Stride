@@ -18,8 +18,6 @@ namespace Stride.Engine.Tests
         [InlineData(AppContextType.DesktopSDL)]
         public void RenderToWindow(AppContextType contextType)
         {
-            Skip.If(Platform.Type == PlatformType.Linux && contextType == AppContextType.DesktopWinForms, reason: "WinForms not available on Linux");
-
             PerformTest(game =>
             {
                 var context = GameContextFactory.NewGameContext(contextType, isUserManagingRun: true);

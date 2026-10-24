@@ -105,8 +105,8 @@ public sealed class MainViewModel : DispatcherViewModel, IPackagesLogger, IDispo
     public static IntPtr WindowHandle { get; set; }
 
     /// <summary>
-    /// Raised when the launcher should close itself — e.g. because Game Studio signalled back
-    /// via the cross-platform pipe IPC (Linux) or a Win32 WM_CLOSE (Windows).
+    /// Raised when the launcher should closes itself — e.g., because Game Studio signalled back
+    /// via the cross-platform pipe IPC or a Win32 WM_CLOSE.
     /// </summary>
     internal event EventHandler? CloseRequested;
 
@@ -758,20 +758,8 @@ public sealed class MainViewModel : DispatcherViewModel, IPackagesLogger, IDispo
 
         if (AutoCloseLauncher)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                // WindowHandle is a Win32 HWND populated by MainWindow.OnOpened on Windows only.
-                args.AddRange(["/LauncherWindowHandle", WindowHandle.ToString()]);
-            }
-            else
-            {
-                // On Linux (and other non-Windows platforms) the Avalonia GameStudio uses a named
-                // pipe to signal the launcher that it has started. The launcher listens on the pipe
-                // and raises CloseRequested when a connection arrives.
-                var pipeName = $"stride-launcher-{Environment.ProcessId}";
-                _ = WaitForGameStudioPipeSignalAsync(pipeName);
-                args.AddRange(["/LauncherPipe", pipeName]);
-            }
+            // WindowHandle is a Win32 HWND populated by MainWindow.OnOpened on Windows only.
+            args.AddRange(["/LauncherWindowHandle", WindowHandle.ToString()]);
         }
 
         try
@@ -835,28 +823,6 @@ public sealed class MainViewModel : DispatcherViewModel, IPackagesLogger, IDispo
             _settings.ActiveVersion = ActiveVersion is not null ? ActiveVersion.Name : "";
             _settings.Save();
         });
-    }
-
-    /// <summary>
-    /// Waits for Game Studio to connect to the named pipe and signal that it has started,
-    /// then raises <see cref="CloseRequested"/> so that the launcher window closes gracefully.
-    /// Used on Linux (and other non-Windows platforms) as an alternative to the Win32
-    /// <c>/LauncherWindowHandle</c> IPC mechanism.
-    /// </summary>
-    private async Task WaitForGameStudioPipeSignalAsync(string pipeName)
-    {
-        try
-        {
-            using var server = new NamedPipeServerStream(pipeName, PipeDirection.In, 1,
-                PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
-            // Wait up to 2 minutes for Game Studio to start and connect
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-            await server.WaitForConnectionAsync(cts.Token);
-            // Game Studio connected — ask the window to close gracefully
-            await Dispatcher.InvokeAsync(() => CloseRequested?.Invoke(this, EventArgs.Empty));
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception) { }
     }
 
     private async Task InstallLatestVersion()

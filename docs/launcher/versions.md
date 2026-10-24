@@ -51,7 +51,7 @@ Progress is reported via `IPackagesLogger` — `MainViewModel` implements it and
 2. `PackageVersionViewModel.Download(true)` runs: it sets `IsProcessing`, calls `NugetStore.InstallPackage`, and updates progress via `OnDownloadProgress`.
 3. On completion, `UpdateStatus` recomputes `CanBeDownloaded` / `CanDelete` and the UI re-binds.
 4. `MainViewModel.RetrieveLocalStrideVersions` is re-run to refresh the version list and to clean up any newly-unused transitive packages via `RemoveUnusedPackages` (walks `Dependencies` starting from the Stride main packages and uninstalls anything no longer referenced).
-5. `UpdateAvailableEditors()` re-scans `tools/` and `lib/` for TFM subfolders containing a Game Studio executable (`Stride.GameStudio.Avalonia.Desktop.exe` on Windows, `.dll` on Linux). `SelectedEditor` is restored from `LauncherSettings.PreferredEditor` if present, otherwise the first editor found is used, and the runtime combo is refreshed for the active version.
+5. `UpdateAvailableEditors()` re-scans `tools/` and `lib/` for TFM subfolders containing a Game Studio executable (`Stride.GameStudio.Avalonia.Desktop.exe` on Windows). `SelectedEditor` is restored from `LauncherSettings.PreferredEditor` if present, otherwise the first editor found is used, and the runtime combo is refreshed for the active version.
 
 ## Uninstall flow
 

@@ -40,8 +40,7 @@ internal static class TestEnvironment
     }
 
     /// <summary>The platform variant matching the host OS, as used by the dotnet-new templates.</summary>
-    public static string HostPlatform => OperatingSystem.IsLinux() ? "linux"
-                                       : "windows";
+    public static string HostPlatform => "windows";
 
     /// <summary>Committed plugin/consumer fixtures (packed/built as subprocesses).</summary>
     public static string FixturesDir() => Path.Combine(WorktreeRoot(), "tests", "enduser", "Stride.Packaging.Tests", "Fixtures");

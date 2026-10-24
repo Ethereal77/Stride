@@ -9,15 +9,13 @@ namespace Stride.Assets;
 static class ToolLocator
 {
     /// <summary>
-    /// Finds an executable tool by name. Pass <paramref name="ensureExecutable"/>=true for native
-    /// CLI binaries shipped via nupkg — flips the Unix execute bit on Linux, where pack/restore
-    /// drops it.
+    /// Finds an executable tool by name. Pass <paramref name="ensureExecutable"/> = true for native
+    /// CLI binaries shipped via nupkg.
     /// </summary>
     public static UFile LocateTool(string toolName, bool ensureExecutable = false)
     {
-        // Bin-dir lookups use the platform-correct extension so we don't try to exec a
-        // Windows .exe on Unix.
-        var exeExt = OperatingSystem.IsWindows() ? ".exe" : string.Empty;
+        // Bin-dir lookups use the platform-correct extension
+        var exeExt = ".exe";
 
         // On non-Windows, prefer system PATH (apt/brew). Falls through to the bin-dir
         // lookup below, which a future Stride.Dependencies.FFmpeg-style NuGet can satisfy.
@@ -29,7 +27,7 @@ static class ToolLocator
             {
                 var toolLocation = Path.Combine(directory, toolName);
                 if (File.Exists(toolLocation))
-                    return EnsureExecutable(new UFile(toolLocation), ensureExecutable);
+                    return new UFile(toolLocation);
             }
         }
 
@@ -45,58 +43,33 @@ static class ToolLocator
             var nativeRel = new UFile($"runtimes/{rid}/native/{toolName}{exeExt}");
             var ridTool = UPath.Combine(asmDir, nativeRel);
             if (File.Exists(ridTool))
-                return EnsureExecutable(ridTool, ensureExecutable);
+                return ridTool;
 
             var pkgRoot = Path.GetDirectoryName(Path.GetDirectoryName(asmDir));
             if (pkgRoot != null)
             {
                 var pkgRidTool = UPath.Combine(pkgRoot, nativeRel);
                 if (File.Exists(pkgRidTool))
-                    return EnsureExecutable(pkgRidTool, ensureExecutable);
+                    return pkgRidTool;
             }
         }
 
         // Legacy locations kept for backward compatibility with older deps/ layouts.
         var tool = UPath.Combine(asmDir, new UFile($"{toolName}{exeExt}"));
         if (File.Exists(tool))
-            return EnsureExecutable(tool, ensureExecutable);
+            return tool;
 
         tool = UPath.Combine(asmDir, new UFile($"../../content/{toolName}{exeExt}"));
         if (File.Exists(tool))
-            return EnsureExecutable(tool, ensureExecutable);
+            return tool;
 
         return null;
-    }
-
-    private static UFile EnsureExecutable(UFile path, bool ensureExecutable)
-    {
-        if (!ensureExecutable)
-            return path;
-        // +x normalization only applies to ELF executables. Skip on any other host
-        // (Windows, future targets) — the file mode concept doesn't apply or is irrelevant.
-        if (!OperatingSystem.IsLinux())
-            return path;
-        try
-        {
-            var osPath = path.ToOSPath();
-            var current = File.GetUnixFileMode(osPath);
-            const UnixFileMode anyExecute = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
-            if ((current & anyExecute) == 0)
-                File.SetUnixFileMode(osPath, current | UnixFileMode.UserExecute);
-        }
-        catch
-        {
-            // Best-effort; if chmod fails (read-only fs, foreign filesystem with no POSIX attrs,
-            // etc.) the subsequent Process.Start will surface a clearer error to the user.
-        }
-        return path;
     }
 
     private static string GetCurrentRid()
     {
         string os;
         if (OperatingSystem.IsWindows()) os = "win";
-        else if (OperatingSystem.IsLinux()) os = "linux";
         else return null;
 
         var arch = RuntimeInformation.OSArchitecture switch
@@ -104,7 +77,7 @@ static class ToolLocator
             Architecture.X64 => "x64",
             Architecture.Arm64 => "arm64",
             Architecture.X86 => "x86",
-            _ => null,
+            _ => null
         };
         return arch == null ? null : $"{os}-{arch}";
     }

@@ -35,10 +35,5 @@ public enum PlatformType
     /// <summary>
     ///   The Windows operating system for desktop applications.
     /// </summary>
-    Windows,
-
-    /// <summary>
-    ///   The Linux operating system, typically used for servers and desktops.
-    /// </summary>
-    Linux
+    Windows
 }

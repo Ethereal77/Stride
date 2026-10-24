@@ -624,10 +624,6 @@ namespace Stride.Graphics
                 };
                 GraphicsDevice.CheckResult(GraphicsDevice.NativeInstanceApi.vkCreateWin32SurfaceKHR(GraphicsDevice.NativeInstance, &surfaceCreateInfo, null, out surface));
             }
-            else if (Platform.Type == PlatformType.Linux)
-            {
-                throw new NotSupportedException("Only SDL is supported for the time being on Linux");
-            }
             else
             {
                 throw new NotSupportedException();

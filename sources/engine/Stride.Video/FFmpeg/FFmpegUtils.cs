@@ -23,8 +23,7 @@ namespace Stride.Video.FFmpeg
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckPlatformSupport()
         {
-            return Platform.Type == PlatformType.Windows
-                || Platform.Type == PlatformType.Linux;
+            return Platform.Type == PlatformType.Windows;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,8 +84,7 @@ namespace Stride.Video.FFmpeg
             DynamicallyLoadedBindings.FunctionResolver = StrideFunctionResolver.Instance;
 
             // Load in dependency order so each library's imports bind to the already-loaded modules.
-            // Windows files carry the version in the name (avutil-59.dll); Linux use the SONAME,
-            // which NativeLibraryHelper matches from the base name.
+            // Windows files carry the version in the name (avutil-59.dll).
             var type = typeof(FFmpegUtils);
             foreach (var library in Libraries)
             {

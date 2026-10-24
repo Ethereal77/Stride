@@ -40,9 +40,9 @@ namespace Stride.Audio
         /// <summary>
         /// A collection containing the <see cref="AudioListenerComponent"/>-<see cref="AudioListener"/> associations.
         /// The AudioListenerComponent keys are added/removed by the user by calls to <see cref="AddListener"/>/<see cref="RemoveListener"/>.
-        /// The AudioListener values are created/updated by the <see cref="AudioListenerProcessor"/>. 
+        /// The AudioListener values are created/updated by the <see cref="AudioListenerProcessor"/>.
         /// </summary>
-        /// <remarks>When a AudioListenerComponent is added to the AudioSystem but not present in the Entity System, 
+        /// <remarks>When a AudioListenerComponent is added to the AudioSystem but not present in the Entity System,
         /// a valid AudioListener can not be computed. Thus we set its value to 'null'.</remarks>
         internal readonly TrackingDictionary<AudioListenerComponent, AudioListener> Listeners = new TrackingDictionary<AudioListenerComponent, AudioListener>();
 
@@ -69,10 +69,8 @@ namespace Stride.Audio
             }
             catch (Exception ex)
             {
-                // Audio may not be available (e.g. missing OpenAL on Linux, headless CI).
+                // Audio may not be available (e.g. missing OpenAL, headless CI).
                 // Log the error but don't crash — audio is not required for rendering tests.
-                // Audio may not be available (e.g. missing OpenAL on Linux, headless CI).
-                // Don't crash — audio is not required for rendering.
                 System.Diagnostics.Debug.WriteLine($"[AudioSystem] Initialization failed, audio disabled: {ex.Message}");
             }
 

@@ -68,13 +68,6 @@ jobs:
       build-type: Debug   # Release has a bug and cannot build
 
   ### Runtimes ###
-  Linux-Runtime:
-    needs: changes
-    if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.runtime == 'true'
-    uses: ./.github/workflows/build-linux-runtime.yml
-    with:
-      build-type: Release
-
   Windows-Runtime-D3D11:
     needs: changes
     if: (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft')) && needs.changes.outputs.runtime == 'true'
@@ -184,30 +177,6 @@ jobs:
       build-type: Debug
       graphics-api: Vulkan
 
-  Linux-Tests-Simple:
-    needs: [changes, Linux-Runtime]
-    if: |
-      !cancelled()
-      && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-      && needs.changes.outputs.runtime == 'true'
-      && needs['Linux-Runtime'].result != 'failure'
-      && needs['Linux-Runtime'].result != 'cancelled'
-    uses: ./.github/workflows/test-linux-simple.yml
-    with:
-      build-type: Debug
-
-  Linux-Tests-Game:
-    needs: [changes, Linux-Runtime]
-    if: |
-      !cancelled()
-      && (github.event.pull_request.draft != true || contains(github.event.pull_request.labels.*.name, 'ci-run-on-draft'))
-      && needs.changes.outputs.runtime == 'true'
-      && needs['Linux-Runtime'].result != 'failure'
-      && needs['Linux-Runtime'].result != 'cancelled'
-    uses: ./.github/workflows/test-linux-game.yml
-    with:
-      build-type: Debug
-
   # Aggregate result for branch protection: mark only "Gate" as required.
   # Skipped jobs (path filters, draft PRs) are fine; failure/cancellation is not.
   # always() on purpose (unlike the !cancelled() test jobs): a cancelled run must
@@ -217,7 +186,6 @@ jobs:
       - changes
       - Assembly-Processor
       - VS-Package
-      - Linux-Runtime
       - Windows-Runtime-D3D11
       - Windows-Runtime-D3D12
       - Windows-Runtime-Vulkan
@@ -227,8 +195,6 @@ jobs:
       - Windows-Tests-Game-D3D11
       - Windows-Tests-Game-D3D12
       - Windows-Tests-Game-Vulkan
-      - Linux-Tests-Simple
-      - Linux-Tests-Game
     if: always()
     runs-on: ubuntu-latest
     steps:

@@ -40,11 +40,6 @@ namespace Stride.Graphics.SDL
         {
             var sdl = Silk.NET.SDL.Sdl.GetApi();
 
-            // jklawreszuk: Workaround for wayland (see #2487 for more details)
-            // TODO: Wayland SDL_EGL_MakeCurrent does not cover multi-context scenario (https://github.com/libsdl-org/SDL/issues/9072)
-            if (OperatingSystem.IsLinux())
-                sdl.SetHint("SDL_VIDEODRIVER", "x11");
-
             sdl.Init(Sdl.InitEverything);
 
             // Pass first mouse event when user clicked on window
@@ -107,11 +102,6 @@ namespace Stride.Graphics.SDL
             if (Core.Platform.Type == Core.PlatformType.Windows)
             {
                 Handle = info.Info.Win.Hwnd;
-            }
-            else if (Core.Platform.Type == Core.PlatformType.Linux)
-            {
-                Handle = (IntPtr)info.Info.X11.Window;
-                Display = (IntPtr)info.Info.X11.Display;
             }
             Application.RegisterWindow(this);
             Application.ProcessEvents();
@@ -637,13 +627,12 @@ namespace Stride.Graphics.SDL
         /// <remarks>
         /// <list type="bullet">
         /// <item>On Windows: the HWND of the window</item>
-        /// <item>On Unix: the Window ID (XID). Note that on Unix, the value is 32-bit (See X11/X.h for the typedef of XID).</item>
         /// </list>
         /// </remarks>
         public IntPtr Handle { get; private set; }
 
         /// <summary>
-        /// Display of current Window (valid only for Unix for X11).
+        /// Display of current Window.
         /// </summary>
         public IntPtr Display { get; private set; }
 

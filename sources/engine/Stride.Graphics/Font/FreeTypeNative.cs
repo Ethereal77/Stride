@@ -7,7 +7,7 @@ namespace Stride.Graphics.Font
 {
     // Minimal FreeType bindings using CLong for correct cross-platform ABI.
     // C FreeType defines FT_Long/FT_Pos/FT_Fixed/FT_F26Dot6 as C `long`, which is
-    // 4 bytes on Windows (LLP64) and 8 bytes on Linux (LP64).
+    // 4 bytes on Windows (LLP64).
     // .NET's CLong matches this exactly.
 
     internal enum FreeTypePixelMode : byte

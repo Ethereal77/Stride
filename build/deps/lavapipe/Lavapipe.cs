@@ -8,7 +8,7 @@ namespace Stride.Dependencies.Lavapipe;
 /// </summary>
 /// <remarks>
 /// The packaged <c>lvp_icd.json</c> uses a relative <c>library_path</c>, so the Vulkan
-/// loader resolves <c>vulkan_lvp.dll</c>/<c>libvulkan_lvp.so</c>
+/// loader resolves <c>vulkan_lvp.dll</c>
 /// against the manifest's own directory — no runtime rewriting needed.
 ///
 /// Resolution order:
@@ -37,18 +37,8 @@ public static class Lavapipe
         if (manifestPath is null)
             return false;
         Environment.SetEnvironmentVariable("VK_DRIVER_FILES", manifestPath);
-        // On Linux, Environment.SetEnvironmentVariable only updates .NET's internal table —
-        // it does NOT call POSIX setenv, so libc getenv (used by the Vulkan loader) still sees
-        // the old value. Mirror the value into the libc env so the native loader picks it up.
-        // (Windows' Environment.SetEnvironmentVariable already updates the process env block
-        // via SetEnvironmentVariableW, so no analogous shim is needed there.)
-        if (!OperatingSystem.IsWindows())
-            PosixSetEnv("VK_DRIVER_FILES", manifestPath, 1);
         return true;
     }
-
-    [DllImport("libc", EntryPoint = "setenv")]
-    private static extern int PosixSetEnv(string name, string value, int overwrite);
 
     static string? LocateManifest()
     {
@@ -96,8 +86,6 @@ public static class Lavapipe
     {
         if (OperatingSystem.IsWindows())
             return RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "win-arm64" : "win-x64";
-        if (OperatingSystem.IsLinux())
-            return "linux-x64";
 
         throw new PlatformNotSupportedException();
     }

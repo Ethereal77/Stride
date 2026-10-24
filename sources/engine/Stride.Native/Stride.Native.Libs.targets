@@ -2,8 +2,4 @@
   <PropertyGroup>
     <StrideNativePathLibsWindows>libCompilerRt.lib libCelt.lib</StrideNativePathLibsWindows>
   </PropertyGroup>
-
-  <ItemGroup>
-    <StrideNativePathLibsLinux Include="libCelt.a;libCompilerRt.a" />
-  </ItemGroup>
 </Project>

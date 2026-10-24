@@ -140,7 +140,7 @@ Use `git` to revert the project file changes (all 125 `.csproj` files). The dire
 
 **Step 5 — Re-add `BuildSdk` target to `build/Stride.build`:**
 
-Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildWindowsVulkan`, `BuildLinux`, `BuildLauncher`, `RunTestsWindows`.
+Restore the target and add `DependsOnTargets="BuildSdk"` (or `BuildSdk;` prefix where multiple dependencies exist) to: `Build`, `BuildRuntime`, `BuildWindows`, `BuildWindowsDirect3D11`, `BuildWindowsDirect3D12`, `BuildWindowsVulkan`, `BuildLauncher`, `RunTestsWindows`.
 
 ```xml
 <!--
@@ -342,7 +342,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Property | Purpose | Set by |
 |----------|---------|--------|
-| `StridePlatform` | Current platform (Windows, Linux) | Auto-detected in Stride.Platform.props |
+| `StridePlatform` | Current platform (Windows) | Auto-detected in Stride.Platform.props |
 | `StridePlatformOriginal` | Original platform value before TFM-based override | Stride.Platform.props |
 | `StridePlatformFullName` | Platform name + optional `StrideBuildDirExtension` suffix | Stride.Platform.props |
 | `StridePlatforms` | Semicolon-separated list of target platforms | Auto-detected per OS |
@@ -352,7 +352,7 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 
 | Platform | Defines |
 |----------|---------|
-| Windows/Linux | `STRIDE_PLATFORM_DESKTOP` |
+| Windows | `STRIDE_PLATFORM_DESKTOP` |
 | All .NET | `STRIDE_RUNTIME_CORECLR` |
 
 ### Graphics API
@@ -370,7 +370,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 | Platform | Default | Available |
 |----------|---------|-----------|
 | Windows | Direct3D11 | Direct3D11, Direct3D12,Vulkan |
-| Linux | Vulkan | Vulkan |
 
 **Graphics API defines** (added to `DefineConstants`):
 
@@ -483,7 +482,6 @@ Practical effect:
 | VS Developer Command Prompt | `MSBuild.exe` | MSVC |
 | VS Developer Command Prompt | `dotnet build` / `dotnet msbuild` | Clang |
 | VS IDE | (msbuild.exe) | MSVC |
-| Linux | `dotnet build` | Clang |
 
 ---
 
@@ -491,7 +489,7 @@ Practical effect:
 
 The `.ssdeps` system (`Stride.Dependencies.targets`) handles native library distribution:
 
-- `.ssdeps` files sit alongside referenced DLLs, listing native libraries (.dll/.so) and content files
+- `.ssdeps` files sit alongside referenced DLLs, listing native libraries (.dll) and content files
 - At build time, native libs are resolved and copied to the output directory
 - During NuGet packaging, native libs are placed in the correct `runtimes/` layout
 - Platform-specific handling for desktop
@@ -618,7 +616,7 @@ The property is likely being read in `Sdk.props` (too early). Move the logic to 
 
 ### Multi-targeting not working
 
-Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows;Linux` (etc.) to target other platforms.
+Ensure the .csproj declares `<TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>` (or the `…Windows` variant; tests use `$(StrideTestTargetFrameworks)`). The set is computed in `Stride.Platform.props` from `$(StridePlatforms)`, so pass `-p:StridePlatforms=Windows` (etc.) to target other platforms.
 
 ### Assembly processor not running
 

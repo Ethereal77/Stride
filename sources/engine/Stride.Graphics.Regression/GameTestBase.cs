@@ -886,7 +886,7 @@ namespace Stride.Graphics.Regression
                 var platformParts = platformSpecificDir.Split(Path.DirectorySeparatorChar, '/');
                 var platformApiPart = platformParts.Length > 0 ? platformParts[0] : null;
                 var devicePart = platformParts.Length > 1 ? platformParts[1] : null;
-                // platformApiPart is e.g. "Linux.Vulkan" — split into platform and API
+                // platformApiPart is e.g. "Windows.Vulkan" — split into platform and API
                 string? platformName = null, apiName = null;
                 if (platformApiPart != null)
                 {
@@ -970,7 +970,6 @@ namespace Stride.Graphics.Regression
             string platformName = Platform.Type switch
             {
                 PlatformType.Windows => "Windows",
-                PlatformType.Linux => "Linux",
                 _ => throw new NotImplementedException($"Platform {Platform.Type} is not supported for image regression tests")
             };
 

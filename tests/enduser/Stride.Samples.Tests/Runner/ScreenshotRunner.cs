@@ -33,9 +33,7 @@ public static class ScreenshotRunner
     // Per-host info used to locate the regenerated sample's project + exe. The dotnet-new templates
     // emit one project per platform under <SampleName>.<Folder>/, with OutputPath=Bin/<Folder>/...
     // and only Windows uses a .exe extension.
-    private static readonly (string Folder, string Rid, string ExeExt) HostPlatform =
-        OperatingSystem.IsLinux() ? ("Linux",   "linux-x64", "")
-                                  : ("Windows", "win-x64",   ".exe");
+    private static readonly (string Folder, string Rid, string ExeExt) HostPlatform = ("Windows", "win-x64", ".exe");
 
     private static readonly object InitLock = new();
     private static bool initialized;

@@ -104,7 +104,7 @@ internal static class NewCommand
                     return 1;
                 }
 
-                // Forward any extra --key value tokens as template parameters (e.g. --platforms windows,linux).
+                // Forward any extra --key value tokens as template parameters (e.g. --platforms windows).
                 var parameters = new Dictionary<string, string>();
                 if (!TryParseParameters(parseResult.UnmatchedTokens, template, parameters, out var parameterError))
                 {

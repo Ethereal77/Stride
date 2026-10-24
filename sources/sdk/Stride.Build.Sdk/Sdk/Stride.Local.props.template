@@ -8,7 +8,6 @@
 
   <PropertyGroup>
     <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Windows))' == 'true'">Windows</StridePlatforms>
-    <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' == 'true'">Linux</StridePlatforms>
     <StrideGraphicsApiDependentBuildAll Condition="'$(StrideGraphicsApiDependentBuildAll)' == ''">false</StrideGraphicsApiDependentBuildAll>
     <!-- Dev build version. Defaults to "last release tag + 1" so a local build sits just above the
          latest release. Set this to force a higher PublicVersion ceiling, e.g. while authoring

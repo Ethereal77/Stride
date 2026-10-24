@@ -5,5 +5,4 @@ the artifacts to refresh.
 Layout:
   win-x64/ffmpeg.exe       Windows x64 CLI    (libx264 + MF + NVENC)
   win-arm64/ffmpeg.exe     Windows arm64 CLI  (libx264 + MF)
-  linux-x64/ffmpeg         Linux x64 CLI      (libx264 + VA-API)
   dotnet/<rid>/            Shared libav* libraries shipped with games

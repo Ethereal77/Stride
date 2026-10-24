@@ -14,7 +14,7 @@
          produced assembly and copies natives into the output's runtimes/<rid>/native/ tree.
 
     Platform-specific consumption:
-    - Desktop (Windows/Linux): natives copied to output runtime asset path.
+    - Desktop (Windows): natives copied to output runtime asset path.
     ================================================================
   -->
 
@@ -40,7 +40,7 @@
       <_StrideDepsFile Include="@(ReferenceDependencyPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(ReferenceDependencyPaths.CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
     </ItemGroup>
     <ItemGroup Condition="'$(StrideGraphicsApi)' != ''">
-      <!-- Path-separator check normalized to '/' so Linux hosts filter correctly. -->
+      <!-- Path-separator check normalized to '/' so other hosts filter correctly. -->
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D11/')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D12/')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Vulkan/')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
@@ -102,7 +102,7 @@
   </Target>
 
   <!-- StrideToolingHost (AssetCompiler, GameStudio): drop runtimes/<rid>/ assets that this desktop
-       host can't use from its no-RID output — linux on the Windows-only net10.0-windows.
+       host can't use from its no-RID output — other platforms on the Windows-only net10.0-windows.
        Covers NuGet assets (ReferenceCopyLocalPaths), .ssdeps natives and Content copies
        (_SourceItemsToCopyToOutputDirectory[Always]); items outside runtimes/ are untouched.
        Normalize '\'→'/' — Replace('/','\\') yields a double backslash here,
@@ -115,18 +115,15 @@
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
           Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
+                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)"
           Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
+                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
       <_SourceItemsToCopyToOutputDirectoryAlways Remove="@(_SourceItemsToCopyToOutputDirectoryAlways)"
           Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
                      And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'
-                          Or (!$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/linux'))))" />
+                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
     </ItemGroup>
   </Target>
 
@@ -172,7 +169,7 @@
 
     <!-- Normalize TargetPath to forward slashes for .ssdeps emission. AssignTargetPath
          uses the host's directory separator, so a Windows-built NuGet would otherwise ship .ssdeps
-         entries with '\' that don't match a Linux consumer's substring checks. Pinning one
+         entries with '\' that don't match other consumer's substring checks. Pinning one
          separator at write time lets every reader assume '/' without normalization. -->
     <ItemGroup>
       <_StrideDependencyToCopy>
@@ -211,7 +208,7 @@
     <ItemGroup Condition="'@(_StrideDependencyToCopy)' != ''">
       <!-- Native dependencies go to the runtimes/RID/native folder. PackagePath is the target directory
            (trailing slash required): NuGet reads an extensionless PackagePath as a folder and would nest
-           extensionless natives such as the linux ffmpeg one level too deep. -->
+           extensionless natives one level too deep. -->
       <TfmSpecificPackageFile Include="@(_StrideDependencyToCopy)" Condition="'%(_StrideDependencyToCopy.Pack)' != 'false'"
                               PackagePath="$([System.IO.Path]::GetDirectoryName('%(_StrideDependencyToCopy.TargetPath)'))/" />
     </ItemGroup>

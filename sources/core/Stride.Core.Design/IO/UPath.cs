@@ -13,7 +13,7 @@ namespace Stride.Core.IO;
 /// <remarks>
 /// <para>A uniform path contains only characters '/' to separate directories and doesn't contain any successive
 /// '/' or './'. This class is used to represent a path, relative or absolute to a directory or filename.</para>
-/// <para>This class can be used to represent uniforms paths both on windows or unix platforms</para>
+/// <para>This class can be used to represent uniforms paths both on Windows or other platforms</para>
 /// TODO Provide more documentation on how to use this class
 /// </remarks>
 public abstract class UPath : IEquatable<UPath>, IComparable

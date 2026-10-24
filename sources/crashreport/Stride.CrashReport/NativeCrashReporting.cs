@@ -76,9 +76,8 @@ namespace Stride.CrashReport
 
         /// <summary>
         /// Recovers the faulting frame (<c>module+0x&lt;rva&gt;</c>) from a minidump, post-mortem. On Windows the
-        /// vectored handler computes this live at fault time; on Linux the runtime's <c>createdump</c> writes
-        /// only the dump, so the frame is parsed back out of it here (same value, so the signature matches). Returns
-        /// null when the dump carries no exception record or the address is outside every module.
+        /// vectored handler computes this live at fault time.
+        /// Returns null when the dump carries no exception record or the address is outside every module.
         /// </summary>
         public static string FaultingFrameFromDump(string dumpPath) => MinidumpReader.FaultingFrame(dumpPath);
 
@@ -135,16 +134,16 @@ namespace Stride.CrashReport
             if (reporter.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
             {
                 // No apphost for this OS (the publish output ships one only for the OS it was built on): run the
-                // dll through the shared dotnet host. This is the Unix path, where spawning doesn't leak handles.
+                // dll through the shared dotnet host.
                 startInfo = new ProcessStartInfo("dotnet") { UseShellExecute = false };
                 startInfo.ArgumentList.Add(reporter);
             }
             else
             {
                 // Detach fully on Windows: with UseShellExecute=false the reporter inherits our std handles and, under
-                // MSBuild's <Exec>, the inherited pipe blocks the build until the reporter closes; ShellExecuteEx inherits
-                // nothing. Unix has no such leak (pipes are O_CLOEXEC) and shell-execute there would route through xdg-open.
-                startInfo = new ProcessStartInfo(reporter) { UseShellExecute = OperatingSystem.IsWindows() };
+                // MSBuild's <Exec>, the inherited pipe blocks of the build until the reporter closes; ShellExecuteEx inherits
+                // nothing.
+                startInfo = new ProcessStartInfo(reporter) { UseShellExecute = true };
             }
             AddReporterArguments(startInfo, runDirectory, hostCrash, ownerWindow);
             return Process.Start(startInfo);

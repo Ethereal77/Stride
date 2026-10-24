@@ -73,5 +73,3 @@ msbuild build\Stride.build /t:FullBuildLauncher /p:StrideSign=false [/p:VersionS
 Releases go through [release-launcher.yml](../../.github/workflows/release-launcher.yml) (manual run, optional `version-suffix` and `checkpoint`). It creates a `launcher/<version>` GitHub release with the setup (a pre-release is marked as one), then pushes the nupkg to NuGet.org, whose update lines point to that setup.
 
 If the deploy fails, e.g. on the NuGet push, use "Re-run failed jobs": the deploy runs again with the same build, the existing GitHub release gets the setup again, and NuGet skips the packages it already has. "Re-run all jobs" stops at the version check, as the `launcher/<version>` tag exists.
-
-On Linux there is no installer: the launcher is run from a `dotnet publish -r linux-x64 --self-contained` output.

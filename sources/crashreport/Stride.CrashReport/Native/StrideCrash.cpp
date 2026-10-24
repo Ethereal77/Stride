@@ -3,9 +3,9 @@
 
 // Native crash trigger for out-of-process capture. On a native access violation it spawns the crash
 // reporter, which writes the minidump from outside the dying process (MiniDumpWriteDump + ClientPointers),
-// then lets the fault propagate so the process terminates as it would have. Windows-only; a no-op stub
-// elsewhere (Unix native capture arrives with .NET 12's SetFatalErrorHandler). Kept deliberately small and
-// managed-code-free: a managed vectored handler is unsupported (dotnet/runtime#119142), a native one is not.
+// then lets the fault propagate so the process terminates as it would have. Windows-only.
+// Kept deliberately small and managed-code-free: a managed vectored handler is unsupported
+// (dotnet/runtime#119142), a native one is not.
 //
 // Stride's native build compiles with clang against the minimal NativePath runtime (no <windows.h>, no wide
 // CRT), so the small Win32 surface used here is declared directly and wide-string helpers are hand-rolled.

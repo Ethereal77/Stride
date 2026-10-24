@@ -1,13 +1,12 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-#pragma warning disable SA1310 // Field names must not contain underscore
+
 using System.Runtime.InteropServices;
 
 namespace Stride.Core.IO;
 
 public static partial class NativeLockFile
 {
-    // Windows
     [DllImport("Kernel32.dll", SetLastError = true)]
     private static extern bool LockFileEx(Microsoft.Win32.SafeHandles.SafeFileHandle handle, uint flags, uint reserved, uint countLow, uint countHigh, ref NativeOverlapped overlapped);
 
@@ -17,38 +16,8 @@ public static partial class NativeLockFile
     internal const uint LOCKFILE_FAIL_IMMEDIATELY = 0x00000001;
     internal const uint LOCKFILE_EXCLUSIVE_LOCK = 0x00000002;
 
-    // Unix (Linux)
-    [DllImport("libc", EntryPoint = "fcntl", SetLastError = true)]
-    private static extern int fcntl(int fd, int cmd, ref Flock lockInfo);
-
-    // Standard fcntl lock commands (per-process, all Unix platforms)
-    private const int F_SETLK = 6;   // Non-blocking
-    private const int F_SETLKW = 7;  // Blocking
-
-    // OFD lock commands (per-file-description, Linux 3.15+)
-    // These behave like Windows LockFileEx — per-handle, not per-process.
-    private const int F_OFD_SETLK = 37;   // Non-blocking
-    private const int F_OFD_SETLKW = 38;  // Blocking
-
-    private const short F_RDLCK = 0;
-    private const short F_WRLCK = 1;
-    private const short F_UNLCK = 2;
-
-    private const int EINVAL = 22;
-    // Contention errnos (Linux EAGAIN/EACCES, Windows ERROR_LOCK_VIOLATION) — distinct from EINVAL (unsupported).
-    private const int EAGAIN = 11;
-    private const int EACCES = 13;
     private const int ERROR_LOCK_VIOLATION = 33;
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Flock
-    {
-        public short l_type;
-        public short l_whence;  // SEEK_SET = 0
-        public long l_start;
-        public long l_len;      // 0 = to EOF
-        public int l_pid;       // must be 0 for OFD locks
-    }
 
     /// <summary>Outcome of <see cref="TryAcquireFile"/> — contention means retry, unsupported means stop trying.</summary>
     public enum FileLockResult
@@ -58,10 +27,6 @@ public static partial class NativeLockFile
         Unsupported,
     }
 
-    /// <summary>
-    ///   On Linux: true = use OFD locks, false = use standard fcntl, null = not yet determined.
-    /// </summary>
-    private static bool? useOfdLocks;
 
     /// <summary>
     ///   Attempts to lock a byte range of a file.
@@ -84,10 +49,8 @@ public static partial class NativeLockFile
                 (exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0) + (failImmediately ? LOCKFILE_FAIL_IMMEDIATELY : 0),
                 0, countLow, countHigh, ref overlapped);
         }
-        else
-        {
-            return UnixLock(fileStream, offset, count, exclusive) == FileLockResult.Acquired;
-        }
+
+        throw new PlatformNotSupportedException("Non-Windows platforms are not supported for TryLockFile.");
     }
 
     /// <summary>Non-blocking lock acquisition that classifies failure for retry decisions.</summary>
@@ -115,7 +78,7 @@ public static partial class NativeLockFile
                 : FileLockResult.Unsupported;
         }
 
-        return UnixLock(fileStream, offset, count, exclusive);
+        throw new PlatformNotSupportedException("Non-Windows platforms are not supported for TryAcquireFile.");
     }
 
     /// <summary>
@@ -139,79 +102,5 @@ public static partial class NativeLockFile
                 throw new IOException("Couldn't unlock file.");
             }
         }
-        else
-        {
-            UnixUnlock(fileStream, offset, count);
-        }
-    }
-
-    /// <summary>
-    ///   Lock on Unix: on Linux, tries OFD locks first (per-handle, like Windows LockFileEx),
-    ///   falls back to standard fcntl (per-process) if OFD is not supported.
-    /// </summary>
-    private static FileLockResult UnixLock(FileStream fileStream, long offset, long count, bool exclusive)
-    {
-        int fd = fileStream.SafeFileHandle.DangerousGetHandle().ToInt32();
-
-        var lockInfo = new Flock
-        {
-            l_type = exclusive ? F_WRLCK : F_RDLCK,
-            l_whence = 0, // SEEK_SET
-            l_start = offset,
-            l_len = count,
-            l_pid = 0, // required for OFD locks, ignored by standard fcntl
-        };
-
-        // On Linux, try OFD locks first (per-handle byte-range locking)
-        if (OperatingSystem.IsLinux())
-        {
-            if (useOfdLocks != false)
-            {
-                // Always use non-blocking F_OFD_SETLK — blocking F_OFD_SETLKW can hang
-                // indefinitely on some filesystems and in some contention scenarios.
-                if (fcntl(fd, F_OFD_SETLK, ref lockInfo) == 0)
-                {
-                    useOfdLocks = true;
-                    return FileLockResult.Acquired;
-                }
-
-                int errno = Marshal.GetLastWin32Error();
-                if (errno == EINVAL && useOfdLocks == null)
-                {
-                    // OFD not supported by this kernel — fall through to standard fcntl
-                    useOfdLocks = false;
-                }
-                else
-                {
-                    return (errno == EAGAIN || errno == EACCES) ? FileLockResult.Contended : FileLockResult.Unsupported;
-                }
-            }
-        }
-
-        // Standard fcntl (per-process) — used as fallback on old Linux kernels.
-        // Always non-blocking to avoid hanging.
-        if (fcntl(fd, F_SETLK, ref lockInfo) == 0)
-            return FileLockResult.Acquired;
-        int fallbackErrno = Marshal.GetLastWin32Error();
-        return (fallbackErrno == EAGAIN || fallbackErrno == EACCES) ? FileLockResult.Contended : FileLockResult.Unsupported;
-    }
-
-    private static void UnixUnlock(FileStream fileStream, long offset, long count)
-    {
-        int fd = fileStream.SafeFileHandle.DangerousGetHandle().ToInt32();
-
-        var lockInfo = new Flock
-        {
-            l_type = F_UNLCK,
-            l_whence = 0,
-            l_start = offset,
-            l_len = count,
-            l_pid = 0,
-        };
-
-        // Unlock failure is silently ignored — the lock may not have been acquired
-        // (e.g. unsupported filesystem, or TryLockFile returned false).
-        int cmd = useOfdLocks == true ? F_OFD_SETLK : F_SETLK;
-        _ = fcntl(fd, cmd, ref lockInfo);
     }
 }

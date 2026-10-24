@@ -206,7 +206,7 @@ async function downloadCiRun() {
   const repo = selectedCiRunRepo || 'stride3d/stride';
   const isUpstream = repo === 'stride3d/stride';
   const labelPrefix = isUpstream ? 'CI' : repo.split('/')[0];
-  const artifacts = selectedCiArtifacts.size > 0 ? [...selectedCiArtifacts] : ['test-artifacts-linux-vulkan'];
+  const artifacts = selectedCiArtifacts.size > 0 ? [...selectedCiArtifacts] : ['test-artifacts-windows-vulkan'];
 
   const btn = document.getElementById('ciDownloadBtn');
   btn.disabled = true;
@@ -1308,7 +1308,7 @@ function isSoftwareRenderer(platform) {
 }
 
 function getGfxApi(platform) {
-  // "Windows.Direct3D11/WARP" → "Direct3D11", "Linux.Vulkan/SwiftShader" → "Vulkan"
+  // "Windows.Direct3D11/WARP" → "Direct3D11", "Windows.Vulkan/Lavapipe" → "Vulkan"
   const platApi = platform.split('/')[0];
   const dot = platApi.indexOf('.');
   return dot >= 0 ? platApi.substring(dot + 1) : platApi;

@@ -367,7 +367,7 @@ app.MapPost("/api/sources/add-ci", async (HttpRequest request) =>
     if (body == null || string.IsNullOrEmpty(body.RunId)) return Results.BadRequest("runId required");
 
     var repo = NormalizeRepo(body.Repo) ?? UpstreamRepo;
-    var artifactName = body.ArtifactName ?? "test-artifacts-linux-vulkan";
+    var artifactName = body.ArtifactName ?? "test-artifacts-windows-direct3d12";
     // Repo is scoped into the cache path so runs with the same id across forks don't collide.
     var destDir = Path.Combine(ciCacheDir, repo.Replace('/', '_'), body.RunId);
     var markerFile = Path.Combine(destDir, $".downloaded_{artifactName}");
@@ -794,14 +794,14 @@ Sidecar? TryReadSidecar(string jsonPath)
 
 static string GetGfxApi(string platformApi)
 {
-    // "Windows.Direct3D11" → "Direct3D11", "Linux.Vulkan" → "Vulkan"
+    // "Windows.Direct3D11" → "Direct3D11", "Windows.Vulkan" → "Vulkan"
     var dot = platformApi.IndexOf('.');
     return dot >= 0 ? platformApi[(dot + 1)..] : platformApi;
 }
 
 static string GetOS(string platformApi)
 {
-    // "Windows.Direct3D11" → "Windows", "Linux.Vulkan" → "Linux"
+    // "Windows.Direct3D11" → "Windows", "Windows.Vulkan" → "Windows"
     var dot = platformApi.IndexOf('.');
     return dot >= 0 ? platformApi[..dot] : platformApi;
 }
@@ -872,29 +872,7 @@ static bool TryReveal(string path)
 {
     try
     {
-        if (OperatingSystem.IsWindows())
-            return StartExplorerSelect(path);
-
-        if (IsWsl())
-        {
-            // wslpath resolves both directions, sidestepping the dotnet process's PATH (which
-            // doesn't always include the Windows dir, so bare "explorer.exe" can ENOENT) and
-            // any non-/mnt automount root config.
-            var winPath = WslToWindowsPath(path);
-            var exe = WindowsPathToWsl(@"C:\Windows\explorer.exe");
-            if (winPath == null || exe == null) return false;
-            var psi = new ProcessStartInfo(exe);
-            psi.ArgumentList.Add("/select," + winPath);
-            Process.Start(psi);
-            return true;
-        }
-
-        // Generic Linux: no portable "select" verb — open the containing folder.
-        var dir = Path.GetDirectoryName(path) ?? path;
-        var xdg = new ProcessStartInfo("xdg-open");
-        xdg.ArgumentList.Add(dir);
-        Process.Start(xdg);
-        return true;
+        return StartExplorerSelect(path);
     }
     catch { return false; }
 }
@@ -911,39 +889,6 @@ static bool StartExplorerSelect(string windowsPath)
     Process.Start(psi);
     ExplorerForeground.PullNewToFront(before);
     return true;
-}
-
-static bool IsWsl()
-{
-    try
-    {
-        return File.Exists("/proc/sys/kernel/osrelease")
-            && File.ReadAllText("/proc/sys/kernel/osrelease").Contains("microsoft", StringComparison.OrdinalIgnoreCase);
-    }
-    catch { return false; }
-}
-
-// `wslpath -w /linux/path` → `C:\...` (or `\\wsl.localhost\...` for native-FS checkouts),
-// both of which Explorer can select.
-static string? WslToWindowsPath(string path) => RunWslpath("-w", path);
-
-// `wslpath -u 'C:\foo'` → Linux mount path under the configured automount root.
-static string? WindowsPathToWsl(string winPath) => RunWslpath("-u", winPath);
-
-static string? RunWslpath(string flag, string path)
-{
-    try
-    {
-        var psi = new ProcessStartInfo("wslpath") { RedirectStandardOutput = true };
-        psi.ArgumentList.Add(flag);
-        psi.ArgumentList.Add(path);
-        using var p = Process.Start(psi);
-        if (p == null) return null;
-        var s = p.StandardOutput.ReadToEnd().Trim();
-        p.WaitForExit(2000);
-        return string.IsNullOrEmpty(s) ? null : s;
-    }
-    catch { return null; }
 }
 
 // Accepts "owner/name", returns null if the shape doesn't match. Trims whitespace.

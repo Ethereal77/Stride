@@ -36,7 +36,6 @@
   <PropertyGroup>
     <!-- Default mappings -->
     <StridePlatform Condition="'$(StridePlatform)' == '' And '$(TargetPlatformIdentifier)' == 'Windows'">Windows</StridePlatform>
-    <StridePlatform Condition="'$(StridePlatform)' == '' And $(RuntimeIdentifier.StartsWith('linux'))">Linux</StridePlatform>
     <StridePlatform Condition="'$(StridePlatform)' == ''">Windows</StridePlatform>
   </PropertyGroup>
 
@@ -139,7 +138,7 @@
        self-build path in Stride.Build.Sdk's Stride.Dependencies.targets share one impl. -->
   <PropertyGroup>
     <_StrideListDepsFilesDependsOn>ResolveAssemblyReferences</_StrideListDepsFilesDependsOn>
-    <_StrideListDepsFilesDependsOn Condition="'$(StridePlatform)' == 'Windows' Or '$(StridePlatform)' == 'Linux'">$(_StrideListDepsFilesDependsOn);ResolvePackageAssets</_StrideListDepsFilesDependsOn>
+    <_StrideListDepsFilesDependsOn Condition="'$(StridePlatform)' == 'Windows'">$(_StrideListDepsFilesDependsOn);ResolvePackageAssets</_StrideListDepsFilesDependsOn>
   </PropertyGroup>
   <Target Name="_StrideListDepsFiles" DependsOnTargets="$(_StrideListDepsFilesDependsOn)">
     <ItemGroup>

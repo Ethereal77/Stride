@@ -24,9 +24,7 @@
     <!-- Detect platform from RuntimeIdentifier first, then TargetFramework, then OS -->
     <StridePlatform></StridePlatform>
     <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(win))' ">Windows</StridePlatform>
-    <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">Windows</StridePlatform>
-    <StridePlatform Condition=" '$(StridePlatform)' == '' And '$([MSBuild]::IsOSPlatform(Linux))' ">Linux</StridePlatform>
     <StridePlatform Condition=" '$(StridePlatform)' == '' ">Windows</StridePlatform>
 
     <!-- Platform full name (may be extended with build dir suffix) -->
@@ -63,7 +61,6 @@
     <!-- Set default StridePlatforms based on OS (if not already set by user/build system) -->
     <!-- Note: drives the StrideRuntimeTargetFrameworks sets below (runtime multi-targeting) -->
     <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Windows))'">Windows</StridePlatforms>
-    <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Linux))'">Linux</StridePlatforms>
 
     <!-- Unescape in case it was passed from Stride.build with escaped characters -->
     <StridePlatforms>$([MSBuild]::Unescape('$(StridePlatforms)'))</StridePlatforms>
@@ -95,9 +92,6 @@
   <!-- ================================================================ -->
   <PropertyGroup Condition="'$(StridePlatform)' == 'Windows'">
     <StrideGraphicsApis Condition="'$(StrideGraphicsApis)' == ''">Direct3D11</StrideGraphicsApis>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(StridePlatform)' == 'Linux'">
-    <StrideGraphicsApis Condition="'$(StrideGraphicsApis)' == ''">Vulkan</StrideGraphicsApis>
   </PropertyGroup>
 
   <!-- ================================================================ -->

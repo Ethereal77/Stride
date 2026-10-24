@@ -72,12 +72,12 @@ public class TestSolutionPlatform
     [Fact]
     public void TestToString()
     {
-        var platform = new SolutionPlatform { Type = PlatformType.Linux };
+        var platform = new SolutionPlatform { Type = PlatformType.Windows };
 
         var result = platform.ToString();
 
         Assert.Contains("SolutionPlatform", result);
-        Assert.Contains("Linux", result);
+        Assert.Contains("Windows", result);
     }
 }
 
@@ -213,11 +213,11 @@ public class TestSolutionPlatformPart
     [Fact]
     public void TestGetProjectNameForLibrary()
     {
-        var part = new SolutionPlatformPart("Linux") { LibraryProjectName = "LinuxLib" };
+        var part = new SolutionPlatformPart("Windows") { LibraryProjectName = "WindowsLib" };
 
         var name = part.GetProjectName(ProjectType.Library);
 
-        Assert.Equal("LinuxLib", name);
+        Assert.Equal("WindowsLib", name);
     }
 
     [Fact]

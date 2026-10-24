@@ -39,7 +39,7 @@ public sealed partial class ThreadPool
                 opti = i;
             }
             OptimalMaxSpinWaitsPerSpinIteration = opti;
-            SpinMult = Environment.OSVersion.Platform == PlatformID.Unix ? 2 : 1;
+            SpinMult = 1;
         }
 
         public SemaphoreW(int spinCountParam)

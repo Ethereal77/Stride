@@ -204,7 +204,6 @@ namespace Stride.Assets.Textures
                     switch (parameters.Platform)
                     {
                         case PlatformType.Windows:
-                        case PlatformType.Linux:
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:

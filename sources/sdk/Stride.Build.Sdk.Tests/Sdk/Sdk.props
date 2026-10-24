@@ -64,7 +64,7 @@
     <_StrideTestPlatforms>;$(StrideTestPlatforms);</_StrideTestPlatforms>
 
     <!-- desktop base ($(StrideFramework)) -->
-    <_StrideTestDesktop Condition="$(_StrideTestPlatforms.Contains(';Linux;')) Or ($(_StrideTestPlatforms.Contains(';Windows;')) And !(FALSE)) Or $(_StrideTestPlatforms.Contains(';Game;'))">$(StrideFramework);</_StrideTestDesktop>
+    <_StrideTestDesktop Condition="$(_StrideTestPlatforms.Contains(';Windows;')) Or $(_StrideTestPlatforms.Contains(';Game;'))">$(StrideFramework);</_StrideTestDesktop>
 
     <!-- base set: the shared desktop TFM (folded in if no other desktop) -->
     <_StrideTestTargetFrameworksBase>$(_StrideTestDesktop)</_StrideTestTargetFrameworksBase>
@@ -91,8 +91,6 @@
 
   <PropertyGroup>
     <!-- Build list of Graphics API for platforms that support multiple -->
-    <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Linux' And '$(StrideGraphicsApiDependentBuildAll)' == 'true'">Vulkan</StrideGraphicsApis>
-    <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Linux' And '$(StrideGraphicsApis)' == ''">Vulkan</StrideGraphicsApis>
     <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Windows' And '$(StrideGraphicsApiDependentBuildAll)' == 'true'">Direct3D11;Direct3D12;Vulkan</StrideGraphicsApis>
     <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Windows' And '$(StrideGraphicsApis)' == ''">Direct3D11</StrideGraphicsApis>
 
