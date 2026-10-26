@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-#if STRIDE_PLATFORM_DESKTOP
 using System.Runtime.InteropServices;
 
 namespace Stride.Core.Diagnostics;
@@ -239,5 +238,3 @@ public static partial class VTuneProfiler
 #endif // NET7_0_OR_GREATER
 #pragma warning restore SA1300 // Element must begin with upper-case letter
 }
-
-#endif

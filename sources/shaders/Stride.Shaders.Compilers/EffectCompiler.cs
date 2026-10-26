@@ -174,21 +174,18 @@ namespace Stride.Shaders.Compiler
 
             // -------------------------------------------------------
             // Prepare DynamicCache folder for debug files
-#if STRIDE_PLATFORM_DESKTOP
             var effectDir = Path.Combine(
                 PlatformFolders.ApplicationCacheDirectory,
                 EffectCompilerCache.GetEffectCacheDirectory(fullEffectName));
             if (!Directory.Exists(effectDir))
                 Directory.CreateDirectory(effectDir);
-#endif
 
             if (log.HasErrors)
             {
-#if STRIDE_PLATFORM_DESKTOP
                 if (spirvBytecode is { Length: > 0 })
                     lock (WriterLock)
                         WriteSpvDebugFiles(effectDir, mixinObjectId.ToString(), spirvBytecode.ToArray());
-#endif
+
                 return new EffectBytecodeCompilerResult(null, log);
             }
 
@@ -198,14 +195,12 @@ namespace Stride.Shaders.Compiler
             bool useSpirvCrossToHlsl = false;
             switch (effectParameters.Platform)
             {
-#if STRIDE_PLATFORM_DESKTOP
                 case GraphicsPlatform.Direct3D11:
                     if (Platform.Type != PlatformType.Windows)
                         throw new NotSupportedException();
                     compiler = new Direct3D.ShaderCompiler();
                     useSpirvCrossToHlsl = true;
                     break;
-#endif
                 case GraphicsPlatform.Vulkan:
                 case GraphicsPlatform.Direct3D12:
                     compiler = null;
@@ -216,15 +211,11 @@ namespace Stride.Shaders.Compiler
 
             var shaderStageBytecodes = new List<ShaderBytecode>();
 
-#if STRIDE_PLATFORM_DESKTOP
             var stageStringBuilder = new StringBuilder();
             var stageHlslSources = new List<(string Suffix, string Code)>();
-#endif
 
             var bytecode = new EffectBytecode { Reflection = effectReflection, HashSources = usedHashSources };
-#if STRIDE_PLATFORM_DESKTOP
             var spirvBytecodeForDebug = spirvBytecode.ToArray();
-#endif
 
             try
             {
@@ -246,11 +237,11 @@ namespace Stride.Shaders.Compiler
                         if (!validationResult.IsValid)
                         {
                             log.Error($"SPIR-V for effect {fullEffectName} (id: {mixinObjectId}) is invalid and cannot be legalized for HLSL: {validationResult.Output}", legalizeException);
-#if STRIDE_PLATFORM_DESKTOP
+
                             // Returning here skips the outer catch, so dump the module that failed to legalize.
                             lock (WriterLock)
                                 WriteSpvDebugFiles(effectDir, mixinObjectId.ToString(), spirvBytecodeForDebug);
-#endif
+
                             return new EffectBytecodeCompilerResult(null, log);
                         }
                         throw;
@@ -274,7 +265,6 @@ namespace Stride.Shaders.Compiler
                             _ => throw new NotSupportedException($"Unsupported execution model: {entryPoint.ExecutionModel}"),
                         };
 
-#if STRIDE_PLATFORM_DESKTOP
                         var stageSuffix = shaderStage switch
                         {
                             ShaderStage.Vertex => "vs",
@@ -287,9 +277,7 @@ namespace Stride.Shaders.Compiler
                         };
                         stageHlslSources.Add((stageSuffix, code));
                         string? stageFilename = null;
-#else
-                        string? stageFilename = null;
-#endif
+
                         var result = compiler!.Compile(code, entryPoint.TranslatedName, shaderStage, effectParameters, bytecode.Reflection, stageFilename);
                         result.CopyTo(log);
 
@@ -307,13 +295,13 @@ namespace Stride.Shaders.Compiler
 
                         // -------------------------------------------------------
                         // Append bytecode id to shader log
-#if STRIDE_PLATFORM_DESKTOP
+
                         stageStringBuilder.AppendLine($"@G    {shaderStage} => {result.Bytecode!.Id}");
                         if (result.DisassembleText != null)
                         {
                             stageStringBuilder.Append(result.DisassembleText);
                         }
-#endif
+
                         // -------------------------------------------------------
 
                         shaderStageBytecodes.Add(result.Bytecode);
@@ -326,7 +314,6 @@ namespace Stride.Shaders.Compiler
                 // TODO: Move that code inside ShaderCompiler (need a new interface for processing SPIR-V)
                 else if (effectParameters.Platform == GraphicsPlatform.Direct3D12)
                 {
-#if STRIDE_PLATFORM_DESKTOP
                     if (OperatingSystem.IsWindows())
                     {
                         // Check API
@@ -334,7 +321,6 @@ namespace Stride.Shaders.Compiler
                         CompileDxilPipeline(spirvBytecode, entryPoints, shaderStageBytecodes);
                     }
                     else
-#endif
                     {
                         throw new NotImplementedException("D3D12 shader compilation is not supported on this platform");
                     }
@@ -361,10 +347,9 @@ namespace Stride.Shaders.Compiler
             }
             catch (Exception)
             {
-#if STRIDE_PLATFORM_DESKTOP
                 lock (WriterLock)
                     WriteSpvDebugFiles(effectDir, mixinObjectId.ToString(), spirvBytecodeForDebug);
-#endif
+
                 throw;
             }
 
@@ -372,7 +357,7 @@ namespace Stride.Shaders.Compiler
 
             // -------------------------------------------------------
             // Write debug files using output hash (content-addressed, shared across inputs with same output)
-#if STRIDE_PLATFORM_DESKTOP
+
             var outputHash = bytecode.ComputeId();
             var shaderBaseFilename = Path.Combine(effectDir, outputHash.ToString());
             lock (WriterLock) // protect write in case the same shader is created twice
@@ -555,12 +540,10 @@ namespace Stride.Shaders.Compiler
                     File.WriteAllText(shaderBaseFilename + "_meta.txt", builder.ToString());
                 }
             }
-#endif
 
             return new EffectBytecodeCompilerResult(bytecode, log);
         }
 
-#if STRIDE_PLATFORM_DESKTOP
         /// <summary>
         /// Compile SPIR-V to DXIL for all stages in a single linked call. Needed so spirv_to_dxil
         /// can match PS inputs to VS outputs correctly when some varyings are unused.
@@ -677,6 +660,5 @@ namespace Stride.Shaders.Compiler
                 File.WriteAllText(baseFilename + ".spvdis", Spirv.Tools.Spv.Dis(SpirvBytecode.CreateFromSpan(spirvBytecode), DisassemblerFlags.Name | DisassemblerFlags.Id | DisassemblerFlags.InstructionIndex));
             }
         }
-#endif
     }
 }

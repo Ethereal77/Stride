@@ -101,16 +101,12 @@ public static class PlatformFolders
     [UnconditionalSuppressMessage("SingleFile", "IL3000", Justification = "Falls back to Environment.ProcessPath when Location is empty.")]
     private static string? GetApplicationExecutablePath()
     {
-#if STRIDE_PLATFORM_DESKTOP
         var appPath = Assembly.GetEntryAssembly()?.Location;
         if (string.IsNullOrEmpty(appPath))
         {
             appPath = Environment.ProcessPath;
         }
         return appPath;
-#else
-        return null;
-#endif
     }
 
     private static string GetTemporaryDirectory()
@@ -125,29 +121,17 @@ public static class PlatformFolders
 
     private static string GetApplicationBinaryDirectory()
     {
-#if STRIDE_PLATFORM_DESKTOP
         return Path.GetDirectoryName(AppContext.BaseDirectory)!;
-#else
-        return Path.GetDirectoryName(typeof(PlatformFolders).Assembly.Location);
-#endif
     }
 
     private static string GetApplicationExecutableDirectory()
     {
-#if STRIDE_PLATFORM_DESKTOP
         var executableName = GetApplicationExecutablePath();
         if (!string.IsNullOrEmpty(executableName))
         {
             return Path.GetDirectoryName(executableName)!;
         }
-  #if STRIDE_RUNTIME_CORECLR
         return AppContext.BaseDirectory;
-  #else
-        return AppDomain.CurrentDomain.BaseDirectory;
-  #endif
-#else
-        throw new NotImplementedException();
-#endif
     }
 
     private static string GetApplicationDataDirectory()

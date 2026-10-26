@@ -34,9 +34,8 @@ public static partial class NativeLibraryHelper
     private static readonly Lock loadedLibrariesLock = new();
     private static readonly HashSet<string> registeredDirectories = new(StringComparer.OrdinalIgnoreCase);
     private static bool globalResolverRegistered;
-#if STRIDE_PLATFORM_DESKTOP
+
     private static readonly HashSet<System.Runtime.Loader.AssemblyLoadContext> resolvedLoadContexts = [];
-#endif
 
     private static readonly Dictionary<string, string> nativeDependenciesWithoutExtensions = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<string, string> nativeDependenciesWithExtensions = new(StringComparer.OrdinalIgnoreCase);
@@ -167,7 +166,6 @@ public static partial class NativeLibraryHelper
     /// </remarks>
     public static nint PreloadLibrary(string libraryName, Type ownerType)
     {
-#if STRIDE_PLATFORM_DESKTOP
         lock (loadedLibrariesLock)
         {
             EnsureGlobalResolverRegistered();
@@ -237,9 +235,6 @@ public static partial class NativeLibraryHelper
             LogLibraryLoaded(name, handle);
             return handle;
         }
-#else
-        return 0;
-#endif
     }
 
     /// <summary>
@@ -319,7 +314,6 @@ public static partial class NativeLibraryHelper
     /// <param name="libraryName">The name of the library to unload.</param>
     public static void Unload(string libraryName)
     {
-#if STRIDE_PLATFORM_DESKTOP
         lock (loadedLibrariesLock)
         {
             if (loadedLibraries.TryGetValue(libraryName, out nint libHandle))
@@ -328,7 +322,6 @@ public static partial class NativeLibraryHelper
                 loadedLibraries.Remove(libraryName);
             }
         }
-#endif
     }
 
     /// <summary>
@@ -336,7 +329,6 @@ public static partial class NativeLibraryHelper
     /// </summary>
     public static void UnloadAll()
     {
-#if STRIDE_PLATFORM_DESKTOP
         lock (loadedLibrariesLock)
         {
             foreach (var libraryItem in loadedLibraries)
@@ -345,7 +337,6 @@ public static partial class NativeLibraryHelper
             }
             loadedLibraries.Clear();
         }
-#endif
     }
 
     /// <summary>
@@ -366,9 +357,7 @@ public static partial class NativeLibraryHelper
             nativeDependenciesWithExtensions[libraryNameWithExtension] = libraryPath;
             nativeDependenciesWithoutExtensions.TryAdd(libraryNameWithoutExtension, libraryPath);
 
-#if STRIDE_PLATFORM_DESKTOP
             EnsureGlobalResolverRegistered();
-#endif
         }
     }
 
@@ -434,7 +423,6 @@ public static partial class NativeLibraryHelper
         return Path.GetFileNameWithoutExtension(fileName);
     }
 
-#if STRIDE_PLATFORM_DESKTOP
     // Register a global resolver once so [DllImport] from any assembly can find libraries
     // by name even when only the full path is known (NuGet runtimes/<RID>/native lookup).
     // Must be called inside loadedLibrariesLock.
@@ -446,7 +434,6 @@ public static partial class NativeLibraryHelper
             System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll += ResolvePreloadedLibrary;
         }
     }
-#endif
 
     /// <summary>
     ///   Makes the <c>[DllImport]</c> calls of <paramref name="assembly"/> find the native libraries known here
@@ -458,7 +445,7 @@ public static partial class NativeLibraryHelper
     public static void RegisterResolverFor(Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
-#if STRIDE_PLATFORM_DESKTOP
+
         var context = System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly);
         if (context is null || context == System.Runtime.Loader.AssemblyLoadContext.Default)
             return;
@@ -468,7 +455,6 @@ public static partial class NativeLibraryHelper
                 return;
         }
         context.ResolvingUnmanagedDll += ResolvePreloadedLibrary;
-#endif
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 name: "Dep: Build msdfgen"
 
-# Builds stride_msdfgen.{dll,so} per RID: a single self-contained shared lib
+# Builds stride_msdfgen.dll per RID: a single self-contained shared lib
 # that static-links msdfgen-core + msdfgen-ext (and a private FreeType for non-vcpkg
 # builds). Used by Stride.Assets to rasterize signed-distance-field font glyphs,
 # replacing the previous msdfgen.exe subprocess invocation.

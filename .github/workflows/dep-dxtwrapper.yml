@@ -1,6 +1,6 @@
 name: "Dep: Build directxtex"
 
-# Builds stride_directxtex.{dll,so} per RID: a single self-contained shared
+# Builds stride_directxtex.dll per RID: a single self-contained shared
 # lib that static-links DirectXTex. Used by Stride.TextureConverter for DDS/TGA/HDR
 # I/O, BC1-7 compression, mip generation, format conversion, etc.
 #

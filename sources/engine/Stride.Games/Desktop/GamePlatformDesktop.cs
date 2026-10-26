@@ -21,8 +21,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if STRIDE_PLATFORM_DESKTOP
-
 using System;
 using System.IO;
 
@@ -53,7 +51,7 @@ namespace Stride.Games
         {
             IsBlockingRun = true;
 
-#if (STRIDE_UI_WINFORMS || STRIDE_UI_WPF)
+#if STRIDE_UI_WINFORMS || STRIDE_UI_WPF
             if (Platform.Type == PlatformType.Windows)
             {
                 // This is required by the Audio subsystem of SharpDX.
@@ -109,5 +107,3 @@ namespace Stride.Games
         }
     }
 }
-
-#endif

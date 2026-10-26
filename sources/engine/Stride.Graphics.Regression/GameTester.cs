@@ -32,8 +32,6 @@ namespace Stride.Graphics.Regression
         /// </remarks>
         public static void RunGameTest(Game game)
         {
-#if STRIDE_PLATFORM_DESKTOP
-
             using (game)
             {
                 try
@@ -55,8 +53,6 @@ namespace Stride.Graphics.Regression
             // Log process memory for diagnostics (helps detect resource leaks across tests)
             using var process = Process.GetCurrentProcess();
             Logger.Info($"Process memory: working set={process.WorkingSet64 / 1024 / 1024}MB, private={process.PrivateMemorySize64 / 1024 / 1024}MB, GC={GC.GetTotalMemory(false) / 1024 / 1024}MB");
-
-#endif
         }
     }
 }

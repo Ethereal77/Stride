@@ -1,8 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-#if STRIDE_PLATFORM_DESKTOP
-
 using Stride.Core.IO;
 using Xunit;
 
@@ -24,7 +22,7 @@ public class TemporaryDirectoryTests
     public void Constructor_WithPath_CreatesDirectoryAtSpecifiedPath()
     {
         var uniquePath = $"temp_test_{Guid.NewGuid():N}";
-        
+
         using var tempDir = new TemporaryDirectory(uniquePath);
 
         Assert.True(Directory.Exists(tempDir.DirectoryPath));
@@ -144,5 +142,3 @@ public class TemporaryDirectoryTests
         Assert.NotEqual(tempDir1.DirectoryPath, tempDir2.DirectoryPath);
     }
 }
-
-#endif

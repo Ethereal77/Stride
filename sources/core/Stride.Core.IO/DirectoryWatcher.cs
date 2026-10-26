@@ -96,29 +96,4 @@ public partial class DirectoryWatcher : IDisposable
     {
         Modified?.Invoke(sender, e);
     }
-
-#if !STRIDE_PLATFORM_DESKTOP
-    // Doesn't throw any exceptions on other platforms
-
-    private void InitializeInternal()
-    {
-    }
-
-    private void DisposeInternal()
-    {
-    }
-
-    private void TrackInternal(string path)
-    {
-    }
-
-    private void UnTrackInternal(string path)
-    {
-    }
-
-    private List<string> GetTrackedDirectoriesInternal()
-    {
-        return new List<string>();
-    }
-#endif
 }

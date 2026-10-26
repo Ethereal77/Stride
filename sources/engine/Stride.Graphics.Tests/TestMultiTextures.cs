@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 /*
-#if STRIDE_PLATFORM_DESKTOP
 
 using System;
 using System.IO;
@@ -61,7 +60,7 @@ namespace Stride.Graphics.Tests
                 var compilerCache = new EffectCompilerCache(compiler);
                 var compilerParameters = new CompilerParameters();
                 var compilerResults = compilerCache.Compile(new ShaderMixinSource("MultiTexturesSpriteEffect"), compilerParameters);
-                
+
                 Assert.That(compilerResults.HasErrors, Is.False);
 
                 var effectBytecode = compilerResults.Bytecodes[0];
@@ -73,7 +72,7 @@ namespace Stride.Graphics.Tests
 
             // load geometry
             geometry = GeometricPrimitive.Plane.New(GraphicsDevice);
-            
+
             var view = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
             var projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
             MultiTexturesEffect.SharedParameters.Set(TransformationKeys.WorldViewProjection, Matrix.Multiply(view, projection));
@@ -111,5 +110,4 @@ namespace Stride.Graphics.Tests
     }
 }
 
-#endif
 */

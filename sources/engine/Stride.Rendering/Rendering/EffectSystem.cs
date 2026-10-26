@@ -27,9 +27,9 @@ namespace Stride.Rendering
         private EffectCompilerBase compiler;
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
-#if STRIDE_PLATFORM_DESKTOP
+
         private DirectoryWatcher directoryWatcher;
-#endif
+
         private bool isInitialized;
 
         /// <summary>
@@ -65,12 +65,10 @@ namespace Stride.Rendering
             // Get graphics device service
             InitializeGraphicsDeviceService();
 
-#if STRIDE_PLATFORM_DESKTOP
             Enabled = true;
             directoryWatcher = new DirectoryWatcher("*.sdsl");
             directoryWatcher.Modified += FileModifiedEvent;
             // TODO: sdfx too
-#endif
 
             isInitialized = true;
         }
@@ -96,14 +94,12 @@ namespace Stride.Rendering
                 isInitialized = false;
             }
 
-#if STRIDE_PLATFORM_DESKTOP
             if (directoryWatcher is not null)
             {
                 directoryWatcher.Modified -= FileModifiedEvent;
                 directoryWatcher.Dispose();
                 directoryWatcher = null;
             }
-#endif
 
             Compiler?.Dispose();
             Compiler = null;
@@ -207,7 +203,6 @@ namespace Stride.Rendering
                     effect = new Effect(GraphicsDevice, bytecode) { Name = effectName };
                     cachedEffects.Add(bytecode, effect);
 
-#if STRIDE_PLATFORM_DESKTOP
                     foreach (var type in bytecode.HashSources.Keys)
                     {
                         var storagePath = EffectCompilerBase.GetStoragePathFromShaderType(type);
@@ -226,7 +221,6 @@ namespace Stride.Rendering
                         if (filePath is not null)
                             directoryWatcher.Track(filePath);
                     }
-#endif
                 }
             }
             return effect;

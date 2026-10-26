@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 /* THIS CODE IS DISABLED, WE WILL HAVE TO CLEANUP ASSEMBLY DEPENDENCIES
-#if STRIDE_PLATFORM_DESKTOP
 using System;
 using System.IO;
 
@@ -52,5 +51,4 @@ namespace Stride.Graphics
         }
     }
 }
-#endif
 */

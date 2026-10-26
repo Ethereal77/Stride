@@ -110,7 +110,6 @@ namespace Stride.Graphics.Regression
 
         private BackBufferSizeMode backBufferSizeMode;
 
-#if STRIDE_PLATFORM_DESKTOP
         /// <summary>
         ///   Controls RenderDoc capture behavior for tests. Defaults to the value of the
         ///   <c>STRIDE_TESTS_RENDERDOC</c> environment variable (lower-cased) and can be
@@ -128,7 +127,6 @@ namespace Stride.Graphics.Regression
         private static bool ForceCaptureRenderDocOnSuccess => RenderDocMode is "always";
 
         private RenderDocManager renderDocManager;
-#endif
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="GameTestBase"/> class,
@@ -194,14 +192,12 @@ namespace Stride.Graphics.Regression
         {
             base.Initialize();
 
-#if STRIDE_PLATFORM_DESKTOP
             if (CaptureRenderDocOnError)
             {
                 renderDocManager = new RenderDocManager();
                 if (!renderDocManager.IsInitialized)
                     renderDocManager = null;
             }
-#endif
 
             // Disable streaming
             Streaming.Enabled = false;
@@ -335,7 +331,6 @@ namespace Stride.Graphics.Regression
         {
             await base.LoadContent();
 
-#if STRIDE_PLATFORM_DESKTOP
             // Setup RenderDoc capture
             if (renderDocManager is not null)
             {
@@ -347,7 +342,6 @@ namespace Stride.Graphics.Regression
                 renderDocManager.Initialize(renderdocCaptureFile);
                 renderDocManager.StartFrameCapture(GraphicsDevice, hwndPtr: IntPtr.Zero);
             }
-#endif
 
             if (!ForceInteractiveMode)
                 InitializeSimulatedInputSource();
@@ -375,7 +369,6 @@ namespace Stride.Graphics.Regression
             base.Destroy();
         }
 
-#if STRIDE_PLATFORM_DESKTOP
         /// <summary>
         ///   Ends the current frame RenderDoc capture session, finalizing the capture of rendering data,
         ///   allowing the captured data to be saved or processed.
@@ -415,7 +408,6 @@ namespace Stride.Graphics.Regression
                 EndFrameCapture();
             }
         }
-#endif
 
         /// <inheritdoc/>
         protected override void Update(GameTime gameTime)

@@ -2,10 +2,8 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System.Diagnostics;
-#if STRIDE_PLATFORM_DESKTOP
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-#endif
 
 namespace Stride.Core.Diagnostics;
 
@@ -52,7 +50,6 @@ public partial class ConsoleLogListener : LogListener
 
         var exceptionMsg = GetExceptionText(logMessage);
 
-#if STRIDE_PLATFORM_DESKTOP
         // save initial console color
         var initialColor = Console.ForegroundColor;
 
@@ -76,7 +73,6 @@ public partial class ConsoleLogListener : LogListener
                 Console.ForegroundColor = ConsoleColor.Red;
                 break;
         }
-#endif
 
         if (Debugger.IsAttached)
         {
@@ -95,14 +91,9 @@ public partial class ConsoleLogListener : LogListener
             Console.WriteLine(exceptionMsg);
         }
 
-#if STRIDE_PLATFORM_DESKTOP
-
         // revert console initial color
         Console.ForegroundColor = initialColor;
-#endif
     }
-
-#if STRIDE_PLATFORM_DESKTOP
 
     // TODO: MOVE THIS CODE OUT IN A SEPARATE CLASS
 
@@ -321,10 +312,4 @@ public partial class ConsoleLogListener : LogListener
         //int mode;
         //return !GetConsoleMode(ioHandle, out mode);
     }
-
-#else
-    private void EnsureConsole()
-    {
-    }
-#endif
 }
