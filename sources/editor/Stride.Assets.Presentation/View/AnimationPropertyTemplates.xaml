@@ -15,7 +15,7 @@
     <DockPanel>
       <Button DockPanel.Dock="Right" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
               Content="{sd:Image {StaticResource ImageEditCurve}, 16, 16, NearestNeighbor}"
-              Command="{Binding EditCurve}" ToolTip="{sd:Localize Edit curve, Context=ToolTip}" />
+              Command="{Binding EditCurve}" ToolTip="Edit curve" />
       <ContentPresenter ContentTemplateSelector="{x:Static sd:PropertyViewHelper.EditorProviders}" Content="{Binding}" />
     </DockPanel>
   </DataTemplate>
@@ -46,7 +46,7 @@
           <ColumnDefinition Width="3*"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Slider Minimum="{Binding Parent.Parent.AnimationTimeMinimum.NodeValue, Converter={sd:Chained {sd:DifferentValuesToNull}, {valueConverters:TimeToFrames}}}" 
+        <Slider Minimum="{Binding Parent.Parent.AnimationTimeMinimum.NodeValue, Converter={sd:Chained {sd:DifferentValuesToNull}, {valueConverters:TimeToFrames}}}"
                 Maximum="{Binding Parent.Parent.AnimationTimeMaximum.NodeValue, Converter={sd:Chained {sd:DifferentValuesToNull}, {valueConverters:TimeToFrames}}}"
                 SmallChange="1" LargeChange="1" IsSnapToTickEnabled="true" TickFrequency="1" x:Name="Slider"
                 Value="{Binding Value, ElementName=TextBox, Mode=TwoWay}" Height="22" VerticalAlignment="Center">
@@ -67,7 +67,7 @@
       </Grid>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
         <DataTrigger Binding="{Binding Parent.Parent.AnimationTimeMinimum.NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
           <Setter TargetName="Slider" Property="Visibility" Value="Collapsed"/>
@@ -86,9 +86,9 @@
   <!-- Providers for number with a range editors -->
   <tp:AnimationFrameBoxTemplateProvider x:Key="AnimationFrameBoxTemplateProvider" sd:PropertyViewHelper.TemplateCategory="PropertyEditor" OverrideRule="Most">
     <DataTemplate>
-      <sd:NumericTextBox x:Name="TextBox" Value="{Binding NodeValue, Converter={valueConverters:TimeToFrames}}" 
+      <sd:NumericTextBox x:Name="TextBox" Value="{Binding NodeValue, Converter={valueConverters:TimeToFrames}}"
                            Minimum="{Binding TimeSpan.Zero, FallbackValue=0, Converter={valueConverters:TimeToFrames}}"
-                           Maximum="{Binding TimeSpan.MaxValue, FallbackValue={x:Static s:TimeSpan.MaxValue}, Converter={valueConverters:TimeToFrames}}" 
+                           Maximum="{Binding TimeSpan.MaxValue, FallbackValue={x:Static s:TimeSpan.MaxValue}, Converter={valueConverters:TimeToFrames}}"
                            SelectAllOnFocus="True" Margin="6,2,2,2" SmallChange="1"
                            LargeChange="1" DecimalPlaces="3"
                            DisplayUpDownButtons="False">

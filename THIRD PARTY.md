@@ -48,7 +48,6 @@ Stride uses the following open-source products.
 * [AvalonDock](https://github.com/Dirkster99/AvalonDock) (Ms-PL)
 * [DocFX](https://dotnet.github.io/docfx/) (MIT License)
 * [ffmpeg](https://ffmpeg.org/) (GPL 3)
-* [Gettext.NET](https://sourceforge.net/projects/gettextnet/) (LGPL 2.1, [modified binaries](https://github.com/stride3d/gettextnet))
 * [ImageMagick](http://www.imagemagick.org/)
 * [Markdown.XAML](https://github.com/theunrepentantgeek/Markdown.XAML) (MIT License)
 * [msdfgen](https://github.com/Chlumsky/msdfgen) (MIT License)

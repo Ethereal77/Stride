@@ -23,7 +23,6 @@ using Stride.Core.Presentation.Interop;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
 using Stride.Core.Quantum;
-using Stride.Core.Translation;
 using Stride.Assets.Presentation.AssetEditors.AssetCompositeGameEditor.ViewModels;
 using Stride.Assets.Presentation.AssetEditors.EntityHierarchyEditor.Services;
 using Stride.Assets.Presentation.AssetEditors.GameEditor.Services;
@@ -423,10 +422,10 @@ namespace Stride.Assets.Presentation.AssetEditors.UIEditor.ViewModels
             var ask = UIEditorSettings.AskBeforeDeletingUIElements.GetValue();
             if (ask)
             {
-                var confirmMessage = Tr._p("Message", "Are you sure you want to delete this UI element?");
+                var confirmMessage = "Are you sure you want to delete this UI element?";
                 if (elementsToDelete.Count > 1)
-                    confirmMessage = string.Format(Tr._p("Message", "Are you sure you want to delete these {0} UI elements?"), elementsToDelete.Count);
-                var buttons = DialogHelper.CreateButtons(new[] { Tr._p("Button", "Delete"), Tr._p("Button", "Cancel") }, 1, 2);
+                    confirmMessage = string.Format("Are you sure you want to delete these {0} UI elements?", elementsToDelete.Count);
+                var buttons = DialogHelper.CreateButtons(new[] { "Delete", "Cancel" }, 1, 2);
                 var result = await ServiceProvider.Get<IDialogService>().CheckedMessageBoxAsync(confirmMessage, false, DialogHelper.DontAskAgain, buttons, MessageBoxImage.Question);
                 if (result.Result != 1)
                     return;

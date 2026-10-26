@@ -11,8 +11,6 @@ public static class StridePackagesToSkipUpgrade
         // In case other packages are added with the community namespace,
         "Stride.Community.",
         "Stride.CommunityToolkit",
-        "Stride.GraphX.WPF.Controls",
-        "Stride.GNU.Gettext",
-        "Stride.OpenTK",
+        "Stride.GraphX.WPF.Controls"
     ];
 }

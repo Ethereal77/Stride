@@ -6,7 +6,7 @@
         xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
         mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Style="{DynamicResource WindowChromeStyle}"
-        Title="{sd:Localize New script}" Height="300" Width="300">
+        Title="New script" Height="300" Width="300">
   <Window.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
@@ -17,18 +17,18 @@
   <DockPanel>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20,0,20,20" DockPanel.Dock="Bottom">
       <UniformGrid Rows="1">
-        <Button Content="{sd:Localize Create script, Context=Button}" Padding="20,6" Margin="10,0,0,0" Click="ButtonOk"/>
-        <Button Content="{sd:Localize Cancel, Context=Button}" Padding="20,6" Margin="10,0,0,0" IsCancel="True" Click="ButtonCancel"/>
+        <Button Content="Create script" Padding="20,6" Margin="10,0,0,0" Click="ButtonOk"/>
+        <Button Content="Cancel" Padding="20,6" Margin="10,0,0,0" IsCancel="True" Click="ButtonCancel"/>
       </UniformGrid>
     </StackPanel>
     <sd:KeyValueGrid Margin="40">
-      <TextBlock Text="{sd:Localize Class:}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+      <TextBlock Text="Class:" Margin="10,0,0,0" VerticalAlignment="Center"/>
       <sd:TextBox x:Name="ClassNameTextBox" Width="200" Margin="10" KeyDown="TextBoxKeyDown" GetFocusOnLoad="True" SelectAllOnFocus="True"/>
 
-      <TextBlock Text="{sd:Localize Template:}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding Visibility, ElementName= TemplateComboBox}"/>
+      <TextBlock Text="Template:" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding Visibility, ElementName= TemplateComboBox}"/>
       <ComboBox x:Name="TemplateComboBox" Width="200" Margin="10" DisplayMemberPath="Name" />
-      
-      <TextBlock Text="{sd:Localize Namespace:}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+
+      <TextBlock Text="Namespace:" Margin="10,0,0,0" VerticalAlignment="Center"/>
       <sd:TextBox x:Name="NamespaceTextBox" Width="200" Margin="10" KeyDown="TextBoxKeyDown" SelectAllOnFocus="True"/>
     </sd:KeyValueGrid>
   </DockPanel>

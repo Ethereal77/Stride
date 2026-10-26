@@ -1,11 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Editor.Components.Status;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.Settings;
@@ -17,7 +13,6 @@ using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.ViewModels;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.ViewModel
 {
@@ -133,10 +128,10 @@ namespace Stride.Core.Assets.Editor.ViewModel
             {
                 var buttons = DialogHelper.CreateButtons(new[]
                 {
-                    Tr._p("Button", "Try again"),
-                    Tr._p("Button", "Cancel")
+                    "Try again",
+                    "Cancel"
                 }, 1, 2);
-                string message = string.Format(Tr._p("Message", "The last attempt to load the project **{0}** failed. \r\n\r\nDo you want to try to load it again?"), Path.GetFileName(initialSessionPath));
+                string message = string.Format("The last attempt to load the project **{0}** failed. \r\n\r\nDo you want to try to load it again?", Path.GetFileName(initialSessionPath));
                 var result = await ServiceProvider.Get<IDialogService>().MessageBoxAsync(message, buttons, MessageBoxImage.Warning);
                 if (result != 1)
                     return false;
@@ -168,7 +163,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             {
                 RemoveRecentFile(filePath);
 
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format(Tr._p("Message", @"The file '{0}' does not exist."), filePath), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format("The file '{0}' does not exist.", filePath), MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
 
@@ -197,7 +192,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
                 filePath = filePath.Replace('/', '\\');
                 if (!File.Exists(filePath))
                 {
-                    await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "You need to save the file before you can open it."), MessageBoxButton.OK, MessageBoxImage.Information);
+                    await ServiceProvider.Get<IDialogService>().MessageBoxAsync("You need to save the file before you can open it.", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
@@ -210,7 +205,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             }
             catch (Exception ex)
             {
-                var message = $"{Tr._p("Message", "An error occurred while opening the file.")}{ex.FormatSummary(true)}";
+                var message = $"An error occurred while opening the file.{ex.FormatSummary(true)}";
                 await ServiceProvider.Get<IDialogService>().MessageBoxAsync(message, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -228,7 +223,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             }
             catch (Exception ex)
             {
-                var message = $"{Tr._p("Message", "An error occurred while opening the file.")}{ex.FormatSummary(true)}";
+                var message = $"An error occurred while opening the file.{ex.FormatSummary(true)}";
                 await ServiceProvider.Get<IDialogService>().MessageBoxAsync(message, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

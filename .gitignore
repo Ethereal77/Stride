@@ -85,15 +85,6 @@ sources/engine/Stride.UI.Tests/log/
 sources/engine/Stride.UI.Tests/app_data/
 sources/engine/Stride.Graphics.Tests/app_data/
 sources/tests/framework/Stride.Framework.Audio.Tests/app_data/
-libfreetype.a
-libcore.a
-libbulletc.a
-libNativePath.a
-libstridenative_arm64.a
-libstridenative_armv7.a
-libstridenative_armv7s.a
-libstridenative_i386.a
-libstridenative_x86_64.a
 *.CachedGlyphs
 *.CachedImage
 sources/engine/Stride.Graphics/Shaders.Bytecodes/log/

@@ -7,7 +7,7 @@
         xmlns:strings="clr-namespace:Stride.Assets.Presentation.Resources.Strings"
         xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
         mc:Ignorable="d"
-        Title="{sd:Localize New code library}" SizeToContent="Height" Width="480"
+        Title="New code library" SizeToContent="Height" Width="480"
         Style="{DynamicResource WindowChromeStyle}" d:DataContext="{d:DesignInstance templates:ProjectLibraryWindow}">
   <sd:ModalWindow.Resources>
     <ResourceDictionary>
@@ -18,14 +18,14 @@
     </ResourceDictionary>
   </sd:ModalWindow.Resources>
   <StackPanel>
-    <TextBlock Text="{sd:Localize Library name:}" Margin="20,20,20,0"/>
+    <TextBlock Text="Library name:" Margin="20,20,20,0"/>
     <TextBox Name="LibBox" Text="{Binding LibraryName, UpdateSourceTrigger=PropertyChanged}" Margin="20,5,20,20"/>
-    <TextBlock Text="{sd:Localize Namespace:}" Margin="20,20,20,0"/>
+    <TextBlock Text="Namespace:" Margin="20,20,20,0"/>
     <TextBox Text="{Binding Namespace}" Margin="20,5,20,20"/>
     <TextBlock Name="WarningLabel" Margin="20,0,10,0" Text="Name already exists" Visibility="{Binding HasError, Converter={sd:VisibleOrHidden}}" HorizontalAlignment="Left" Foreground="Tomato"/>
     <UniformGrid Rows="1" Margin="20">
-      <Button Content="{sd:Localize OK, Context=Button}" Margin="0,0,20,0" Padding="8" Click="ButtonOk" IsDefault="True" IsEnabled="{Binding HasError, Converter={sd:InvertBool}}"/>
-      <Button Content="{sd:Localize Cancel, Context=Button}" Padding="8" Click="ButtonCancel" IsCancel="True"/>
+      <Button Content="OK" Margin="0,0,20,0" Padding="8" Click="ButtonOk" IsDefault="True" IsEnabled="{Binding HasError, Converter={sd:InvertBool}}"/>
+      <Button Content="Cancel" Padding="8" Click="ButtonCancel" IsCancel="True"/>
     </UniformGrid>
   </StackPanel>
 </sd:ModalWindow>

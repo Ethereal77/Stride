@@ -76,7 +76,7 @@
            BasedOn="{StaticResource {x:Type Window}}">
     <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
   </Style>
-  
+
   <Style TargetType="scriptEditor:SimpleCodeTextEditor">
     <Setter Property="FontFamily" Value="Consolas"/>
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -107,7 +107,7 @@
               </Grid.RowDefinitions>
 
               <ToggleButton Style="{StaticResource ExpanderToggle}"
-                            ToolTip="{sd:Localize Toggle between find and replace modes, Context=ToolTip}"
+                            ToolTip="Toggle between find and replace modes"
                             IsChecked="{Binding IsReplaceMode, RelativeSource={RelativeSource TemplatedParent}}"
                             Grid.Column="0" Grid.Row="0" Width="16" Margin="2" />
 
@@ -167,7 +167,7 @@
                         Height="16"
                         Width="16"
                         Command="editor:SearchCommandsEx.ReplaceNext"
-                        ToolTip="{sd:Localize Replace next (Alt+R), Context=ToolTip}">
+                        ToolTip="Replace next (Alt+R)">
                   <Image Width="16"
                          Height="16"
                          Stretch="Fill"
@@ -177,7 +177,7 @@
                         Height="16"
                         Width="16"
                         Command="editor:SearchCommandsEx.ReplaceAll"
-                        ToolTip="{sd:Localize Replace all (Alt+A), Context=ToolTip}">
+                        ToolTip="Replace all (Alt+A)">
                   <Image Width="16"
                          Height="16"
                          Stretch="Fill"
@@ -253,7 +253,7 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                       <ListBoxItem Style="{StaticResource CompletionListBoxItem}">
-                        <TextBlock Text="{sd:Localize No suggestions}"/>
+                        <TextBlock Text="No suggestions"/>
                       </ListBoxItem>
                     </Border>
                   </ControlTemplate>

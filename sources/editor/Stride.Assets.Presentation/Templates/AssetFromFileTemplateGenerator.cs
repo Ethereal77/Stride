@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using Stride.Core.Reflection;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.View;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 
 namespace Stride.Assets.Presentation.Templates
 {
@@ -45,12 +43,12 @@ namespace Stride.Assets.Presentation.Templates
                 var assetTypeName = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(assetType)?.Name ?? assetType.Name;
                 var buttons = DialogHelper.CreateButtons(new[]
                 {
-                    Tr._p("Button", "Create"),
-                    Tr._p("Button", "Select a source..."),
-                    Tr._p("Button", "Cancel")
+                    "Create",
+                    "Select a source...",
+                    "Cancel"
                 }, 1, 3);
                 var result = await DialogHelper.MessageBox(DispatcherService.Create(),
-                    string.Format(Tr._p("Message", "Do you want to create this {0} without a source file?"), assetTypeName),
+                    string.Format("Do you want to create this {0} without a source file?", assetTypeName),
                     EditorViewModel.Instance.EditorName, buttons, MessageBoxImage.Question);
 
                 // Close without clicking a button or Cancel

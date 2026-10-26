@@ -1,8 +1,5 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Annotations;
 using Stride.Core.Extensions;
@@ -10,7 +7,6 @@ using Stride.Core.IO;
 using Stride.Core.Storage;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Services;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.ViewModel
 {
@@ -103,7 +99,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             error = "";
             if (!IsEditable)
             {
-                error = Tr._p("Message", "This package that contains this folder can't be edited.");
+                error = "This package that contains this folder can't be edited.";
             }
             return IsEditable;
         }
@@ -140,7 +136,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             string error;
             if (IsValidName(newName, out error) == false)
             {
-                ServiceProvider.Get<IDialogService2>().BlockingMessageBox(string.Format(Tr._p("Message", "Unable to rename folder. {0}"), error), MessageBoxButton.OK, MessageBoxImage.Error);
+                ServiceProvider.Get<IDialogService2>().BlockingMessageBox(string.Format("Unable to rename folder. {0}", error), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -165,7 +161,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
 
             if (Parent.SubDirectories.Any(x => x != this && string.Equals(x.Name, value, StringComparison.InvariantCultureIgnoreCase)))
             {
-                error = Tr._p("Message", "A folder with the same name already exists in the parent folder.");
+                error = "A folder with the same name already exists in the parent folder.";
                 return false;
             }
 
@@ -187,7 +183,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
                 var result = System.IO.Path.GetFullPath(normalized.ToString());
                 if (result.StartsWith("\\\\.\\", StringComparison.Ordinal))
                 {
-                    message = Tr._p("Message", "Path is a device name");  // pipe, CON, NUL, COM1...
+                    message = "Path is a device name";  // pipe, CON, NUL, COM1...
                     ok = false;
                 }
             }

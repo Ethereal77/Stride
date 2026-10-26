@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 using Stride.Core.Settings;
-using Stride.Core.Translation;
 using Stride.Input;
 
 namespace Stride.Assets.Presentation.SceneEditor
@@ -9,100 +8,100 @@ namespace Stride.Assets.Presentation.SceneEditor
     public static class SceneEditorSettings
     {
         // Categories
-        public static readonly string KeyBindings = Tr._p("Settings", "Key bindings");
-        public static readonly string SceneEditor = Tr._p("Settings", "Scene editor");
-        public static readonly string ViewportSettings = Tr._p("Settings", "Viewport settings");
+        public static readonly string KeyBindings = "Key bindings";
+        public static readonly string SceneEditor = "Scene editor";
+        public static readonly string ViewportSettings = "Viewport settings";
 
         static SceneEditorSettings()
         {
             // Note: assignments cannot be moved to initializer, because category names need to be assigned first.
             MoveCamForward = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamForward", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.W)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera forward")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera forward"}"
             };
             MoveCamBackward = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamBackward", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.S)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera backward")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera backward"}"
             };
             MoveCamLeft = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamLeft", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.A)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera left")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera left"}"
             };
             MoveCamRight = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamRight", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.D)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera right")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera right"}"
             };
             MoveCamUpward = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamUpward", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.E)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera up")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera up"}"
             };
             MoveCamDownward = new SettingsKey<Keys>("SceneEditor/KeyBindings/MoveCamDownward", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.Q)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Move camera down")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Move camera down"}"
             };
             IncreaseCamSpeed = new SettingsKey<Keys>("SceneEditor/KeyBindings/IncreaseCamSpeed", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.OemPlus)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Increase camera speed")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Increase camera speed"}"
             };
             DecreaseCamSpeed = new SettingsKey<Keys>("SceneEditor/KeyBindings/DecreaseCamSpeed", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.OemMinus)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Decrease camera speed")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Decrease camera speed"}"
             };
             InvertPanningAxis = new SettingsKey<bool>("SceneEditor/KeyBindings/InvertPanningAxis", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, true)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Invert mouse panning axis")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Invert mouse panning axis"}"
             };
             CenterViewOnSelection = new SettingsKey<Keys>("SceneEditor/KeyBindings/CenterViewOnSelection", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.F)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Center view on selection")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Center view on selection"}"
             };
             SnapSelectionToGrid = new SettingsKey<Keys>("SceneEditor/KeyBindings/SnapSelectionToGrid", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.N)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Snap selection to the grid")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Snap selection to the grid"}"
             };
             ControlDynamicSnapSelectionToGrid = new SettingsKey<Keys>("SceneEditor/KeyBindings/ControlDynamicSnapSelectionToGrid", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.LeftShift)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Use snapping while selection is beeing manipulated")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Use snapping while selection is beeing manipulated"}"
             };
             TranslationGizmo = new SettingsKey<Keys>("SceneEditor/KeyBindings/TranslationGizmo", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.W)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Switch to translation mode")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Switch to translation mode"}"
             };
             RotationGizmo = new SettingsKey<Keys>("SceneEditor/KeyBindings/RotationGizmo", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.E)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Switch to rotation mode")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Switch to rotation mode"}"
             };
             ScaleGizmo = new SettingsKey<Keys>("SceneEditor/KeyBindings/ScaleGizmo", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.R)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Switch to scale mode")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Switch to scale mode"}"
             };
             SwitchGizmo = new SettingsKey<Keys>("SceneEditor/KeyBindings/SwitchGizmo", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, Keys.Space)
             {
-                DisplayName = $"{SceneEditor}/{KeyBindings}/{Tr._p("Settings", "Switch to next gizmo mode")}"
+                DisplayName = $"{SceneEditor}/{KeyBindings}/{"Switch to next gizmo mode"}"
             };
             DefaultTranslationSnap = new SettingsKey<float>("SceneEditor/ViewportSettings/DefaultTranslation", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, 1.0f)
             {
-                DisplayName = $"{SceneEditor}/{ViewportSettings}/{Tr._p("Settings", "Default snap distance for translation")}"
+                DisplayName = $"{SceneEditor}/{ViewportSettings}/{"Default snap distance for translation"}"
             };
             DefaultRotationSnap = new SettingsKey<float>("SceneEditor/ViewportSettings/DefaultRotation", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, 22.5f)
             {
-                DisplayName = $"{SceneEditor}/{ViewportSettings}/{Tr._p("Settings", "Default snap angle for rotation")}"
+                DisplayName = $"{SceneEditor}/{ViewportSettings}/{"Default snap angle for rotation"}"
             };
             DefaultScaleSnap = new SettingsKey<float>("SceneEditor/ViewportSettings/DefaultScale", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, 1.1f)
             {
-                DisplayName = $"{SceneEditor}/{ViewportSettings}/{Tr._p("Settings", "Default snap factor for scale")}"
+                DisplayName = $"{SceneEditor}/{ViewportSettings}/{"Default snap factor for scale"}"
             };
             DisplayDirectionNames = new SettingsKey<bool>("SceneEditor/ViewportSettings/DisplayDirectionNames", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, false)
             {
-                DisplayName = $"{SceneEditor}/{ViewportSettings}/{Tr._p("Settings", "Display direction names instead of XYZ components")}"
+                DisplayName = $"{SceneEditor}/{ViewportSettings}/{"Display direction names instead of XYZ components"}"
             };
             UseLinearMovementForRotation = new SettingsKey<bool>("SceneEditor/ViewportSettings/UseLinearMovementForRotation", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, false)
             {
-                DisplayName = $"{SceneEditor}/{ViewportSettings}/{Tr._p("Settings", "Use linear movement for the rotation gizmo")}"
+                DisplayName = $"{SceneEditor}/{ViewportSettings}/{"Use linear movement for the rotation gizmo"}"
             };
             AskBeforeDeletingEntities = new SettingsKey<bool>("SceneEditor/AskBeforeDeletingEntities", Stride.Core.Assets.Editor.Settings.EditorSettings.SettingsContainer, true)
             {
-                DisplayName = $"{SceneEditor}/{Tr._p("Settings", "Ask before deleting entities")}"
+                DisplayName = $"{SceneEditor}/{"Ask before deleting entities"}"
             };
         }
 

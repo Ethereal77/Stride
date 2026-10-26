@@ -1,11 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.ViewModel.Progress;
 using Stride.Core.Assets.Templates;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.Components.TemplateDescriptions
 {
@@ -31,14 +28,14 @@ namespace Stride.Core.Assets.Editor.Components.TemplateDescriptions
                 {
                     // If the preparation failed without error, it means that the user cancelled the operation.
                     if (!parameters.Logger.HasErrors)
-                        parameters.Logger.Info(Tr._p("Log", "Operation cancelled."));
+                        parameters.Logger.Info("Operation cancelled.");
 
                     return false;
                 }
             }
             catch (Exception e)
             {
-                parameters.Logger.Error(Tr._p("Log", "An exception occurred while generating the template."), e);
+                parameters.Logger.Error("An exception occurred while generating the template.", e);
             }
 
             if (parameters.Logger.HasErrors || !success)
@@ -57,7 +54,7 @@ namespace Stride.Core.Assets.Editor.Components.TemplateDescriptions
                 }
                 catch (Exception e)
                 {
-                    parameters.Logger.Error(Tr._p("Log", "An exception occurred while generating the template."), e);
+                    parameters.Logger.Error("An exception occurred while generating the template.", e);
                     return false;
                 }
             });

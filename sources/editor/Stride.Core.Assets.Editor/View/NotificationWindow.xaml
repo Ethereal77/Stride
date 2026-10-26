@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
-        Title="{sd:Localize Notification}" Width="300" SizeToContent="Height" ShowInTaskbar="False"
+        Title="Notification" Width="300" SizeToContent="Height" ShowInTaskbar="False"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
   <Window.Resources>
     <ResourceDictionary>

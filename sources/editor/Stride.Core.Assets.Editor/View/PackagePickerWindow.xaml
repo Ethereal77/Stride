@@ -7,18 +7,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
         mc:Ignorable="d"
-        Title="{sd:Localize Select a package}" Height="640" Width="480"
+        Title="Select a package" Height="640" Width="480"
         Style="{DynamicResource WindowChromeStyle}" ShowInTaskbar="False"
         d:DataContext="{d:DesignInstance view:PackagePickerWindow}">
   <DockPanel>
     <UniformGrid Rows="1" DockPanel.Dock="Bottom" Margin="20" HorizontalAlignment="Right">
-      <Button Margin="10,0,0,0" Padding="20,4" Content="{sd:Localize OK, Context=Button}" ToolTip="{sd:Localize Select this package, Context=ToolTip}"
+      <Button Margin="10,0,0,0" Padding="20,4" Content="OK" ToolTip="Select this package"
               IsEnabled="{Binding SelectedItems.Count, Converter={sd:NumericToBool}, ElementName=PackageListBox}">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
         </i:Interaction.Behaviors>
       </Button>
-      <Button Margin="10,0,0,0" Padding="20,4" Content="{sd:Localize Cancel, Context=Button}" IsCancel="True" ToolTip="{sd:Localize Cancel (Esc), Context=ToolTip}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="Cancel" IsCancel="True" ToolTip="Cancel (Esc)">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
         </i:Interaction.Behaviors>

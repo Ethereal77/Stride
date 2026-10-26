@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:templates="clr-namespace:Stride.Assets.Presentation.Templates"
         mc:Ignorable="d"
-        Title="{sd:Localize Select platforms}" SizeToContent="Height" Width="480"
+        Title="Select platforms" SizeToContent="Height" Width="480"
         Style="{DynamicResource WindowChromeStyle}" d:DataContext="{d:DesignInstance templates:UpdatePlatformsWindow}">
   <Window.Resources>
     <ResourceDictionary>
@@ -28,22 +28,22 @@
               <StackPanel Orientation="Horizontal">
                 <Image Width="16" Height="16" Source="{Binding Platform, Converter={sd:StaticResourceConverter}}" Margin="0,0,4,0"/>
                 <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanBeUnselected}"  Margin="5"/>
-                <TextBlock Margin="4,0" Text="{sd:Localize (This will remove the project from the package and disk.)}" Visibility="{Binding MarkedToRemove, Mode=OneWay, Converter={sd:VisibleOrCollapsed}}" Foreground="OrangeRed" TextWrapping="Wrap"/>
+                <TextBlock Margin="4,0" Text="(This will remove the project from the package and disk.)" Visibility="{Binding MarkedToRemove, Mode=OneWay, Converter={sd:VisibleOrCollapsed}}" Foreground="OrangeRed" TextWrapping="Wrap"/>
               </StackPanel>
               <!-- TODO: The margin is a hack to align it with previous checkbox; this should be done differently (the checkbox content should be the stack panel with text + this?) -->
               <DockPanel Margin="24,0,0,4" Visibility="{Binding IsAvailableOnMachine, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}">
                 <Image DockPanel.Dock="Left" Source="{StaticResource ImageWarning}" Height="16"/>
-                <TextBlock Margin="4,0" Text="{sd:Localize This machine doesn\'t meet the requirements to build for this platform.}" FontSize="10" TextWrapping="Wrap"/>
+                <TextBlock Margin="4,0" Text="This machine doesn\'t meet the requirements to build for this platform." FontSize="10" TextWrapping="Wrap"/>
               </DockPanel>
             </StackPanel>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </Border>
-    <CheckBox Content="{sd:Localize Force regeneration of all platform projects, Context=Button}" IsChecked="{Binding ForcePlatformRegeneration, Mode=TwoWay}" Visibility="{Binding ForcePlatformRegenerationVisible, Converter={sd:VisibleOrCollapsed}}" Margin="20,0"/>
+    <CheckBox Content="Force regeneration of all platform projects" IsChecked="{Binding ForcePlatformRegeneration, Mode=TwoWay}" Visibility="{Binding ForcePlatformRegenerationVisible, Converter={sd:VisibleOrCollapsed}}" Margin="20,0"/>
     <UniformGrid Rows="1" Margin="20">
-      <Button Content="{sd:Localize OK, Context=Button}" Margin="0,0,20,0" Padding="8" Click="ButtonOk" IsDefault="True"/>
-      <Button Content="{sd:Localize Cancel, Context=Button}" Padding="8" Click="ButtonCancel" IsCancel="True"/>
+      <Button Content="OK" Margin="0,0,20,0" Padding="8" Click="ButtonOk" IsDefault="True"/>
+      <Button Content="Cancel" Padding="8" Click="ButtonCancel" IsCancel="True"/>
     </UniformGrid>
   </StackPanel>
 </sd:ModalWindow>

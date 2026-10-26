@@ -1,9 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -14,7 +11,6 @@ using Stride.Core.Annotations;
 using Stride.Core.Diagnostics;
 using Stride.Core.Extensions;
 using Stride.Core.IO;
-using Stride.Core.Translation;
 
 namespace Stride.GameStudio.Remote
 {
@@ -117,7 +113,7 @@ namespace Stride.GameStudio.Remote
                 }
                 catch (Exception)
                 {
-                    var message = Tr._p("Message", "Unable to launch {0} on host {1}");
+                    var message = "Unable to launch {0} on host {1}";
                     logger.Error(string.Format(message, exePath, host));
                 }
                 sshClient.Dispose();

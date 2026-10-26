@@ -1,12 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Stride.Core.Assets.Analysis;
@@ -25,7 +21,6 @@ using Stride.Core.Presentation.Quantum;
 using Stride.Core.Presentation.Quantum.ViewModels;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Quantum;
-using Stride.Core.Translation;
 using Stride.Core.Yaml;
 
 namespace Stride.Core.Assets.Editor.ViewModel
@@ -511,7 +506,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
         }
 
         /// <summary>
-        /// Replace the internal asset with the one provided, this function expects the two assets to have the same identity 
+        /// Replace the internal asset with the one provided, this function expects the two assets to have the same identity
         /// </summary>
         /// <exception cref="ArgumentException">The asset provided does not have the same identity as the current one</exception>
         public void UpdateAsset(Asset newAsset, ILogger loggerResult)
@@ -663,12 +658,12 @@ namespace Stride.Core.Assets.Editor.ViewModel
         {
             if (Directory.Assets.Any(x => string.Equals(x.Name, newName, StringComparison.InvariantCultureIgnoreCase) && x != this))
             {
-                error = string.Format(Tr._p("Message", "Unable to rename asset to '{0}' because an asset with the same name exists in the same directory"), newName);
+                error = string.Format("Unable to rename asset to '{0}' because an asset with the same name exists in the same directory", newName);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(newName))
             {
-                error = Tr._p("Message", "Unable to rename asset with an empty name");
+                error = "Unable to rename asset with an empty name";
                 return false;
             }
             error = null;

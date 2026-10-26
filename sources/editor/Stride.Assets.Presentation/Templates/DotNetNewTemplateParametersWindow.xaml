@@ -24,8 +24,8 @@
         <TextBlock x:Name="DescriptionTextBlock" Text="{Binding TemplateDescription}" Margin="20,5,20,10" TextWrapping="Wrap"/>
         <StackPanel x:Name="ParametersPanel" Margin="20,0,20,10"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20,10,20,20">
-            <Button Content="{sd:Localize OK}" IsDefault="True" Width="80" Margin="0,0,8,0" Click="OnOk"/>
-            <Button Content="{sd:Localize Cancel}" IsCancel="True" Width="80" Click="OnCancel"/>
+            <Button Content="OK" IsDefault="True" Width="80" Margin="0,0,8,0" Click="OnOk"/>
+            <Button Content="Cancel" IsCancel="True" Width="80" Click="OnCancel"/>
         </StackPanel>
     </StackPanel>
 </sd:ModalWindow>

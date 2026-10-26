@@ -8,7 +8,7 @@
         xmlns:views="clr-namespace:Stride.Core.Assets.Editor.Components.TemplateDescriptions.Views"
         xmlns:viewModels="clr-namespace:Stride.Core.Assets.Editor.Components.TemplateDescriptions.ViewModels"
         mc:Ignorable="d"
-        Title="{sd:Localize New package}" Height="768" Width="1024" Icon="{DynamicResource EditorIcon}" ShowInTaskbar="False"
+        Title="New package" Height="768" Width="1024" Icon="{DynamicResource EditorIcon}" ShowInTaskbar="False"
         Style="{DynamicResource WindowChromeStyle}" d:DataContext="{d:DesignInstance viewModels:NewProjectTemplateCollectionViewModel}">
   <sd:ModalWindow.Resources>
     <ResourceDictionary>
@@ -22,13 +22,13 @@
       <DockPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20" DockPanel.Dock="Bottom">
           <UniformGrid Rows="1">
-            <Button Content="{sd:Localize Select, Context=Button}" Padding="20,6" Margin="10,0,0,0"
-                    ToolTip="{sd:Localize Use the selected template, Context=ToolTip}" IsEnabled="{Binding SelectedTemplate, Converter={sd:ObjectToBool}}">
+            <Button Content="Select" Padding="20,6" Margin="10,0,0,0"
+                    ToolTip="Use the selected template" IsEnabled="{Binding SelectedTemplate, Converter={sd:ObjectToBool}}">
               <i:Interaction.Behaviors>
                 <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
               </i:Interaction.Behaviors>
             </Button>
-            <Button Content="{sd:Localize Cancel, Context=Button}" Padding="20,6" Margin="10,0,0,0" IsCancel="True" ToolTip="{sd:Localize Cancel (Esc), Context=ToolTip}">
+            <Button Content="Cancel" Padding="20,6" Margin="10,0,0,0" IsCancel="True" ToolTip="Cancel (Esc)">
               <i:Interaction.Behaviors>
                 <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
               </i:Interaction.Behaviors>
@@ -54,15 +54,15 @@
             </Style>
           </Grid.Resources>
 
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="{sd:Localize Name:}" Margin="20,0" VerticalAlignment="Center"/>
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" Margin="20,0" VerticalAlignment="Center"/>
           <sd:TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding Name}">
             <i:Interaction.Behaviors>
               <sd:TextBoxCloseWindowBehavior DialogResult="OK" IsEnabled="{sd:MultiBinding {Binding SelectedTemplate, Converter={sd:ObjectToBool}}, {Binding ArePropertiesValid}, Converter={sd:AndMultiConverter}}"/>
             </i:Interaction.Behaviors>
           </sd:TextBox>
-          <TextBlock Grid.Row="1" Grid.Column="0" Text="{sd:Localize Location:}" Margin="20,0" VerticalAlignment="Center"/>
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Location:" Margin="20,0" VerticalAlignment="Center"/>
           <DockPanel Grid.Row="1" Grid.Column="1">
-            <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectoryCommand}" CommandParameter="Location" ToolTip="{sd:Localize Browse directory, Context=ToolTip}">
+            <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectoryCommand}" CommandParameter="Location" ToolTip="Browse directory">
               <Image Source="{StaticResource ImageBrowse}" Width="16" Height="16" Margin="-1"/>
             </Button>
             <sd:TextBox Margin="2" Text="{Binding Location, Converter={sd:UDirectoryToString}}" sd:Trimming.TextTrimming="WordEllipsis" sd:Trimming.TrimmingSource="Middle" sd:Trimming.WordSeparators="/\\">

@@ -8,7 +8,7 @@
         xmlns:view="clr-namespace:Stride.Assets.Presentation.View"
         mc:Ignorable="d" ShowInTaskbar="False"
         Style="{DynamicResource WindowChromeStyle}"
-        Title="{sd:Localize Live scripting debugger}" Height="500" Width="400" d:DataContext="{d:DesignInstance view:DebuggerPickerWindow}">
+        Title="Live scripting debugger" Height="500" Width="400" d:DataContext="{d:DesignInstance view:DebuggerPickerWindow}">
   <sd:ModalWindow.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
@@ -18,12 +18,12 @@
   </sd:ModalWindow.Resources>
   <DockPanel>
     <UniformGrid Rows="1" DockPanel.Dock="Bottom" Margin="20" HorizontalAlignment="Right">
-      <Button Margin="10,0,0,0" Padding="20,4" Content="OK" ToolTip="{sd:Localize Select these assets, Context=ToolTip}" IsEnabled="{Binding SelectionValid}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="OK" ToolTip="Select these assets" IsEnabled="{Binding SelectionValid}">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
         </i:Interaction.Behaviors>
       </Button>
-      <Button Margin="10,0,0,0" Padding="20,4" Content="Cancel" IsCancel="True" ToolTip="{sd:Localize Cancel (Esc), Context=ToolTip}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="Cancel" IsCancel="True" ToolTip="Cancel (Esc)">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
         </i:Interaction.Behaviors>

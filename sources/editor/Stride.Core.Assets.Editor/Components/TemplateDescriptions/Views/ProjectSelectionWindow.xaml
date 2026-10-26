@@ -21,18 +21,18 @@
     <Grid DockPanel.Dock="Bottom">
       <DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="20">
-          <Button DockPanel.Dock="Left" Content="{sd:Localize Browse for existing project, Context=Button}" Command="{Binding BrowseForExistingProjectCommand}" Padding="20,6"/>
-          <CheckBox IsChecked="{Binding AutoReloadSession}" Content="{sd:Localize Reload last session automatically at startup, Context=Button}"
+          <Button DockPanel.Dock="Left" Content="Browse for existing project" Command="{Binding BrowseForExistingProjectCommand}" Padding="20,6"/>
+          <CheckBox IsChecked="{Binding AutoReloadSession}" Content="Reload last session automatically at startup"
                     VerticalAlignment="Center" Margin="8"/>
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <UniformGrid Rows="1">
-              <Button Content="{sd:Localize Select, Context=Button}" Padding="20,6" Margin="10,0,0,0"
-                      ToolTip="{sd:Localize Use the selected template, Context=ToolTip}" IsEnabled="{Binding SelectedTemplate, Converter={sd:ObjectToBool}}">
+              <Button Content="Select" Padding="20,6" Margin="10,0,0,0"
+                      ToolTip="Use the selected template" IsEnabled="{Binding SelectedTemplate, Converter={sd:ObjectToBool}}">
                 <i:Interaction.Behaviors>
                   <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
                 </i:Interaction.Behaviors>
               </Button>
-              <Button Content="{sd:Localize Cancel, Context=Button}" Padding="20,6" Margin="10,0,0,0" IsCancel="True" ToolTip="{sd:Localize Cancel (Esc), Context=ToolTip}">
+              <Button Content="Cancel" Padding="20,6" Margin="10,0,0,0" IsCancel="True" ToolTip="Cancel (Esc)">
                 <i:Interaction.Behaviors>
                   <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
                 </i:Interaction.Behaviors>
@@ -70,15 +70,15 @@
             </Style>
           </Grid.Resources>
 
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="{sd:Localize Name:}" Margin="20,0" VerticalAlignment="Center"/>
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" Margin="20,0" VerticalAlignment="Center"/>
           <sd:TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding Name}">
             <i:Interaction.Behaviors>
               <sd:TextBoxCloseWindowBehavior DialogResult="OK" IsEnabled="{sd:MultiBinding {Binding SelectedTemplate, Converter={sd:ObjectToBool}}, {Binding ArePropertiesValid}, Converter={sd:AndMultiConverter}}"/>
             </i:Interaction.Behaviors>
           </sd:TextBox>
-          <TextBlock Grid.Row="1" Grid.Column="0" Text="{sd:Localize Location:}" Margin="20,0" VerticalAlignment="Center"/>
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Location:" Margin="20,0" VerticalAlignment="Center"/>
           <DockPanel Grid.Row="1" Grid.Column="1">
-            <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectoryCommand}" CommandParameter="Location" ToolTip="{sd:Localize Browse directory, Context=ToolTip}">
+            <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectoryCommand}" CommandParameter="Location" ToolTip="Browse directory">
               <Image Source="{StaticResource VectorOpenFolder}" Width="16" Height="16" Margin="-1"/>
             </Button>
             <sd:TextBox Margin="2" sd:Trimming.TextTrimming="WordEllipsis" sd:Trimming.TrimmingSource="Middle" sd:Trimming.WordSeparators="/\\"
@@ -88,19 +88,19 @@
               </i:Interaction.Behaviors>
             </sd:TextBox>
           </DockPanel>
-          <TextBlock Grid.Row="2" Grid.Column="0" Text="{sd:Localize Solution name:}" Margin="20,0" VerticalAlignment="Center"/>
-          <sd:TextBox Grid.Row="2" Grid.Column="1" Margin="2" WatermarkContent="{sd:Localize (Auto-generate solution name)}"
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="Solution name:" Margin="20,0" VerticalAlignment="Center"/>
+          <sd:TextBox Grid.Row="2" Grid.Column="1" Margin="2" WatermarkContent="(Auto-generate solution name)"
                         Text="{Binding SolutionName}">
             <i:Interaction.Behaviors>
               <sd:TextBoxCloseWindowBehavior DialogResult="OK" IsEnabled="{sd:MultiBinding {Binding SelectedTemplate, Converter={sd:ObjectToBool}}, {Binding ArePropertiesValid}, Converter={sd:AndMultiConverter}}"/>
             </i:Interaction.Behaviors>
           </sd:TextBox>
-          <TextBlock Grid.Row="3" Grid.Column="0" Text="{sd:Localize Solution location:}" Margin="20,0" VerticalAlignment="Center"/>
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="Solution location:" Margin="20,0" VerticalAlignment="Center"/>
           <DockPanel Grid.Row="3" Grid.Column="1">
             <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectoryCommand}" CommandParameter="SolutionLocation" ToolTip="Browse directory">
               <Image Source="{StaticResource VectorOpenFolder}" Width="16" Height="16" Margin="-1"/>
             </Button>
-            <sd:TextBox Margin="2" WatermarkContent="{sd:Localize (Same location)}" sd:Trimming.TextTrimming="WordEllipsis" sd:Trimming.TrimmingSource="Middle" sd:Trimming.WordSeparators="/\\"
+            <sd:TextBox Margin="2" WatermarkContent="(Same location)" sd:Trimming.TextTrimming="WordEllipsis" sd:Trimming.TrimmingSource="Middle" sd:Trimming.WordSeparators="/\\"
                           Text="{Binding SolutionLocation, Converter={sd:UDirectoryToString}}">
               <i:Interaction.Behaviors>
                 <sd:TextBoxCloseWindowBehavior DialogResult="OK" IsEnabled="{sd:MultiBinding {Binding SelectedTemplate, Converter={sd:ObjectToBool}}, {Binding ArePropertiesValid}, Converter={sd:AndMultiConverter}}"/>

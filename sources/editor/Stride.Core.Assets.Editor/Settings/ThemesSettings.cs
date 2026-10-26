@@ -2,20 +2,19 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 using Stride.Core.Assets.Editor.Settings;
 using Stride.Core.Settings;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Presentation.Themes
 {
     public static class ThemesSettings
     {
         // Categories
-        public static readonly string Themes = Tr._p("Settings", "Themes");
+        public static readonly string Themes = "Themes";
 
         static ThemesSettings()
         {
             ThemeName = new SettingsKey<ThemeType>("Themes/ThemeName", EditorSettings.SettingsContainer, ThemeType.ExpressionDark)
             {
-                DisplayName = $"{Themes}/{Tr._p("Settings", "Theme Name")}"
+                DisplayName = $"{Themes}/Theme Name"
             };
         }
 

@@ -1,10 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.ViewModel;
 using Stride.Core;
@@ -14,7 +10,6 @@ using Stride.Core.IO;
 using Stride.Core.MostRecentlyUsedFiles;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Services;
-using Stride.Core.Translation;
 using Stride.Assets.Effect;
 using Stride.Assets.Presentation.ViewModel;
 using Stride.Core.CodeEditorSupport;
@@ -97,7 +92,7 @@ namespace Stride.GameStudio.ViewModels
         {
             if (sessionPath != null && !File.Exists(sessionPath.ToOSPath()))
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "The file {0} does not exist.").ToFormat(sessionPath.ToOSPath()));
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync("The file {0} does not exist.".ToFormat(sessionPath.ToOSPath()));
                 return;
             }
             if (sessionPath == null)
@@ -140,7 +135,7 @@ namespace Stride.GameStudio.ViewModels
                 graphicsDeviceLost = true;
 
                 await ServiceProvider.Get<IDialogService>().MessageBoxAsync(
-                    Tr._p("Message", "The graphics device was lost ({0}). Game Studio needs to restart to use it again.").ToFormat(exception.Status),
+                    "The graphics device was lost ({0}). Game Studio needs to restart to use it again.".ToFormat(exception.Status),
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 await RestartAndOpenSession(Session.SessionFilePath);
             }).Forget();

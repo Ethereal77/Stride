@@ -18,7 +18,6 @@ using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Interop;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 using Stride.Assets.Entities;
 using Stride.Assets.Presentation.AssetEditors.AssetCompositeGameEditor.ViewModels;
 using Stride.Assets.Presentation.AssetEditors.EntityHierarchyEditor.EntityFactories;
@@ -490,12 +489,12 @@ namespace Stride.Assets.Presentation.AssetEditors.EntityHierarchyEditor.ViewMode
             var ask = SceneEditorSettings.AskBeforeDeletingEntities.GetValue();
             if (ask)
             {
-                var confirmMessage = Tr._p("Message", "Are you sure you want to delete this entity?");
+                var confirmMessage = "Are you sure you want to delete this entity?";
                 // TODO: we should compute the actual total number of entities to be deleted here (children recursively, etc.)
                 if (entitiesToDelete.Count > 1)
-                    confirmMessage = string.Format(Tr._p("Message", "Are you sure you want to delete these {0} entities?"), entitiesToDelete.Count);
+                    confirmMessage = string.Format("Are you sure you want to delete these {0} entities?", entitiesToDelete.Count);
                 var checkedMessage = string.Format(Stride.Core.Assets.Editor.Settings.EditorSettings.AlwaysDeleteWithoutAsking, "entities");
-                var buttons = DialogHelper.CreateButtons(new[] { Tr._p("Button", "Delete"), Tr._p("Button", "Cancel") }, 1, 2);
+                var buttons = DialogHelper.CreateButtons(new[] { "Delete", "Cancel" }, 1, 2);
                 var result = await ServiceProvider.Get<IDialogService>().CheckedMessageBoxAsync(confirmMessage, false, checkedMessage, buttons, MessageBoxImage.Question);
                 if (result.Result != 1)
                     return;

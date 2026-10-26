@@ -9,7 +9,6 @@ using System.Windows.Interop;
 using System.Windows.Threading;
 using Stride.Core.Annotations;
 using Stride.Core.Presentation.Services;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Presentation.Windows
 {
@@ -18,7 +17,7 @@ namespace Stride.Core.Presentation.Windows
         /// <summary>
         /// Don't ask again
         /// </summary>
-        public static readonly string DontAskAgain = Tr._("Don't ask again");
+        public static readonly string DontAskAgain = "Don't ask again";
 
         [NotNull]
         public static Task<int> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)

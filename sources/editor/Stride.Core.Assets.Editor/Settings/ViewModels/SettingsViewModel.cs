@@ -1,9 +1,5 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Editor.Components.Properties;
 using Stride.Core.Assets.Editor.Quantum.NodePresenters.Commands;
 using Stride.Core.Assets.Quantum;
@@ -14,7 +10,6 @@ using Stride.Core.Presentation.Collections;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Quantum;
 using Stride.Core.Presentation.Services;
-using Stride.Core.Translation;
 using Stride.Core.Presentation.ViewModels;
 
 namespace Stride.Core.Assets.Editor.Settings.ViewModels
@@ -114,7 +109,7 @@ namespace Stride.Core.Assets.Editor.Settings.ViewModels
             EditorSettings.Save();
             if (EditorSettings.NeedRestart)
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "Some changes will be applied after you restart Game Studio."), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync("Some changes will be applied after you restart Game Studio.", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -125,7 +120,7 @@ namespace Stride.Core.Assets.Editor.Settings.ViewModels
             Profile.Container.CurrentProfile.DiscardSettingsChanges();
         }
 
-        protected override string EmptySelectionFallbackMessage => Tr._p("Properties", "Select a settings category.");
+        protected override string EmptySelectionFallbackMessage => "Select a settings category.";
 
         protected override bool CanDisplaySelectedObjects(IReadOnlyCollection<IPropertyProviderViewModel> selectedObjects, out string fallbackMessage)
         {
@@ -135,7 +130,7 @@ namespace Stride.Core.Assets.Editor.Settings.ViewModels
 
         protected override void FeedbackException(IReadOnlyCollection<IPropertyProviderViewModel> selectedObjects, Exception exception, out string fallbackMessage)
         {
-            fallbackMessage = Tr._p("Properties", "There was a problem loading the Settings page.");
+            fallbackMessage = "There was a problem loading the Settings page.";
         }
     }
 }

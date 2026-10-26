@@ -23,7 +23,7 @@ sources/launcher/
 │   ├── Crash/                     Crash reporting view + view model
 │   ├── Assets/
 │   │   ├── Images/                Icons, banners, social links
-│   │   └── Localization/          Strings.resx, Urls.resx and .ja-JP variants
+│   │   └── Localization/          Strings.resx, Urls.resx
 │   ├── Properties/PublishProfiles/ dotnet publish profiles
 │   ├── Stride.Launcher.csproj      net10.0, win-x64
 │   └── Stride.Launcher.nuspec      NuGet package definition (single source of truth for version)

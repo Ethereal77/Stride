@@ -1,13 +1,10 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.View.Behaviors;
 using Stride.Core.Annotations;
 using Stride.Core.Extensions;
 using Stride.Core.IO;
-using Stride.Core.Translation;
 using Stride.Core.Presentation.ViewModels;
 
 namespace Stride.Core.Assets.Editor.ViewModel
@@ -107,19 +104,19 @@ namespace Stride.Core.Assets.Editor.ViewModel
 
             if (value.Length > 240)
             {
-                error = Tr._p("Message", "The name is too long.");
+                error = "The name is too long.";
                 return false;
             }
 
             if (value.Contains(UPath.DirectorySeparatorChar) || value.Contains(UPath.DirectorySeparatorCharAlt) || !UPath.IsValid(value))
             {
-                error = Tr._p("Message", "The name contains invalid characters.");
+                error = "The name contains invalid characters.";
                 return false;
             }
 
             if (string.IsNullOrEmpty(value))
             {
-                error = Tr._p("Message", "The name is empty.");
+                error = "The name is empty.";
                 return false;
             }
 

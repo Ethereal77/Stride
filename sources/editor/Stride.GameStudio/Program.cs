@@ -1,16 +1,11 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Stride.Assets;
@@ -30,8 +25,6 @@ using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.View;
 using Stride.Core.Presentation.ViewModels;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
-using Stride.Core.Translation.Providers;
 using Stride.Editor;
 using Stride.Editor.Build;
 using Stride.Editor.Preview;
@@ -393,7 +386,6 @@ public static partial class Program
     {
         try
         {
-            InitializeLanguageSettings();
             var serviceProvider = InitializeServiceProvider();
 
             try
@@ -606,25 +598,6 @@ public static partial class Program
             services.Add(renderDocManager);
         var serviceProvider = new ViewModelServiceProvider(services);
         return serviceProvider;
-    }
-
-    private static void InitializeLanguageSettings()
-    {
-        TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
-        TranslationManager.Instance.CurrentLanguage = EditorSettings.Language.GetValue() switch
-        {
-            SupportedLanguage.MachineDefault => CultureInfo.InstalledUICulture,
-            SupportedLanguage.English => new CultureInfo("en-US"),
-            SupportedLanguage.French => new CultureInfo("fr-FR"),
-            SupportedLanguage.Japanese => new CultureInfo("ja-JP"),
-            SupportedLanguage.Russian => new CultureInfo("ru-RU"),
-            SupportedLanguage.German => new CultureInfo("de-DE"),
-            SupportedLanguage.Spanish => new CultureInfo("es-ES"),
-            SupportedLanguage.ChineseSimplified => new CultureInfo("zh-Hans"),
-            SupportedLanguage.Italian => new CultureInfo("it-IT"),
-            SupportedLanguage.Korean => new CultureInfo("ko-KR"),
-            _ => throw new ArgumentException("Invalid language option"),
-        };
     }
 
     internal static void NotifyGameStudioStarted()

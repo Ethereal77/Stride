@@ -1,12 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Stride.Core.Diagnostics;
 using Stride.Core.Extensions;
-using Stride.Core.IO;
-using Stride.Core.Translation;
 using Stride.Editor;
 using Stride.GameStudio.ViewModels;
 
@@ -51,15 +47,15 @@ public static partial class Program
             // WPF does not say why its render thread failed, but a loss one of our devices saw is almost surely the cause
             var loss = GraphicsDeviceLoss.FirstLoss;
             var message = loss is not null
-                ? string.Format(Tr._p("Message", "Game Studio can no longer draw its windows (the graphics device was lost: {0}) and needs to restart."), loss.Status)
-                : Tr._p("Message", "Game Studio can no longer draw its windows (the graphics device was probably lost) and needs to restart.");
+                ? string.Format("Game Studio can no longer draw its windows (the graphics device was lost: {0}) and needs to restart.", loss.Status)
+                : "Game Studio can no longer draw its windows (the graphics device was probably lost) and needs to restart.";
             if (session != null && session.HasUnsavedAssets())
             {
-                if (ShowNativeMessageBox(message + "\n\n" + Tr._p("Message", "Do you want to save your changes first?"), MB_YESNO | MB_ICONWARNING) == IDYES)
+                if (ShowNativeMessageBox(message + "\n\n" + "Do you want to save your changes first?", MB_YESNO | MB_ICONWARNING) == IDYES)
                 {
                     var result = session.SaveSessionWithoutUI();
                     if (result.HasErrors)
-                        ShowNativeMessageBox(string.Format(Tr._p("Message", "The session could not be saved:\n\n{0}"), result.ToText()), MB_ICONERROR);
+                        ShowNativeMessageBox(string.Format("The session could not be saved:\n\n{0}", result.ToText()), MB_ICONERROR);
                 }
             }
             else

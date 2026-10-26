@@ -1,7 +1,7 @@
 <UserControl x:Class="Stride.Core.Assets.Editor.Components.TemplateDescriptions.Views.TemplateBrowserUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
              xmlns:views="clr-namespace:Stride.Core.Assets.Editor.Components.TemplateDescriptions.Views"
@@ -30,17 +30,17 @@
                   <DockPanel.ContextMenu>
                     <ContextMenu>
                       <!-- Default action (same as double-click), in bold. EditorIcon is defined by the Game Studio application. -->
-                      <MenuItem Header="{sd:Localize Open, Context=Menu}" Command="{Binding OpenCommand}" FontWeight="Bold">
+                      <MenuItem Header="Open" Command="{Binding OpenCommand}" FontWeight="Bold">
                         <MenuItem.Icon>
                           <Image Source="{DynamicResource EditorIcon}" RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                       </MenuItem>
                       <Separator/>
-                      <MenuItem Header="{sd:Localize Show in Explorer, Context=Menu}" Command="{Binding ExploreCommand}" Icon="{sd:Image {StaticResource ImageExplore}}" />
-                      <MenuItem Header="{sd:Localize Copy solution path, Context=Menu}" Command="{Binding CopySolutionPathCommand}" Icon="{sd:Image {StaticResource ImageCopy}}" />
-                      <MenuItem Header="{sd:Localize Copy folder path, Context=Menu}" Command="{Binding CopyFolderPathCommand}" Icon="{sd:Image {StaticResource ImageCopy}}" />
+                      <MenuItem Header="Show in Explorer" Command="{Binding ExploreCommand}" Icon="{sd:Image {StaticResource ImageExplore}}" />
+                      <MenuItem Header="Copy solution path" Command="{Binding CopySolutionPathCommand}" Icon="{sd:Image {StaticResource ImageCopy}}" />
+                      <MenuItem Header="Copy folder path" Command="{Binding CopyFolderPathCommand}" Icon="{sd:Image {StaticResource ImageCopy}}" />
                       <Separator/>
-                      <MenuItem Header="{sd:Localize Remove From List, Context=Menu}" Command="{Binding RemoveCommand}" Icon="{sd:Image {StaticResource ImageRemove}}" />
+                      <MenuItem Header="Remove From List" Command="{Binding RemoveCommand}" Icon="{sd:Image {StaticResource ImageRemove}}" />
                     </ContextMenu>
                   </DockPanel.ContextMenu>
                 </DockPanel>

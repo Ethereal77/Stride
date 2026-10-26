@@ -66,13 +66,11 @@
 
   <ItemGroup>
     <AvaloniaResource Remove="Assets\Localization\**" />
-    <EmbeddedResource Update="Assets\Localization\Strings.ja-JP.resx" />
     <EmbeddedResource Update="Assets\Localization\Strings.resx">
       <SubType>Designer</SubType>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Assets\Localization\Urls.ja-JP.resx" />
     <EmbeddedResource Update="Assets\Localization\Urls.resx">
       <SubType>Designer</SubType>
       <LastGenOutput>Urls.Designer.cs</LastGenOutput>

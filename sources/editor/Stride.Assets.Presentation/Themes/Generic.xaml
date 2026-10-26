@@ -25,10 +25,10 @@
             <Border DockPanel.Dock="Top" Background="{StaticResource NormalBrush}" x:Name="ToolBar">
               <StackPanel Margin="4" Orientation="Horizontal">
                 <Border Width="1" Margin="6,2,6,2" Background="{StaticResource NormalBorderBrush}"/>
-                <Button Command="{Binding PlayCommand}" Background="Transparent" ToolTip="{sd:Localize Play the animation, Context=ToolTip}">
+                <Button Command="{Binding PlayCommand}" Background="Transparent" ToolTip="Play the animation">
                   <Image Source="{StaticResource ImagePlay}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                 </Button>
-                <Button Command="{Binding PauseCommand}" Background="Transparent" ToolTip="{sd:Localize Pause the animation, Context=ToolTip}">
+                <Button Command="{Binding PauseCommand}" Background="Transparent" ToolTip="Pause the animation">
                   <Image Source="{StaticResource ImagePause}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                 </Button>
 
@@ -40,7 +40,7 @@
                 </TextBlock>
 
                 <Border Width="1" Margin="6,2,6,2" Background="{StaticResource NormalBorderBrush}"/>
-                <TextBlock DockPanel.Dock="Left" Text="{sd:Localize Time scale:}" VerticalAlignment="Center" Margin="4,0"/>
+                <TextBlock DockPanel.Dock="Left" Text="Time scale:" VerticalAlignment="Center" Margin="4,0"/>
                 <sd:NumericTextBox Value="{Binding TimeScale}" SmallChange="0.1" LargeChange="1.0" Width="40"  DecimalPlaces="3" Minimum="0.0"/>
               </StackPanel>
             </Border>
@@ -114,7 +114,7 @@
           <DockPanel d:DataContext="{d:DesignInstance viewModel:ModelPreviewViewModel}">
             <Border DockPanel.Dock="Top" Background="{StaticResource NormalBrush}">
               <StackPanel Orientation="Horizontal"  Margin="6">
-                <Button Command="{Binding ResetModelCommand}" Background="Transparent" ToolTip="{sd:Localize Reset the camera, Context=ToolTip}">
+                <Button Command="{Binding ResetModelCommand}" Background="Transparent" ToolTip="Reset the camera">
                   <Image Source="{StaticResource ImageResetCamera}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                 </Button>
               </StackPanel>
@@ -133,7 +133,7 @@
           <DockPanel d:DataContext="{d:DesignInstance viewModel:SkyboxPreviewViewModel}">
             <Border DockPanel.Dock="Top" Background="{StaticResource NormalBrush}" HorizontalAlignment="Stretch">
               <StackPanel Orientation="Vertical"  Margin="6" HorizontalAlignment="Stretch">
-                <Button Command="{Binding ResetModelCommand}" Background="Transparent" ToolTip="{sd:Localize Reset the camera, Context=ToolTip}" HorizontalAlignment="Left">
+                <Button Command="{Binding ResetModelCommand}" Background="Transparent" ToolTip="Reset the camera" HorizontalAlignment="Left">
                   <Image Source="{StaticResource ImageResetCamera}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                 </Button>
                 <Grid HorizontalAlignment="Stretch">
@@ -184,7 +184,7 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type views:ScenePreviewView}">
           <DockPanel Background="{StaticResource NormalBrush}">
-            <TextBlock Text="{sd:Localize Scenes can\'t be previewed. To see the scene\, open it in the scene editor.}"
+            <TextBlock Text="Scenes can't be previewed. To see the scene, open it in the scene editor."
                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
           </DockPanel>
         </ControlTemplate>
@@ -198,10 +198,10 @@
         <ControlTemplate TargetType="{x:Type views:SoundPreviewView}">
           <DockPanel Background="{StaticResource NormalBrush}" d:DataContext="{d:DesignInstance viewModel:SoundPreviewViewModel}">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Visibility="{Binding IsAudioValid, Converter={sd:VisibleOrCollapsed}}">
-              <Button Command="{Binding PlayCommand}" Background="Transparent" ToolTip="{sd:Localize Play the sound, Context=ToolTip}">
+              <Button Command="{Binding PlayCommand}" Background="Transparent" ToolTip="Play the sound">
                 <Image Source="{StaticResource ImagePlay}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
               </Button>
-              <Button Command="{Binding PauseCommand}" Background="Transparent" ToolTip="{sd:Localize Pause the sound, Context=ToolTip}">
+              <Button Command="{Binding PauseCommand}" Background="Transparent" ToolTip="Pause the sound">
                 <Image Source="{StaticResource ImagePause}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
               </Button>
               <Slider Height="8" Margin="5" Minimum="0" Maximum="1" Value="{Binding MasterVolume}" Width="60" IsMoveToPointEnabled="True"/>
@@ -237,7 +237,7 @@
                 <TextBlock HorizontalAlignment="Center" Visibility="{Binding IsAudioValid, Converter={sd:VisibleOrCollapsed}}">
                   <Run Text="{Binding CurrentTime, StringFormat={}{0:mm\\:ss\\:fff}, Mode=OneWay}"/>/<Run Text="{Binding Duration, StringFormat={}{0:mm\\:ss\\:fff}, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock Text="{sd:Localize Building preview sound asset...}" HorizontalAlignment="Center" Visibility="{Binding IsAudioValid, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
+                <TextBlock Text="Building preview sound asset..." HorizontalAlignment="Center" Visibility="{Binding IsAudioValid, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
               </StackPanel>
             </Border>
           </DockPanel>
@@ -275,12 +275,12 @@
                   </ComboBox.ItemTemplate>
                 </ComboBox>
                 <Border Width="1" Margin="6,2,6,2" Background="{StaticResource NormalBorderBrush}"/>
-                <Button Command="{Binding PreviewPreviousFrameCommand}" Background="Transparent" ToolTip="{sd:Localize Previous sprite, Context=ToolTip}" Content="&lt;" Padding="4,0"/>
+                <Button Command="{Binding PreviewPreviousFrameCommand}" Background="Transparent" ToolTip="Previous sprite" Content="&lt;" Padding="4,0"/>
                 <TextBlock VerticalAlignment="Center" Margin="4">
-                  <Run Text="{sd:Localize Sprite:}"/>
+                  <Run Text="Sprite:"/>
                   <Run Text="{Binding PreviewCurrentFrame, Mode=OneWay}"/>/<Run Text="{Binding PreviewFrameCount, Mode=OneWay}"/>
                 </TextBlock>
-                <Button Command="{Binding PreviewNextFrameCommand}" Background="Transparent" ToolTip="{sd:Localize Next sprite,  Context=ToolTip}" Content="&gt;" Padding="4,0"/>
+                <Button Command="{Binding PreviewNextFrameCommand}" Background="Transparent" ToolTip="Next sprite" Content="&gt;" Padding="4,0"/>
               </StackPanel>
             </DockPanel>
             <Border DockPanel.Dock="Bottom">
@@ -308,7 +308,7 @@
                   <ColumnDefinition Width="*" />
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <sd:TextBox UseTimedValidation="True" Text="{Binding PreviewString}" MaxHeight="32" WatermarkContent="{sd:Localize Preview text}" AcceptsReturn="True"/>
+                <sd:TextBox UseTimedValidation="True" Text="{Binding PreviewString}" MaxHeight="32" WatermarkContent="Preview text" AcceptsReturn="True"/>
                 <Button Grid.Column="1" Command="{Binding ClearTextCommand}" Background="Transparent">
                   <Image Source="{StaticResource ImageClear}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16" />
                 </Button>
@@ -350,11 +350,11 @@
                             ItemsSource="{Binding Source={x:Type preview:TextureCubePreviewMode}, Converter={sd:EnumValues}}"/>
                 </StackPanel>
                 <DockPanel x:Name="Texture3DPanel" Visibility="Collapsed">
-                  <Button DockPanel.Dock="Left" Padding="4,0" Command="{Binding PreviewPreviousDepthCommand}" Background="Transparent" ToolTip="{sd:Localize Previous slice, Context=ToolTip}" Content="&lt;"/>
+                  <Button DockPanel.Dock="Left" Padding="4,0" Command="{Binding PreviewPreviousDepthCommand}" Background="Transparent" ToolTip="Previous slice" Content="&lt;"/>
                   <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4" TextAlignment="Center" Width="60">
                     <Run Text="{Binding SelectedDepth, Mode=OneWay, StringFormat={}{0:0.##}}"/>/<Run Text="{Binding PreviewTextureDepth, Mode=OneWay}"/>
                   </TextBlock>
-                  <Button DockPanel.Dock="Right" Padding="4,0" Command="{Binding PreviewNextDepthCommand}" Background="Transparent" ToolTip="{sd:Localize Next slice, Context=ToolTip}" Content="&gt;"/>
+                  <Button DockPanel.Dock="Right" Padding="4,0" Command="{Binding PreviewNextDepthCommand}" Background="Transparent" ToolTip="Next slice" Content="&gt;"/>
                   <Slider Height="16" Minimum="0" Maximum="{Binding PreviewTextureDepth, Mode=OneWay}" Value="{Binding SelectedDepth}" SmallChange="1" LargeChange="5"/>
                 </DockPanel>
               </DockPanel>
@@ -377,8 +377,8 @@
               <Separator Grid.Column="1"/>
               <StatusBarItem Grid.Column="2">
                 <StackPanel Orientation="Horizontal">
-                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewTextureWidth, StringFormat={sd:Localize W: {0}}}"/>
-                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewTextureHeight, StringFormat={sd:Localize H: {0}}}"/>
+                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewTextureWidth, StringFormat=W: {0}}"/>
+                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewTextureHeight, StringFormat=H: {0}}"/>
                 </StackPanel>
               </StatusBarItem>
             </StatusBar>
@@ -442,8 +442,8 @@
               <Separator Grid.Column="1"/>
               <StatusBarItem Grid.Column="2">
                 <StackPanel Orientation="Horizontal">
-                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewHeightmapWidth, StringFormat={sd:Localize W: {0}}}"/>
-                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewHeightmapLength, StringFormat={sd:Localize L: {0}}}"/>
+                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewHeightmapWidth, StringFormat=W: {0}}"/>
+                  <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding PreviewHeightmapLength, StringFormat=L: {0}}"/>
                 </StackPanel>
               </StatusBarItem>
             </StatusBar>

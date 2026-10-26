@@ -1,12 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.ViewModel;
@@ -15,7 +10,6 @@ using Stride.Core.Extensions;
 using Stride.Assets.Presentation.View;
 using Stride.Debugger.Target;
 using Stride.Core.Presentation.Services;
-using Stride.Core.Translation;
 using Stride.Assets.Presentation.AssetEditors;
 using Stride.Core.Presentation.ViewModels;
 
@@ -37,7 +31,7 @@ namespace Stride.GameStudio.Debugging
         {
             if (currentProject == null)
             {
-                await editor.Session.Dialogs.MessageBoxAsync(Tr._p("Message", "An executable project must be set as current project in the session explorer in order to process build."),
+                await editor.Session.Dialogs.MessageBoxAsync("An executable project must be set as current project in the session explorer in order to process build.",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }

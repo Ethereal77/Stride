@@ -11,7 +11,6 @@ using Stride.Engine;
 using MessageBoxImage = Stride.Core.Presentation.Services.MessageBoxImage;
 using MessageBoxButton = Stride.Core.Presentation.Services.MessageBoxButton;
 using Stride.Core.Extensions;
-using Stride.Core.Translation;
 using Stride.Core.Assets.Templates;
 using Stride.Core.Presentation.ViewModels;
 
@@ -54,7 +53,7 @@ namespace Stride.Assets.Presentation.Templates
             if (enableTemplateSelect)
             {
                 TemplateComboBox.ItemsSource = scriptTemplates;
-                TemplateComboBox.SelectedValue = defaultScriptTemplate; 
+                TemplateComboBox.SelectedValue = defaultScriptTemplate;
             }
 
             this.enableTemplateSelect = enableTemplateSelect;
@@ -75,7 +74,7 @@ namespace Stride.Assets.Presentation.Templates
 
             if (string.IsNullOrWhiteSpace(ClassName) || string.IsNullOrWhiteSpace(Namespace))
             {
-                await services.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "The names you entered are invalid or empty."), MessageBoxButton.OK, MessageBoxImage.Information);
+                await services.Get<IDialogService>().MessageBoxAsync("The names you entered are invalid or empty.", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 

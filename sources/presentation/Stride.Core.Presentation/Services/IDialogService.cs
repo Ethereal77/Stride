@@ -3,7 +3,6 @@
 
 using Stride.Core.IO;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Presentation.Services;
 
@@ -64,7 +63,7 @@ public interface IDialogService
     {
         Result = (int)MessageBoxResult.No,
         Content = "No",
-        Key = Tr._p("KeyGesture", "N"),
+        Key = "N",
     };
 
     /// <summary>
@@ -78,7 +77,7 @@ public interface IDialogService
         IsDefault = true,
         Result = (int)MessageBoxResult.Yes,
         Content = "Yes",
-        Key = Tr._p("KeyGesture", "Y"),
+        Key = "Y",
     };
 
     /// <summary>

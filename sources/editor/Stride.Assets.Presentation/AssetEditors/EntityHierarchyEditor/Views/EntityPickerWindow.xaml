@@ -10,7 +10,7 @@
         xmlns:views="clr-namespace:Stride.Assets.Presentation.AssetEditors.EntityHierarchyEditor.Views"
         mc:Ignorable="d" ShowInTaskbar="False"
         Style="{DynamicResource WindowChromeStyle}"
-        Title="{sd:Localize Select an entity}" Height="800" Width="400" d:DataContext="{d:DesignInstance views:EntityPickerWindow}">
+        Title="Select an entity" Height="800" Width="400" d:DataContext="{d:DesignInstance views:EntityPickerWindow}">
   <sd:ModalWindow.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
@@ -20,12 +20,12 @@
   </sd:ModalWindow.Resources>
   <DockPanel>
     <UniformGrid Rows="1" DockPanel.Dock="Bottom" Margin="20" HorizontalAlignment="Right">
-      <Button Margin="10,0,0,0" Padding="20,4" Content="OK" ToolTip="{sd:Localize Select the selected assets, Context=ToolTip}" IsEnabled="{Binding SelectionValid}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="OK" ToolTip="Select the selected assets" IsEnabled="{Binding SelectionValid}">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
         </i:Interaction.Behaviors>
       </Button>
-      <Button Margin="10,0,0,0" Padding="20,4" Content="{sd:Localize Cancel, Context=Button}" IsCancel="True" ToolTip="{sd:Localize Cancel (Esc), Context=ToolTip}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="Cancel" IsCancel="True" ToolTip="Cancel (Esc)">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
         </i:Interaction.Behaviors>
@@ -34,7 +34,7 @@
     <TextBlock Margin="15,25" TextWrapping="Wrap" DockPanel.Dock="Top" Visibility="{Binding ComponentType, Converter={sd:Chained {sd:ObjectToBool}, {sd:VisibleOrCollapsed}}}"
                Text="{Binding ComponentType, Converter={valueConverters1:TypeToDisplayName}, StringFormat=Select an entity that has a {0} component.}"/>
 
-    <TextBlock Margin="15,25" TextWrapping="Wrap" DockPanel.Dock="Top" Text="{sd:Localize Select an entity:}"
+    <TextBlock Margin="15,25" TextWrapping="Wrap" DockPanel.Dock="Top" Text="Select an entity:"
                Visibility="{Binding ComponentType, Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
 
     <UniformGrid Rows="1">
@@ -63,7 +63,7 @@
           <DataTemplate>
             <TextBlock>
                <Run Text="{Binding Item2, Mode=OneWay, Converter={sd:ObjectToTypeName}}"/>
-               <Run Text="{Binding Item1, Mode=OneWay, StringFormat={sd:Localize (Index: {0})}}"/>
+               <Run Text="{Binding Item1, Mode=OneWay, StringFormat=(Index: {0})}"/>
             </TextBlock>
           </DataTemplate>
         </ListBox.ItemTemplate>

@@ -1,27 +1,38 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
 using System.Globalization;
-using System.Reflection;
 
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Assets.Editor.ViewModel;
 using Stride.Core.Serialization;
 using Stride.Core.Serialization.Contents;
 using Stride.Core.Presentation.Quantum.ViewModels;
-using Stride.Core.Translation;
-using Stride.Core.Translation.Presentation.ValueConverters;
+using System.Windows.Markup;
+using System.Windows.Data;
 
 namespace Stride.Core.Assets.Editor.View.ValueConverters
 {
     /// <summary>
     /// The asset name part of a reference URL, for the unfocused display overlay (never truncated).
     /// </summary>
-    public class ContentReferenceToDisplayName : LocalizableConverter<ContentReferenceToDisplayName>
+    public class ContentReferenceToDisplayName : MarkupExtension, IValueConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <inheritdoc/>
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ContentReferenceDisplayUrl.Split(value, Assembly).Name;
+            return ContentReferenceDisplayUrl.Split(value).Name;
+        }
+
+        /// <inheritdoc/>
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc/>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return new ContentReferenceToDisplayName();
         }
     }
 
@@ -30,23 +41,35 @@ namespace Stride.Core.Assets.Editor.View.ValueConverters
     /// root when the target's namespace is not in scope for the session), for the unfocused display
     /// overlay. The separating slash is rendered separately so it survives ellipsis trimming.
     /// </summary>
-    public class ContentReferenceToDisplayLocation : LocalizableConverter<ContentReferenceToDisplayLocation>
+    public class ContentReferenceToDisplayLocation : MarkupExtension, IValueConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <inheritdoc/>
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ContentReferenceDisplayUrl.Split(value, Assembly).Location;
+            return ContentReferenceDisplayUrl.Split(value).Location;
+        }
+        /// <inheritdoc/>
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc/>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return new ContentReferenceToDisplayLocation();
         }
     }
 
     internal static class ContentReferenceDisplayUrl
     {
-        public static (string Location, string Name) Split(object value, Assembly assembly)
+        public static (string Location, string Name) Split(object value)
         {
             if (value == null)
                 return (string.Empty, ContentReferenceHelper.EmptyReference);
 
             if (value == NodeViewModel.DifferentValues)
-                return (string.Empty, TranslationManager.Instance.GetString("(Different values)", assembly));
+                return (string.Empty, "(Different values)");
 
             var contentReference = value as IReference ?? AttachedReferenceManager.GetOrCreateAttachedReference(value);
             var asset = contentReference != null && contentReference.Id != AssetId.Empty ? SessionViewModel.Instance.GetAssetById(contentReference.Id) : null;

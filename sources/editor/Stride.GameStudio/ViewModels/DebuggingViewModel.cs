@@ -22,10 +22,7 @@ using Stride.Core.Presentation.ViewModel;
 using Stride.Assets.Presentation.AssemblyReloading;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Annotations;
-using Stride.Core.Translation;
 using Stride.Assets.Presentation.AssetEditors;
-using Stride.GameStudio.Services;
-using Stride.GameStudio.Remote;
 using Stride.Core.Presentation.ViewModels;
 using Stride.Assets.Presentation.ViewModel;
 
@@ -45,7 +42,7 @@ namespace Stride.GameStudio.ViewModels
         private bool assemblyChangesPending;
         private bool trackAssemblyChanges;
         private string outputTitle;
-        private readonly string outputTitleBase = Tr._p("Title", "Output");
+        private readonly string outputTitleBase = "Output";
         private ICancellableAsyncBuild currentBuild;
 
         public DebuggingViewModel(GameStudioViewModel editor, IDebugService debugService)
@@ -224,9 +221,9 @@ namespace Stride.GameStudio.ViewModels
 
                 if (shouldNotify)
                 {
-                    var message = Tr._p("Message", "Some game code files have been modified. Do you want to reload the assemblies?");
+                    var message = "Some game code files have been modified. Do you want to reload the assemblies?";
                     ServiceProvider.Get<IEditorDialogService>().AddDelayedNotification(EditorSettings.AskBeforeReloadingAssemblies, message,
-                        Tr._p("Button", "Reload"), Tr._p("Button", "Don't reload"),
+                        "Reload", "Don't reload",
                         yesAction: async () =>
                         {
                             var undoRedoService = ServiceProvider.Get<IUndoRedoService>();
@@ -423,7 +420,7 @@ namespace Stride.GameStudio.ViewModels
             {
                 await ServiceProvider.Get<IDialogService>()
                     .MessageBoxAsync(
-                        string.Format(Tr._p("Message", "Platform {0} isn't supported for execution."), Session.CurrentProject.Platform),
+                        string.Format("Platform {0} isn't supported for execution.", Session.CurrentProject.Platform),
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
@@ -526,14 +523,14 @@ namespace Stride.GameStudio.ViewModels
                             break;
 
                         default:
-                            logger.Error(string.Format(Tr._p("Message", "Platform {0} isn't supported for execution."), Session.CurrentProject.Platform));
+                            logger.Error(string.Format("Platform {0} isn't supported for execution.", Session.CurrentProject.Platform));
                             return (false, null);
                     }
                 }
 
                 if (projectViewModel == null)
                 {
-                    logger.Error(string.Format(Tr._p("Message", "Platform {0} isn't supported for execution."), Session.CurrentProject.Platform != PlatformType.Shared ? Session.CurrentProject.Platform : PlatformType.Windows));
+                    logger.Error(string.Format("Platform {0} isn't supported for execution.", Session.CurrentProject.Platform != PlatformType.Shared ? Session.CurrentProject.Platform : PlatformType.Windows));
                     return (false, null);
                 }
 
@@ -546,7 +543,7 @@ namespace Stride.GameStudio.ViewModels
                 currentBuild = VSProjectHelper.CompileProjectAssemblyAsync(projectViewModel.ProjectPath, logger, target, configuration, platformName, extraProperties, BuildRequestDataFlags.ProvideProjectStateAfterBuild);
                 if (currentBuild == null)
                 {
-                    logger.Error(string.Format(Tr._p("Message", "Unable to load and compile project {0}"), projectViewModel.ProjectPath));
+                    logger.Error(string.Format("Unable to load and compile project {0}", projectViewModel.ProjectPath));
                     return (false, null);
                 }
 
@@ -570,7 +567,7 @@ namespace Stride.GameStudio.ViewModels
                             {
                                 if (!File.Exists(assemblyPath))
                                 {
-                                    logger.Error(string.Format(Tr._p("Message", "Unable to reach to output executable: {0}"), assemblyPath));
+                                    logger.Error(string.Format("Unable to reach to output executable: {0}", assemblyPath));
                                     return (false, null);
                                 }
                                 var process = new Process
@@ -586,13 +583,13 @@ namespace Stride.GameStudio.ViewModels
                             break;
                     }
 
-                    logger.Info(string.Format(Tr._p("Message", "Deployment of {0} successful."), projectViewModel.Name));
+                    logger.Info(string.Format("Deployment of {0} successful.", projectViewModel.Name));
                 }
             }
             catch (Exception e)
             {
                 logger.Error("An exception occurred during compilation.", e);
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format(Tr._p("Message", "An exception occurred while compiling the project: {0}"), e.FormatSummary(true)), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format("An exception occurred while compiling the project: {0}", e.FormatSummary(true)), MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             return (!currentBuild.IsCanceled && !logger.HasErrors, startedProcess);
@@ -602,7 +599,7 @@ namespace Stride.GameStudio.ViewModels
         {
             if (Session.CurrentProject == null)
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "To process the build, set an executable project as the current project in the session explorer."), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync("To process the build, set an executable project as the current project in the session explorer.", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
 
@@ -610,7 +607,7 @@ namespace Stride.GameStudio.ViewModels
 
             if (!saved)
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "To build, save the project first."), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync("To build, save the project first.", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
 
@@ -656,7 +653,7 @@ namespace Stride.GameStudio.ViewModels
                 currentBuild = VSProjectHelper.CompileProjectAssemblyAsync(projectPath, logger, target, configuration, platformName, extraProperties, BuildRequestDataFlags.ProvideProjectStateAfterBuild);
                 if (currentBuild == null)
                 {
-                    logger.Error(string.Format(Tr._p("Message", "Unable to load and compile project {0}"), projectPath));
+                    logger.Error(string.Format("Unable to load and compile project {0}", projectPath));
                 }
                 else
                 {
@@ -665,7 +662,7 @@ namespace Stride.GameStudio.ViewModels
             }
             catch (Exception e)
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format(Tr._p("Message", "An exception occurred while compiling the project: {0}"), e.FormatSummary(true)), MessageBoxButton.OK, MessageBoxImage.Information);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(string.Format("An exception occurred while compiling the project: {0}", e.FormatSummary(true)), MessageBoxButton.OK, MessageBoxImage.Information);
             }
             finally
             {

@@ -1,10 +1,6 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 using Stride.Core.Assets.Analysis;
 using Stride.Core.Assets.Diagnostics;
@@ -17,7 +13,6 @@ using Stride.Core.Presentation.Collections;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.ViewModel;
 using Stride.Core.Presentation.ViewModels;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.ViewModel.Logs
 {
@@ -55,11 +50,11 @@ namespace Stride.Core.Assets.Editor.ViewModel.Logs
             AssetLogSourceViewModel CreateSource(string id, string displayName) => new(serviceProvider, id, displayName, !hiddenSources.Contains(id), SourcesChanged);
             Sources =
             [
-                CreateSource(BuildLogName, Tr._p("Log", "Asset builds")),
-                CreateSource(ThumbnailLogName, Tr._p("Log", "Thumbnails")),
-                CreateSource(AssetReplacementLogName, Tr._p("Log", "Asset replacements")),
-                CreateSource(SessionLogName, Tr._p("Log", "Project load")),
-                CreateSource(ConsistencyLogName, Tr._p("Log", "Package consistency")),
+                CreateSource(BuildLogName, "Asset builds"),
+                CreateSource(ThumbnailLogName, "Thumbnails"),
+                CreateSource(AssetReplacementLogName, "Asset replacements"),
+                CreateSource(SessionLogName, "Project load"),
+                CreateSource(ConsistencyLogName, "Package consistency"),
             ];
             ShowAllSourcesCommand = new AnonymousCommand(serviceProvider, () => Sources.ForEach(x => x.IsShown = true));
             UpdateSourcesState();
@@ -86,6 +81,10 @@ namespace Stride.Core.Assets.Editor.ViewModel.Logs
         public ObservableList<ILogMessage> FilteredMessages { get; private set; }
 
         public int ErrorCount { get { return errorCount; } set { SetValue(ref errorCount, value); } }
+
+        public string ErrorCountText => ErrorCount == 1
+            ? "Asset error (1)"
+            : $"Asset errors ({ErrorCount})";
 
         /// <summary>
         /// Gets or sets which assets the messages are shown for. Messages about no asset are shown in both cases.
@@ -123,8 +122,8 @@ namespace Stride.Core.Assets.Editor.ViewModel.Logs
         {
             var shownCount = Sources.Count(x => x.IsShown);
             SourcesHeader = shownCount == Sources.Count
-                ? Tr._p("Log", "Sources")
-                : string.Format(Tr._p("Log", "Sources ({0}/{1})"), shownCount, Sources.Count);
+                ? "Sources"
+                : string.Format("Sources ({0}/{1})", shownCount, Sources.Count);
             ShowAllSourcesCommand.IsEnabled = shownCount < Sources.Count;
         }
 

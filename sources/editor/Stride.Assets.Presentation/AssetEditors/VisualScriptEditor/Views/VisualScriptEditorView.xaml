@@ -1,8 +1,8 @@
 <UserControl x:Class="Stride.Assets.Presentation.AssetEditors.VisualScriptEditor.VisualScriptEditorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Stride.Assets.Presentation.AssetEditors.VisualScriptEditor"
              xmlns:graphx="clr-namespace:GraphX.Controls;assembly=GraphX.WPF.Controls"
              xmlns:sskkgraph="http://schemas.stride3d.net/xaml/presentation/graph"
@@ -12,7 +12,7 @@
              xmlns:graphX="http://schemas.panthernet.ru/graphx/"
              xmlns:sd="http://schemas.stride3d.net/xaml/presentation"
              Focusable="True"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance local:VisualScriptEditorViewModel}">
   <UserControl.Resources>
     <ResourceDictionary>
@@ -61,7 +61,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Ellipse Grid.Column="0" x:Name="connector" DataContext="{Binding}" AllowDrop="True" StrokeThickness="4"
-                                     Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}" 
+                                     Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                      Fill="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                               <i:Interaction.Behaviors>
@@ -99,7 +99,7 @@
 
                             <ContentPresenter Grid.Column="0" Content="{Binding}" Margin="10,0,2,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             <Ellipse Grid.Column="1" x:Name="connector" DataContext="{Binding}" AllowDrop="True" StrokeThickness="4"
-                                     Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}" 
+                                     Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                      Fill="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                               <i:Interaction.Behaviors>
@@ -210,8 +210,8 @@
       </ContextMenu>
 
       <ContextMenu x:Key="DropVariableContextMenu">
-        <MenuItem Header="{sd:Localize Get, Context=Menu}" Click="DropVariableContextMenuGetClicked"/>
-        <MenuItem Header="{sd:Localize Set, Context=Menu}" Click="DropVariableContextMenuSetClicked"/>
+        <MenuItem Header="Get" Click="DropVariableContextMenuGetClicked"/>
+        <MenuItem Header="Set" Click="DropVariableContextMenuSetClicked"/>
       </ContextMenu>
 
       <Style x:Key="AddMethodComboBox" BasedOn="{StaticResource AddItemComboBox}" TargetType="ComboBox">
@@ -250,7 +250,7 @@
             <Button Margin="2" Content="{sd:Image {StaticResource ImageAdd}, 16, 16, NearestNeighbor}" Command="{Binding AddNewPropertyCommand}"/>
             <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedPropertiesCommand}"/>
           </UniformGrid>
-          <TextBlock Text="{sd:Localize Variables:}" VerticalAlignment="Center"/>
+          <TextBlock Text="Variables:" VerticalAlignment="Center"/>
         </DockPanel>
         <sd:EditableContentListBox Margin="8" ItemsSource="{Binding Properties.Children}" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
           <sd:EditableContentListBox.ItemContainerStyle>
@@ -299,7 +299,7 @@
             </ComboBox>
             <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedMethodCommand}"/>
           </UniformGrid>
-          <TextBlock Text="{sd:Localize Functions:}" VerticalAlignment="Center"/>
+          <TextBlock Text="Functions:" VerticalAlignment="Center"/>
         </DockPanel>
         <sd:EditableContentListBox Grid.Row="2" Margin="8" ItemsSource="{Binding Methods}" SelectionMode="Single" SelectedItem="{Binding SelectedMethod}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
           <sd:EditableContentListBox.ItemContainerStyle>
@@ -343,15 +343,15 @@
             </DataTemplate>
           </ComboBox.ItemTemplate>
         </ComboBox>
-        <CheckBox DockPanel.Dock="Top" DataContext="{Binding Method.IsStatic}" Content="{sd:Localize Static method, Context=Button}"/>
-        <sd:TextBox DockPanel.Dock="Top" Text="{Binding Method.ReturnType}" WatermarkContent="{sd:Localize Return type...}"/>
+        <CheckBox DockPanel.Dock="Top" DataContext="{Binding Method.IsStatic}" Content="Static method"/>
+        <sd:TextBox DockPanel.Dock="Top" Text="{Binding Method.ReturnType}" WatermarkContent="Return type..."/>
         <DockPanel>
           <DockPanel Margin="8" DockPanel.Dock="Top">
             <UniformGrid Rows="1" DockPanel.Dock="Right">
               <Button Margin="2" Content="{sd:Image {StaticResource ImageAdd}, 16, 16, NearestNeighbor}" Command="{Binding AddNewParameterCommand}"/>
               <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedParametersCommand}"/>
             </UniformGrid>
-            <TextBlock Text="{sd:Localize Function parameters:}" VerticalAlignment="Center"/>
+            <TextBlock Text="Function parameters:" VerticalAlignment="Center"/>
           </DockPanel>
           <sd:EditableContentListBox Margin="8" ItemsSource="{Binding Parameters.Children}" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <sd:EditableContentListBox.ItemContainerStyle>

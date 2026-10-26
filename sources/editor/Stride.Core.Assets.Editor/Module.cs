@@ -3,8 +3,6 @@
 using System.Reflection;
 using Stride.Core.Assets.Editor.Services;
 using Stride.Core.Reflection;
-using Stride.Core.Translation;
-using Stride.Core.Translation.Providers;
 
 namespace Stride.Core.Assets.Editor
 {
@@ -15,8 +13,6 @@ namespace Stride.Core.Assets.Editor
         {
             AssemblyRegistry.Register(typeof(Module).GetTypeInfo().Assembly, AssemblyCommonCategories.Assets);
             AssetsPlugin.RegisterPlugin(typeof(CoreAssetsEditorPlugin));
-            // Initialize translation
-            TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
             // HACK
             Presentation.Quantum.ViewModels.NodeViewModel.UnsetValue = System.Windows.DependencyProperty.UnsetValue;
         }

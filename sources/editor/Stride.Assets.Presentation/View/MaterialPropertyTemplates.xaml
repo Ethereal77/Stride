@@ -10,11 +10,9 @@
                                                                    OverrideRule="Most" sd:PropertyViewHelper.TemplateCategory="PropertyEditor">
     <DataTemplate>
       <DockPanel>
-        <sd:FilteringComboBox Text="{Binding NodeValue}" WatermarkContent="{sd:Localize Select shader...}" ItemsSource="{Binding AvailableEffectShaders}"/>
+        <sd:FilteringComboBox Text="{Binding NodeValue}" WatermarkContent="Select shader..." ItemsSource="{Binding AvailableEffectShaders}"/>
       </DockPanel>
     </DataTemplate>
   </templateProviders:ShaderClassNodeMixinReferenceTemplateProvider>
 
 </ResourceDictionary>
-    
-    

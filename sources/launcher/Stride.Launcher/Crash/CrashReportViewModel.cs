@@ -143,7 +143,6 @@ internal sealed class CrashReportViewModel : ViewModelBase
         catch (Exception)
         {
             DialogService.MainWindow!.Topmost = false;
-            // FIXME: localize resource string
             await ServiceProvider.Get<IDialogService>().MessageBoxAsync("An error occurred while trying to open a web browser", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

@@ -9,7 +9,6 @@ using Stride.Core.Annotations;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Quantum;
-using Stride.Core.Translation;
 using Stride.Assets.Entities;
 using Stride.Assets.Presentation.ViewModel;
 
@@ -163,7 +162,7 @@ namespace Stride.Assets.Presentation.AssetEditors.EntityHierarchyEditor.ViewMode
             if (!canRename)
             {
                 ServiceProvider.Get<IDialogService2>()
-                    .BlockingMessageBox(string.Format(Tr._p("Message", "Unable to rename the folder '{0}' to '{1}'. A folder with the same name already exists."), name, newName), MessageBoxButton.OK,
+                    .BlockingMessageBox(string.Format("Unable to rename the folder '{0}' to '{1}'. A folder with the same name already exists.", name, newName), MessageBoxButton.OK,
                         MessageBoxImage.Information);
             }
             return canRename;

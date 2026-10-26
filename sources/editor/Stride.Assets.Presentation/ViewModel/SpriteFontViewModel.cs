@@ -11,7 +11,6 @@ using Stride.Core.IO;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 using Stride.Graphics;
 
 namespace Stride.Assets.Presentation.ViewModel
@@ -45,7 +44,7 @@ namespace Stride.Assets.Presentation.ViewModel
             if (font.FontType is RuntimeRasterizedSpriteFontType)
             {
                 // Note: Markdown (**, _) are used to format the text.
-                await dialogService.MessageBoxAsync(Tr._p("Message", "**Only static fonts can be precompiled.**\r\n\r\nClear the _Is Dynamic_ property on this font and try again."), MessageBoxButton.OK, MessageBoxImage.Error);
+                await dialogService.MessageBoxAsync("**Only static fonts can be precompiled.**\r\n\r\nClear the _Is Dynamic_ property on this font and try again.", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             // Compute unique name
@@ -61,8 +60,8 @@ namespace Stride.Assets.Presentation.ViewModel
             var gameSettings = Session.CurrentProject?.Package.GetGameSettingsAsset();
             if (gameSettings == null)
             {
-                var buttons = DialogHelper.CreateButtons(new[] { ColorSpace.Linear.ToString(), ColorSpace.Gamma.ToString(), Tr._p("Button", "Cancel") }, 1, 3);
-                var result = await dialogService.MessageBoxAsync(Tr._p("Message", "Which color space do you want to use?"), buttons, MessageBoxImage.Question);
+                var buttons = DialogHelper.CreateButtons(new[] { ColorSpace.Linear.ToString(), ColorSpace.Gamma.ToString(), "Cancel" }, 1, 3);
+                var result = await dialogService.MessageBoxAsync("Which color space do you want to use?", buttons, MessageBoxImage.Question);
                 // Close without clicking a button or Cancel
                 if (result == 0 || result == 3)
                     return;
@@ -74,7 +73,7 @@ namespace Stride.Assets.Presentation.ViewModel
             }
 
             var precompiledFontAsset = (font.FontType is SignedDistanceFieldSpriteFontType) ?
-                font.GeneratePrecompiledSDFSpriteFont(AssetItem, UFile.Combine(directory, precompiledName)) : 
+                font.GeneratePrecompiledSDFSpriteFont(AssetItem, UFile.Combine(directory, precompiledName)) :
                 font.GeneratePrecompiledSpriteFont(AssetItem, UFile.Combine(directory, precompiledName), srgb);
 
             // NOTE: following code could be factorized with AssetFactoryViewModel

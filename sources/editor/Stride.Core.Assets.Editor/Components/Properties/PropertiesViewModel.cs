@@ -1,9 +1,5 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Editor.Quantum.NodePresenters.Commands;
 using Stride.Core.Assets.Editor.Quantum.NodePresenters.Updaters;
 using Stride.Core.Assets.Editor.Services;
@@ -14,7 +10,6 @@ using Stride.Core.Presentation.Quantum.Presenters;
 using Stride.Core.Presentation.Quantum.ViewModels;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Quantum;
-using Stride.Core.Translation;
 using Stride.Core.Presentation.ViewModels;
 
 namespace Stride.Core.Assets.Editor.Components.Properties
@@ -142,7 +137,7 @@ namespace Stride.Core.Assets.Editor.Components.Properties
 
             try
             {
-                FallbackMessage = Tr._p("Properties", "Loading properties...");
+                FallbackMessage = "Loading properties...";
                 var newViewModel = await InitializeViewModel(Selection, localToken);
                 if (localToken != currentToken)
                     return null;

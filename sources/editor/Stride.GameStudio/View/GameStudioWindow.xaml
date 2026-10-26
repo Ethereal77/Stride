@@ -95,12 +95,12 @@
 
       <ContextMenu x:Key="AssetContextMenu" d:DataContext="{d:DesignInstance sd:AssetCollectionViewModel}">
         <!-- Asset -->
-        <MenuItem Header="{sd:Localize Asset, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Edit asset..., Context=Menu}" Command="{Binding Session.EditSelectedContentCommand}" Icon="{sd:Image {StaticResource ImageEditAsset}}" InputGestureText="{x:Static strings:KeyGestures.EditAsset}"/>
+        <MenuItem Header="Asset" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Edit asset..." Command="{Binding Session.EditSelectedContentCommand}" Icon="{sd:Image {StaticResource ImageEditAsset}}" InputGestureText="{x:Static strings:KeyGestures.EditAsset}"/>
         <MenuItem Header="{Binding Session.RootAssetToggleHeader}" Command="{Binding Session.ToggleIsRootOnSelectedAssetCommand}"
                   Icon="{sd:Image {StaticResource ImageAssetIsRoot}}"/>
         <!-- One toggle per package the selection can be rooted in; the default target (the plain item above) is bold -->
-        <MenuItem Header="{sd:Localize Include in build as root asset in, Context=Menu}" ItemsSource="{Binding Session.RootAssetTargets}" Icon="{sd:Image {StaticResource ImageAssetIsRoot}}"
+        <MenuItem Header="Include in build as root asset in" ItemsSource="{Binding Session.RootAssetTargets}" Icon="{sd:Image {StaticResource ImageAssetIsRoot}}"
                   Visibility="{Binding Session.RootAssetTargets.Count, Converter={sd:Chained {sd:NumericToBool}, {sd:VisibleOrCollapsed}}, FallbackValue={sd:Collapsed}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}" d:DataContext="{d:DesignInstance sd:RootAssetTargetViewModel}">
@@ -141,26 +141,26 @@
           </MenuItem.Template>
         </MenuItem>
         <Separator/>
-        <MenuItem Header="{sd:Localize Cut, Context=Menu}" Command="ApplicationCommands.Cut" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCut}}"/>
-        <MenuItem Header="{sd:Localize Copy, Context=Menu}" Command="ApplicationCommands.Copy" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCopy}}"/>
-        <MenuItem Header="{sd:Localize Copy with dependencies, Context=Menu}" Command="{Binding CopyAssetsRecursivelyCommand}" InputGestureText="{x:Static strings:KeyGestures.CopyAssetRecursively}" Icon="{sd:Image {StaticResource ImageCopyRecursively}}"/>
-        <MenuItem Header="{sd:Localize Paste, Context=Menu}" Command="ApplicationCommands.Paste" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImagePaste}}"/>
-        <MenuItem Header="{sd:Localize Delete, Context=Menu}" Command="ApplicationCommands.Delete" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
+        <MenuItem Header="Cut" Command="ApplicationCommands.Cut" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCut}}"/>
+        <MenuItem Header="Copy" Command="ApplicationCommands.Copy" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCopy}}"/>
+        <MenuItem Header="Copy with dependencies" Command="{Binding CopyAssetsRecursivelyCommand}" InputGestureText="{x:Static strings:KeyGestures.CopyAssetRecursively}" Icon="{sd:Image {StaticResource ImageCopyRecursively}}"/>
+        <MenuItem Header="Paste" Command="ApplicationCommands.Paste" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImagePaste}}"/>
+        <MenuItem Header="Delete" Command="ApplicationCommands.Delete" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Copy asset URL, Context=Menu}" Command="{Binding CopyAssetUrlCommand}" />
-        <MenuItem Header="{sd:Localize Rename, Context=Menu}" Command="sd:AssetViewUserControl.BeginEditCommand" Icon="{sd:Image {StaticResource ImageRename}}" InputGestureText="F2"/>
+        <MenuItem Header="Copy asset URL" Command="{Binding CopyAssetUrlCommand}" />
+        <MenuItem Header="Rename" Command="sd:AssetViewUserControl.BeginEditCommand" Icon="{sd:Image {StaticResource ImageRename}}" InputGestureText="F2"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Create folder, Context=Menu}" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}" />
-        <MenuItem Header="{sd:Localize Add asset..., Context=Menu}" Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}" Visibility="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-        <MenuItem Header="{sd:Localize Update selected assets from their source, Context=Menu}" Command="{Binding Session.SourceTracker.UpdateSelectedAssetsFromSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateSelectedAssetsFromSource}" Icon="{sd:Image {StaticResource UpdateSelectedAssetsFromSource}}"/>
-        <MenuItem Header="{sd:Localize Update all assets with modified source, Context=Menu}" Command="{Binding Session.SourceTracker.UpdateAllAssetsWithModifiedSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateAllAssetsWithModifiedSource}" Icon="{sd:Image {StaticResource UpdateAllAssetsWithModifiedSource}}"/>
+        <MenuItem Header="Create folder" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}" />
+        <MenuItem Header="Add asset..." Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}" Visibility="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+        <MenuItem Header="Update selected assets from their source" Command="{Binding Session.SourceTracker.UpdateSelectedAssetsFromSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateSelectedAssetsFromSource}" Icon="{sd:Image {StaticResource UpdateSelectedAssetsFromSource}}"/>
+        <MenuItem Header="Update all assets with modified source" Command="{Binding Session.SourceTracker.UpdateAllAssetsWithModifiedSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateAllAssetsWithModifiedSource}" Icon="{sd:Image {StaticResource UpdateAllAssetsWithModifiedSource}}"/>
         <!-- Explore -->
-        <MenuItem Header="{sd:Localize Explore, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Open with text editor, Context=Menu}" Command="{Binding Session.OpenWithTextEditorCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenWithTextEditor}}"/>
-        <MenuItem Header="{sd:Localize Open asset file, Context=Menu}" Command="{Binding Session.OpenAssetFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenAssetFile}}"/>
-        <MenuItem Header="{sd:Localize Open source file, Context=Menu}" Command="{Binding Session.OpenSourceFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenSourceFile}}"/>
-        <MenuItem Header="{sd:Localize Show in Explorer, Context=Menu}" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding SelectedContent}" Icon="{sd:Image {StaticResource ImageExplore}}"/>
-        <MenuItem Header="{sd:Localize Show source file in Explorer, Context=Menu}" Command="{Binding Session.ExploreSourceFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageExplore}}"/>
+        <MenuItem Header="Explore" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Open with text editor" Command="{Binding Session.OpenWithTextEditorCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenWithTextEditor}}"/>
+        <MenuItem Header="Open asset file" Command="{Binding Session.OpenAssetFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenAssetFile}}"/>
+        <MenuItem Header="Open source file" Command="{Binding Session.OpenSourceFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageOpenSourceFile}}"/>
+        <MenuItem Header="Show in Explorer" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding SelectedContent}" Icon="{sd:Image {StaticResource ImageExplore}}"/>
+        <MenuItem Header="Show source file in Explorer" Command="{Binding Session.ExploreSourceFileCommand}" CommandParameter="{Binding SingleSelectedAsset}" Icon="{sd:Image {StaticResource ImageExplore}}"/>
       </ContextMenu>
 
     </ResourceDictionary>
@@ -197,10 +197,10 @@
     <!-- MENU ROW -->
     <Menu IsHitTestVisible="True" Grid.Row="0" FontSize="12">
       <!-- File Menu -->
-      <MenuItem Header="{sd:Localize File, Context=Menu}">
-        <MenuItem Header="{sd:Localize New, Context=Menu}" Command="ApplicationCommands.New" Icon="{sd:Image {StaticResource ImageNewSolution}}"/>
-        <MenuItem Header="{sd:Localize Open, Context=Menu}" Command="ApplicationCommands.Open" Icon="{sd:Image {StaticResource ImageOpen}}"/>
-        <MenuItem Header="{sd:Localize Open recent, Context=Menu}" Icon="{sd:Image {StaticResource ImageOpen}}" IsEnabled="{Binding MRU.MostRecentlyUsedFiles.Count, Converter={sd:NumericToBool}}">
+      <MenuItem Header="File">
+        <MenuItem Header="New" Command="ApplicationCommands.New" Icon="{sd:Image {StaticResource ImageNewSolution}}"/>
+        <MenuItem Header="Open" Command="ApplicationCommands.Open" Icon="{sd:Image {StaticResource ImageOpen}}"/>
+        <MenuItem Header="Open recent" Icon="{sd:Image {StaticResource ImageOpen}}" IsEnabled="{Binding MRU.MostRecentlyUsedFiles.Count, Converter={sd:NumericToBool}}">
           <!-- IsCheckable=True is a hack to prevent WPF from clearing the selected sub menu item -->
           <MenuItem ItemsSource="{Binding RecentFiles}" IsCheckable="True">
             <MenuItem.ItemTemplate>
@@ -230,42 +230,42 @@
             </MenuItem.Template>
           </MenuItem>
           <Separator/>
-          <MenuItem Header="{sd:Localize Clear list, Context=Menu}" Command="{Binding ClearMRUCommand}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
+          <MenuItem Header="Clear list" Command="{Binding ClearMRUCommand}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
         </MenuItem>
-        <MenuItem Header="{sd:Localize Save, Context=Menu}" Command="ApplicationCommands.Save" Icon="{sd:Image {StaticResource ImageSave}}"/>
+        <MenuItem Header="Save" Command="ApplicationCommands.Save" Icon="{sd:Image {StaticResource ImageSave}}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Reload project, Context=Menu}" Command="{Binding ReloadSessionCommand}" Icon="{sd:Image {StaticResource ImageReloadProject}}"/>
+        <MenuItem Header="Reload project" Command="{Binding ReloadSessionCommand}" Icon="{sd:Image {StaticResource ImageReloadProject}}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Quit, Context=Menu}">
+        <MenuItem Header="Quit">
           <i:Interaction.Behaviors>
             <sd:MenuItemCloseWindowBehavior/>
           </i:Interaction.Behaviors>
         </MenuItem>
       </MenuItem>
       <!-- Edit Menu -->
-      <MenuItem Header="{sd:Localize Edit, Context=Menu}">
-        <MenuItem Header="{sd:Localize Undo, Context=Menu}" Command="ApplicationCommands.Undo" Icon="{sd:Image {StaticResource ImageUndo}}"/>
-        <MenuItem Header="{sd:Localize Redo, Context=Menu}" Command="ApplicationCommands.Redo" Icon="{sd:Image {StaticResource ImageRedo}}"/>
+      <MenuItem Header="Edit">
+        <MenuItem Header="Undo" Command="ApplicationCommands.Undo" Icon="{sd:Image {StaticResource ImageUndo}}"/>
+        <MenuItem Header="Redo" Command="ApplicationCommands.Redo" Icon="{sd:Image {StaticResource ImageRedo}}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Cut, Context=Menu}" Command="ApplicationCommands.Cut" Icon="{sd:Image {StaticResource ImageCut}}" />
-        <MenuItem Header="{sd:Localize Copy, Context=Menu}" Command="ApplicationCommands.Copy" Icon="{sd:Image {StaticResource ImageCopy}}" />
-        <MenuItem Header="{sd:Localize Paste, Context=Menu}" Command="ApplicationCommands.Paste" Icon="{sd:Image {StaticResource ImagePaste}}" />
-        <MenuItem Header="{sd:Localize Delete, Context=Menu}" Command="ApplicationCommands.Delete" Icon="{sd:Image {StaticResource ImageDelete}}"/>
+        <MenuItem Header="Cut" Command="ApplicationCommands.Cut" Icon="{sd:Image {StaticResource ImageCut}}" />
+        <MenuItem Header="Copy" Command="ApplicationCommands.Copy" Icon="{sd:Image {StaticResource ImageCopy}}" />
+        <MenuItem Header="Paste" Command="ApplicationCommands.Paste" Icon="{sd:Image {StaticResource ImagePaste}}" />
+        <MenuItem Header="Delete" Command="ApplicationCommands.Delete" Icon="{sd:Image {StaticResource ImageDelete}}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Settings, Context=Menu}" Command="{Binding OpenSettingsWindowCommand}" Icon="{sd:Image {StaticResource ImageSettings}}"/>
+        <MenuItem Header="Settings" Command="{Binding OpenSettingsWindowCommand}" Icon="{sd:Image {StaticResource ImageSettings}}"/>
       </MenuItem>
       <!-- Project Menu -->
-      <MenuItem Header="{sd:Localize Project, Context=Menu}" IsEnabled="{Binding Session, Converter={sd:ObjectToBool}}">
-        <MenuItem Header="{sd:Localize Build project, Context=Menu}" Command="{Binding Debugging.BuildProjectCommand}" Icon="{sd:Image {StaticResource ImageBuildProject}}" InputGestureText="{x:Static strings:KeyGestures.BuildProject}"/>
-        <MenuItem Header="{sd:Localize Start project, Context=Menu}" Command="{Binding Debugging.StartProjectCommand}" Icon="{sd:Image {StaticResource ImageStartProject}}" InputGestureText="{x:Static strings:KeyGestures.StartProject}"/>
+      <MenuItem Header="Project" IsEnabled="{Binding Session, Converter={sd:ObjectToBool}}">
+        <MenuItem Header="Build project" Command="{Binding Debugging.BuildProjectCommand}" Icon="{sd:Image {StaticResource ImageBuildProject}}" InputGestureText="{x:Static strings:KeyGestures.BuildProject}"/>
+        <MenuItem Header="Start project" Command="{Binding Debugging.StartProjectCommand}" Icon="{sd:Image {StaticResource ImageStartProject}}" InputGestureText="{x:Static strings:KeyGestures.StartProject}"/>
         <!-- Disable live-scripting commands until it is working -->
-        <MenuItem Header="{sd:Localize Start live-scripting, Context=Menu}" Command="{Binding Debugging.LivePlayProjectCommand}" Icon="{sd:Image {StaticResource ImageLiveScripting}}" Visibility="Collapsed"/>
-        <MenuItem Header="{sd:Localize Cancel build, Context=Menu}" Command="{Binding Debugging.CancelBuildCommand}" Icon="{sd:Image {StaticResource ImageStopBuild}}" InputGestureText="{x:Static strings:KeyGestures.CancelBuild}"/>
-        <MenuItem Header="{sd:Localize Folder, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Create folder, Context=Menu}" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}"/>
+        <MenuItem Header="Start live-scripting" Command="{Binding Debugging.LivePlayProjectCommand}" Icon="{sd:Image {StaticResource ImageLiveScripting}}" Visibility="Collapsed"/>
+        <MenuItem Header="Cancel build" Command="{Binding Debugging.CancelBuildCommand}" Icon="{sd:Image {StaticResource ImageStopBuild}}" InputGestureText="{x:Static strings:KeyGestures.CancelBuild}"/>
+        <MenuItem Header="Folder" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Create folder" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}"/>
 
-        <MenuItem Header="{sd:Localize Package, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Update package, Context=Menu}" ItemsSource="{Binding Session.UpdatePackageViewModel.Templates}" Icon="{sd:Image {StaticResource ImageAddNewProject}}" Visibility="{Binding Session.IsUpdatePackageEnabled, Converter={sd:VisibleOrCollapsed}}">
+        <MenuItem Header="Package" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Update package" ItemsSource="{Binding Session.UpdatePackageViewModel.Templates}" Icon="{sd:Image {StaticResource ImageAddNewProject}}" Visibility="{Binding Session.IsUpdatePackageEnabled, Converter={sd:VisibleOrCollapsed}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}" d:DataContext="{d:DesignInstance viewModels1:TemplateDescriptionViewModel}">
               <Setter Property="Command" Value="{Binding UpdatePackageCommand}"/>
@@ -283,55 +283,55 @@
             </DataTemplate>
           </MenuItem.ItemTemplate>
         </MenuItem>
-        <MenuItem Header="{sd:Localize Add dependency..., Context=Menu}" Command="{Binding Session.AddDependencyCommand}" Icon="{sd:Image {StaticResource ImageAddDependency}}"/>
-        <MenuItem Header="{sd:Localize Set as current project, Context=Menu}" Command="{Binding Session.SetCurrentProjectCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageStartupProject}}"/>
-        <MenuItem Header="{sd:Localize Package properties, Context=Menu}" Command="{Binding Session.ActivatePackagePropertiesCommand}" Icon="{sd:Image {StaticResource ImagePackageProperties}}"/>
+        <MenuItem Header="Add dependency..." Command="{Binding Session.AddDependencyCommand}" Icon="{sd:Image {StaticResource ImageAddDependency}}"/>
+        <MenuItem Header="Set as current project" Command="{Binding Session.SetCurrentProjectCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageStartupProject}}"/>
+        <MenuItem Header="Package properties" Command="{Binding Session.ActivatePackagePropertiesCommand}" Icon="{sd:Image {StaticResource ImagePackageProperties}}"/>
 
-        <MenuItem Header="{sd:Localize Solution, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize New project..., Context=Menu}" Command="{Binding Session.NewProjectCommand}" Icon="{sd:Image {StaticResource ImageAddNewPackage}}"/>
-        <MenuItem Header="{sd:Localize Add existing project..., Context=Menu}" Command="{Binding Session.AddExistingProjectCommand}" Icon="{sd:Image {StaticResource ImageAddExistingProject}}"/>
-        <MenuItem Header="{sd:Localize Open in IDE, Context=Menu}" Command="{Binding Session.OpenInIDECommand}" Icon="{sd:Image {StaticResource ImageCodeEditor}}"/>
-        <MenuItem Header="{sd:Localize Reload game assemblies, Context=Menu}" Command="{Binding Debugging.ReloadAssembliesCommand}" Icon="{sd:Image {StaticResource ImageReloadAssemblies}}"/>
+        <MenuItem Header="Solution" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="New project..." Command="{Binding Session.NewProjectCommand}" Icon="{sd:Image {StaticResource ImageAddNewPackage}}"/>
+        <MenuItem Header="Add existing project..." Command="{Binding Session.AddExistingProjectCommand}" Icon="{sd:Image {StaticResource ImageAddExistingProject}}"/>
+        <MenuItem Header="Open in IDE" Command="{Binding Session.OpenInIDECommand}" Icon="{sd:Image {StaticResource ImageCodeEditor}}"/>
+        <MenuItem Header="Reload game assemblies" Command="{Binding Debugging.ReloadAssembliesCommand}" Icon="{sd:Image {StaticResource ImageReloadAssemblies}}"/>
 
-        <MenuItem Header="{sd:Localize Actions, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Delete, Context=Menu}" Command="{Binding Session.DeleteSelectedSolutionItemsCommand}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
-        <MenuItem Header="{sd:Localize Rename, Context=Menu}" Command="{Binding Session.RenameDirectoryOrPackageCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageRename}}" InputGestureText="F2"/>
+        <MenuItem Header="Actions" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Delete" Command="{Binding Session.DeleteSelectedSolutionItemsCommand}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
+        <MenuItem Header="Rename" Command="{Binding Session.RenameDirectoryOrPackageCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageRename}}" InputGestureText="F2"/>
 
-        <MenuItem Header="{sd:Localize Asset, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Add asset..., Context=Menu}" Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}"/>
-        <MenuItem Header="{sd:Localize Update selected assets from their source, Context=Menu}" Command="{Binding Session.SourceTracker.UpdateSelectedAssetsFromSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateSelectedAssetsFromSource}" Icon="{sd:Image {StaticResource UpdateSelectedAssetsFromSource}}"/>
-        <MenuItem Header="{sd:Localize Update all assets with modified source, Context=Menu}" Command="{Binding Session.SourceTracker.UpdateAllAssetsWithModifiedSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateAllAssetsWithModifiedSource}" Icon="{sd:Image {StaticResource UpdateAllAssetsWithModifiedSource}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-        <MenuItem Header="{sd:Localize Explore, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-        <MenuItem Header="{sd:Localize Show in Explorer, Context=Menu}" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageExplore}}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+        <MenuItem Header="Asset" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Add asset..." Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}"/>
+        <MenuItem Header="Update selected assets from their source" Command="{Binding Session.SourceTracker.UpdateSelectedAssetsFromSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateSelectedAssetsFromSource}" Icon="{sd:Image {StaticResource UpdateSelectedAssetsFromSource}}"/>
+        <MenuItem Header="Update all assets with modified source" Command="{Binding Session.SourceTracker.UpdateAllAssetsWithModifiedSourceCommand}" InputGestureText="{x:Static stringsEd:KeyGestures.UpdateAllAssetsWithModifiedSource}" Icon="{sd:Image {StaticResource UpdateAllAssetsWithModifiedSource}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+        <MenuItem Header="Explore" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+        <MenuItem Header="Show in Explorer" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageExplore}}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
       </MenuItem>
       <!-- View Menu -->
-      <MenuItem Header="{sd:Localize View, Context=Menu}" IsEnabled="{Binding Session, Converter={sd:ObjectToBool}}">
-        <MenuItem Header="{sd:Localize Solution explorer, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.SessionExplorerPanelVisible, Mode=TwoWay}"/>
-        <MenuItem Header="{sd:Localize Asset view, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.AssetViewPanelVisible, Mode=TwoWay}"/>
-        <MenuItem Header="{sd:Localize References, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.ReferencesPanelVisible, Mode=TwoWay}"/>
+      <MenuItem Header="View" IsEnabled="{Binding Session, Converter={sd:ObjectToBool}}">
+        <MenuItem Header="Solution explorer" IsCheckable="True" IsChecked="{Binding Panels.SessionExplorerPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Asset view" IsCheckable="True" IsChecked="{Binding Panels.AssetViewPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="References" IsCheckable="True" IsChecked="{Binding Panels.ReferencesPanelVisible, Mode=TwoWay}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Asset preview, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.AssetPreviewPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Asset preview" IsCheckable="True" IsChecked="{Binding Panels.AssetPreviewPanelVisible, Mode=TwoWay}"/>
 
         <Separator/>
-        <MenuItem Header="{sd:Localize Property grid, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.PropertyGridPanelVisible, Mode=TwoWay}"/>
-        <MenuItem Header="{sd:Localize Edit history, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.ActionHistoryPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Property grid" IsCheckable="True" IsChecked="{Binding Panels.PropertyGridPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Edit history" IsCheckable="True" IsChecked="{Binding Panels.ActionHistoryPanelVisible, Mode=TwoWay}"/>
 
         <Separator/>
-        <MenuItem Header="{sd:Localize Asset errors, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.AssetLogPanelVisible, Mode=TwoWay}"/>
-        <MenuItem Header="{sd:Localize Output, Context=Menu}" IsCheckable="True" IsChecked="{Binding Panels.BuildLogPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Asset errors" IsCheckable="True" IsChecked="{Binding Panels.AssetLogPanelVisible, Mode=TwoWay}"/>
+        <MenuItem Header="Output" IsCheckable="True" IsChecked="{Binding Panels.BuildLogPanelVisible, Mode=TwoWay}"/>
 
       </MenuItem>
       <!-- Help Menu -->
-      <MenuItem Header="{sd:Localize Help, Context=Menu}">
-        <MenuItem Header="{sd:Localize Online documentation, Context=Menu}" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.DocumentationUrl}"/>
+      <MenuItem Header="Help">
+        <MenuItem Header="Online documentation" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.DocumentationUrl}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Questions and answers, Context=Menu}" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.AnswersUrl}"/>
-        <MenuItem Header="{sd:Localize Report an issue..., Context=Menu}" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.ReportIssueUrl}"/>
-        <MenuItem Header="{sd:Localize Community forums, Context=Menu}" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.ForumsUrl}"/>
+        <MenuItem Header="Questions and answers" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.AnswersUrl}"/>
+        <MenuItem Header="Report an issue..." Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.ReportIssueUrl}"/>
+        <MenuItem Header="Community forums" Command="{Binding OpenWebPageCommand}" CommandParameter="{x:Static gh:StrideGameStudio.ForumsUrl}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize Show debug window, Context=Menu}" Command="{Binding OpenDebugWindowCommand, RelativeSource={RelativeSource AncestorType=Window}}" InputGestureText="{x:Static strings:KeyGestures.OpenDebugWindow}"/>
+        <MenuItem Header="Show debug window" Command="{Binding OpenDebugWindowCommand, RelativeSource={RelativeSource AncestorType=Window}}" InputGestureText="{x:Static strings:KeyGestures.OpenDebugWindow}"/>
         <Separator/>
-        <MenuItem Header="{sd:Localize About..., Context=Menu}" Command="{Binding OpenAboutPageCommand}"/>
+        <MenuItem Header="About..." Command="{Binding OpenAboutPageCommand}"/>
       </MenuItem>
       <!-- Debug Menu -->
       <MenuItem Header="Debug" Visibility="{Binding IsTestMenuVisible, ElementName=EditorWindow, Converter={sd:VisibleOrCollapsed}}">
@@ -357,15 +357,15 @@
       <ToolBarTray Grid.Row="0" Visibility="{Binding Session, Converter={sd:Chained {sd:ObjectToBool}, {sd:VisibleOrCollapsed}}}">
         <ToolBar>
           <Button Command="ApplicationCommands.New"
-                  ToolTip="{sd:Localize Create a project, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Create a project" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageNewSolution}" />
           </Button>
           <Button Command="ApplicationCommands.Open" Margin="2,0,0,0"
-                  ToolTip="{sd:Localize Open an existing project, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Open an existing project" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageOpen}" />
           </Button>
           <Menu Background="Transparent" Margin="0"
-                ToolTip="{sd:Localize Open recent, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True"
+                ToolTip="Open recent" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True"
                 ToolTipService.IsEnabled="{Binding ElementName=MRUMenu, Path=IsSubmenuOpen, Converter={sd:InvertBool}}">
             <MenuItem x:Name="MRUMenu" ItemsSource="{Binding RecentFiles}" Style="{StaticResource ToolBarDropDownMenuItemStyle}">
               <MenuItem.ItemTemplate>
@@ -391,31 +391,31 @@
             </MenuItem>
           </Menu>
           <Button Command="ApplicationCommands.Save"
-                  ToolTip="{sd:Localize Save the project and all its documents, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Save the project and all its documents" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageSave}" />
           </Button>
           <Separator/>
           <Button Command="{Binding ReloadSessionCommand}"
-                  ToolTip="{sd:Localize Reload current project (ask to save), Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Reload current project (ask to save)" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageReloadProject}" />
           </Button>
           <Separator/>
           <Button Command="ApplicationCommands.Undo"
-                  ToolTip="{sd:Localize Undo last action, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Undo last action" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageUndo}" />
           </Button>
           <Button Command="ApplicationCommands.Redo"
-                  ToolTip="{sd:Localize Redo last cancelled action, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Redo last cancelled action" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageRedo}" />
           </Button>
         </ToolBar>
         <ToolBar>
           <Button Command="{Binding Session.OpenInIDECommand}" Margin="2,0,0,0"
-                  ToolTip="{sd:Localize Open in IDE, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Open in IDE" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageCodeEditor}" Width="16" Height="16" />
           </Button>
           <Menu Background="Transparent"
-                ToolTip="{sd:Localize Open with..., Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                ToolTip="Open with..." sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <MenuItem ItemsSource="{Binding AvailableIDEs}" Style="{StaticResource ToolBarDropDownMenuItemStyle}">
               <MenuItem.ItemContainerStyle>
                 <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -426,7 +426,7 @@
             </MenuItem>
           </Menu>
           <Button Command="{Binding Debugging.ReloadAssembliesCommand}"
-                  ToolTip="{sd:Localize Reload game assemblies and update scripts, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="Reload game assemblies and update scripts" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Grid>
               <Image Source="{StaticResource ImageReloadAssemblies}"/>
               <Rectangle Fill="White" Visibility="{Binding Debugging.ReloadAssembliesCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}">
@@ -447,22 +447,22 @@
           </Button>
           <Separator/>
           <Button Command="{Binding Debugging.BuildProjectCommand}"
-                  ToolTip="{sd:ToolTip {sd:Localize Build the project, Context=ToolTip}, {x:Static strings:KeyGestures.BuildProject}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="{sd:ToolTip Build the project, {x:Static strings:KeyGestures.BuildProject}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageBuildProject}"/>
           </Button>
           <Button Command="{Binding Debugging.StartProjectCommand}"
-                  ToolTip="{sd:ToolTip {sd:Localize Build the project and start the game, Context=ToolTip}, {x:Static strings:KeyGestures.StartProject}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="{sd:ToolTip Build the project and start the game, {x:Static strings:KeyGestures.StartProject}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageStartProject}"/>
           </Button>
           <!-- Live Scripting -->
           <!-- FIXME live scripting is disabled (XK-4309) -->
           <Button Command="{Binding Debugging.LivePlayProjectCommand}"
-                  ToolTip="{sd:Localize Start project in live-scripting mode, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True"
+                  ToolTip="Start project in live-scripting mode" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True"
                   Visibility="Collapsed">
             <Image Source="{StaticResource ImageLiveScripting}"/>
           </Button>
           <Button Command="{Binding Debugging.CancelBuildCommand}"
-                  ToolTip="{sd:ToolTip {sd:Localize Cancel the current build, Context=ToolTip}, {x:Static strings:KeyGestures.CancelBuild}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                  ToolTip="{sd:ToolTip Cancel the current build, {x:Static strings:KeyGestures.CancelBuild}}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
             <Image Source="{StaticResource ImageStopBuild}"/>
           </Button>
         </ToolBar>
@@ -478,49 +478,49 @@
               <xcad:LayoutPanel Orientation="Horizontal">
                 <xcad:LayoutAnchorablePane DockWidth="300">
                   <!-- SOLUTION EXPLORER -->
-                  <xcad:LayoutAnchorable AutoHideMinWidth="300" ContentId="SolutionExplorer" Title="{Binding Source={sd:Localize Solution explorer, Context=View}}"
+                  <xcad:LayoutAnchorable AutoHideMinWidth="300" ContentId="SolutionExplorer" Title="{Binding Source=Solution explorer}"
                                          gh:AvalonDockHelper.IsVisible="{Binding Panels.SessionExplorerPanelVisible, Mode=TwoWay,
                                          Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                     <DockPanel DataContext="{x:Static vm:GameStudioViewModel.GameStudio}">
                       <ToolBarTray DockPanel.Dock="Top">
                         <ToolBar>
                           <Button Command="{Binding Session.NewProjectCommand}"
-                            ToolTip="{sd:Localize Create a project..., Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Create a project..." sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageAddNewPackage}" />
                           </Button>
                           <Button Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding SelectedItems, ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Create a folder, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Create a folder" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageNewFolder}" />
                           </Button>
                           <Separator/>
                           <Button Command="{Binding Session.ActivatePackagePropertiesCommand}"
-                            ToolTip="{sd:Localize Display the properties of the selected package in the property grid, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Display the properties of the selected package in the property grid" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImagePackageProperties}" />
                           </Button>
                           <Button Command="{Binding Session.RenameDirectoryOrPackageCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}}" CommandParameter="{Binding SelectedItems, ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Rename the selected folder or package, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Rename the selected folder or package" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageRename}" />
                           </Button>
                           <Button Command="{Binding Session.DeleteSelectedSolutionItemsCommand}"
-                            ToolTip="{sd:Localize Delete the selected items, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Delete the selected items" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageDelete}" />
                           </Button>
                           <Separator/>
                           <Button Command="{x:Static sd:SessionExplorerHelper.ExpandAssetFolders}" CommandTarget="{Binding ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Expand all asset folders, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Expand all asset folders" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageExpandAssetFolders}" />
                           </Button>
                           <Button Command="{x:Static sd:SessionExplorerHelper.ExpandAllFolders}" CommandTarget="{Binding ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Expand all, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Expand all" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageExpandAllFolders}" />
                           </Button>
                           <Button Command="{x:Static sd:SessionExplorerHelper.CollapseAllFolders}" CommandTarget="{Binding ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Collapse all, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Collapse all" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageCollapseAllFolders}" />
                           </Button>
                           <Separator/>
                           <Button Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding SelectedItems, ElementName=DirectoryTreeView}"
-                            ToolTip="{sd:Localize Show in Explorer, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
+                            ToolTip="Show in Explorer" sd:ToolTipHelper.Status="{Binding Status}" ToolTipService.ShowOnDisabled="True">
                             <Image Source="{StaticResource ImageExplore}" />
                           </Button>
                         </ToolBar>
@@ -529,11 +529,11 @@
                       <sd:TreeView x:Name="DirectoryTreeView" ItemsSource="{Binding Session.PackageCategories.Values}" AllowDrop="True" IsVirtualizing="False">
                         <sd:TreeView.Resources>
                           <ContextMenu x:Key="ContextMenu">
-                            <MenuItem Header="{sd:Localize Folder, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Create folder, Context=Menu}" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Folder" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Create folder" Command="{Binding Session.NewDirectoryCommand}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageNewFolder}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
 
-                            <MenuItem Header="{sd:Localize Package, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{sd:MultiBinding {Binding Session.IsUpdatePackageEnabled}, {Binding Session.AddExistingProjectCommand.IsEnabled}, {Binding Session.AddDependencyCommand.IsEnabled}, {Binding Session.SetCurrentProjectCommand.IsEnabled}, Converter={sd:MultiChained {sd:OrMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
-                            <MenuItem Header="{sd:Localize Update package, Context=Menu}" ItemsSource="{Binding Session.UpdatePackageViewModel.Templates}" Icon="{sd:Image {StaticResource ImageAddNewProject}}" Visibility="{Binding Session.IsUpdatePackageEnabled, Converter={sd:VisibleOrCollapsed}}">
+                            <MenuItem Header="Package" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{sd:MultiBinding {Binding Session.IsUpdatePackageEnabled}, {Binding Session.AddExistingProjectCommand.IsEnabled}, {Binding Session.AddDependencyCommand.IsEnabled}, {Binding Session.SetCurrentProjectCommand.IsEnabled}, Converter={sd:MultiChained {sd:OrMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
+                            <MenuItem Header="Update package" ItemsSource="{Binding Session.UpdatePackageViewModel.Templates}" Icon="{sd:Image {StaticResource ImageAddNewProject}}" Visibility="{Binding Session.IsUpdatePackageEnabled, Converter={sd:VisibleOrCollapsed}}">
                               <MenuItem.ItemContainerStyle>
                                 <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}" d:DataContext="{d:DesignInstance viewModels1:TemplateDescriptionViewModel}">
                                   <Setter Property="Command" Value="{Binding UpdatePackageCommand}"/>
@@ -551,27 +551,27 @@
                                 </DataTemplate>
                               </MenuItem.ItemTemplate>
                             </MenuItem>
-                            <MenuItem Header="{sd:Localize Add dependency..., Context=Menu}" Command="{Binding Session.AddDependencyCommand}" Icon="{sd:Image {StaticResource ImageAddDependency}}" Visibility="{Binding Session.AddDependencyCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Set as current project, Context=Menu}" Command="{Binding Session.SetCurrentProjectCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageStartupProject}}" Visibility="{Binding Session.SetCurrentProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Package properties, Context=Menu}" Command="{Binding Session.ActivatePackagePropertiesCommand}" Icon="{sd:Image {StaticResource ImagePackageProperties}}" Visibility="{Binding Session.ActivatePackagePropertiesCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Add dependency..." Command="{Binding Session.AddDependencyCommand}" Icon="{sd:Image {StaticResource ImageAddDependency}}" Visibility="{Binding Session.AddDependencyCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Set as current project" Command="{Binding Session.SetCurrentProjectCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageStartupProject}}" Visibility="{Binding Session.SetCurrentProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Package properties" Command="{Binding Session.ActivatePackagePropertiesCommand}" Icon="{sd:Image {StaticResource ImagePackageProperties}}" Visibility="{Binding Session.ActivatePackagePropertiesCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
 
-                            <MenuItem Header="{sd:Localize Solution, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{sd:MultiBinding {Binding Session.NewPackageCommand.IsEnabled}, {Binding Session.AddExistingPackageCommand.IsEnabled}, {Binding Session.OpenInIDECommand.IsEnabled}, Converter={sd:MultiChained {sd:OrMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
-                            <MenuItem Header="{sd:Localize New project..., Context=Menu}" Command="{Binding Session.NewProjectCommand}" Icon="{sd:Image {StaticResource ImageAddNewPackage}}" Visibility="{Binding Session.NewProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Add existing project..., Context=Menu}" Command="{Binding Session.AddExistingProjectCommand}" Icon="{sd:Image {StaticResource ImageAddExistingProject}}" Visibility="{Binding Session.AddExistingProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Open in IDE, Context=Menu}" Command="{Binding Session.OpenInIDECommand}" Icon="{sd:Image {StaticResource ImageCodeEditor}}" Visibility="{Binding Session.OpenInIDECommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Solution" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{sd:MultiBinding {Binding Session.NewPackageCommand.IsEnabled}, {Binding Session.AddExistingPackageCommand.IsEnabled}, {Binding Session.OpenInIDECommand.IsEnabled}, Converter={sd:MultiChained {sd:OrMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
+                            <MenuItem Header="New project..." Command="{Binding Session.NewProjectCommand}" Icon="{sd:Image {StaticResource ImageAddNewPackage}}" Visibility="{Binding Session.NewProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Add existing project..." Command="{Binding Session.AddExistingProjectCommand}" Icon="{sd:Image {StaticResource ImageAddExistingProject}}" Visibility="{Binding Session.AddExistingProjectCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Open in IDE" Command="{Binding Session.OpenInIDECommand}" Icon="{sd:Image {StaticResource ImageCodeEditor}}" Visibility="{Binding Session.OpenInIDECommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
 
-                            <MenuItem Header="{sd:Localize Actions, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-                            <MenuItem Header="{sd:Localize Cut, Context=Menu}" Command="ApplicationCommands.Cut" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCut}}"/>
-                            <MenuItem Header="{sd:Localize Copy, Context=Menu}" Command="ApplicationCommands.Copy" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCopy}}"/>
-                            <MenuItem Header="{sd:Localize Paste, Context=Menu}" Command="ApplicationCommands.Paste" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImagePaste}}"/>
-                            <MenuItem Header="{sd:Localize Delete, Context=Menu}" Command="ApplicationCommands.Delete" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
-                            <MenuItem Header="{sd:Localize Rename, Context=Menu}" Command="{Binding Session.RenameDirectoryOrPackageCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageRename}}" Visibility="{Binding Session.RenameDirectoryOrPackageCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}" InputGestureText="F2"/>
+                            <MenuItem Header="Actions" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+                            <MenuItem Header="Cut" Command="ApplicationCommands.Cut" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCut}}"/>
+                            <MenuItem Header="Copy" Command="ApplicationCommands.Copy" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageCopy}}"/>
+                            <MenuItem Header="Paste" Command="ApplicationCommands.Paste" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImagePaste}}"/>
+                            <MenuItem Header="Delete" Command="ApplicationCommands.Delete" CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Icon="{sd:Image {StaticResource ImageDelete}}"/>
+                            <MenuItem Header="Rename" Command="{Binding Session.RenameDirectoryOrPackageCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}}" CommandParameter="{Binding Session.ActiveAssetView.SelectedLocations}" Icon="{sd:Image {StaticResource ImageRename}}" Visibility="{Binding Session.RenameDirectoryOrPackageCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}" InputGestureText="F2"/>
 
-                            <MenuItem Header="{sd:Localize Asset, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Add asset..., Context=Menu}" Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Asset" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Add asset..." Command="{Binding Session.ActiveAssetView.ShowAddAssetDialogCommand}" InputGestureText="{x:Static strings:KeyGestures.AddAsset}" Icon="{sd:Image {StaticResource ImageNewAsset}}" Visibility="{Binding Session.NewDirectoryCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
 
-                            <MenuItem Header="{sd:Localize Explore, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
-                            <MenuItem Header="{sd:Localize Show in Explorer, Context=Menu}" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageExplore}}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Explore" Style="{StaticResource MenuGroupSeparatorStyle}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
+                            <MenuItem Header="Show in Explorer" Command="{Binding Session.ExploreCommand}" CommandParameter="{Binding}" Icon="{sd:Image {StaticResource ImageExplore}}" Visibility="{Binding Session.ExploreCommand.IsEnabled, Converter={sd:VisibleOrCollapsed}}"/>
 
                           </ContextMenu>
                         </sd:TreeView.Resources>
@@ -612,7 +612,7 @@
                 </xcad:LayoutAnchorablePane>
                 <xcad:LayoutDocumentPane>
                   <!-- ASSET VIEW -->
-                  <xcad:LayoutAnchorable AutoHideMinWidth="300" ContentId="AssetView" Title="{Binding Source={sd:Localize Asset view, Context=View}}"
+                  <xcad:LayoutAnchorable AutoHideMinWidth="300" ContentId="AssetView" Title="{Binding Source=Asset view}"
                                            gh:AvalonDockHelper.IsVisible="{Binding Panels.AssetViewPanelVisible, Mode=TwoWay,
                                            Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                     <sd:AssetViewUserControl DataContext="{x:Static vm:GameStudioViewModel.GameStudio}" AssetCollection="{Binding Session.ActiveAssetView}" AssetContextMenu="{StaticResource AssetContextMenu}"
@@ -634,7 +634,7 @@
               </xcad:LayoutPanel>
               <xcad:LayoutAnchorablePane DockHeight="200">
                 <!-- REFERENCES -->
-                <xcad:LayoutAnchorable AutoHideMinHeight="200" ContentId="References" Title="{Binding Source={sd:Localize References, Context=View}}"
+                <xcad:LayoutAnchorable AutoHideMinHeight="200" ContentId="References" Title="{Binding Source=References}"
                                        gh:AvalonDockHelper.IsVisible="{Binding Panels.ReferencesPanelVisible, Mode=TwoWay,
                                        Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                   <DockPanel LastChildFill="True" x:Name="RefViewDockPanel" DataContext="{x:Static vm:GameStudioViewModel.GameStudio}">
@@ -651,8 +651,8 @@
                                                CanEditAssets="False" CanAddAssets="False" CanDeleteAssets="False" CanRecursivelyDisplayAssets="False" TileThumbnailSize="64" AssetDoubleClick="{Binding Session.ActiveAssetView.SelectAssetCommand}"
                                                BorderThickness="0">
                       <sd:AssetViewUserControl.PrimaryToolBarItems>
-                        <ToggleButton IsChecked="{Binding Session.References.ShowReferencers, Converter={sd:InvertBool}}" Content="{sd:Localize References}" MinWidth="80"/>
-                        <ToggleButton IsChecked="{Binding Session.References.ShowReferencers}" Content="{sd:Localize Referenced by}" MinWidth="80"/>
+                        <ToggleButton IsChecked="{Binding Session.References.ShowReferencers, Converter={sd:InvertBool}}" Content="References" MinWidth="80"/>
+                        <ToggleButton IsChecked="{Binding Session.References.ShowReferencers}" Content="Referenced by" MinWidth="80"/>
                       </sd:AssetViewUserControl.PrimaryToolBarItems>
                       <i:Interaction.Behaviors>
                         <sd:CommandBindingBehavior RoutedCommand="ApplicationCommands.Cut" Command="{Binding Session.References.DisplayedReferences.CutContentCommand, FallbackValue={x:Static cmd:DisabledCommand.Instance}, Mode=OneWay}"/>
@@ -663,20 +663,20 @@
                 </xcad:LayoutAnchorable>
                 <!-- ASSET LOG -->
                 <xcad:LayoutAnchorable AutoHideMinHeight="200" ContentId="AssetLog"
-                                       Title="{sd:Localize Asset error ({0}), Plural=Asset errors ({0}), Count={Binding Session.AssetLog.ErrorCount, Source={x:Static vm:GameStudioViewModel.GameStudio}}, IsStringFormat=True, Context=View}"
+                                       Title="{Binding Session.AssetLog.ErrorCountText, Source={x:Static vm:GameStudioViewModel.GameStudio}}"
                                        gh:AvalonDockHelper.IsVisible="{Binding Panels.AssetLogPanelVisible, Mode=TwoWay,
                                        Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                   <sd:GridLogViewer DataContext="{x:Static vm:GameStudioViewModel.GameStudio}" LogMessages="{Binding Session.AssetLog.FilteredMessages}" Session="{Binding Session}" ShowDebugMessages="False" ShowVerboseMessages="False" ShowInfoMessages="False">
                     <sd:GridLogViewer.ToolBarContent>
                       <StackPanel Orientation="Horizontal" DataContext="{Binding Session.AssetLog, Source={x:Static vm:GameStudioViewModel.GameStudio}}">
                         <ComboBox SelectedValuePath="Tag" SelectedValue="{Binding Scope}" MinWidth="100" VerticalAlignment="Center"
-                                  ToolTip="{sd:Localize Show the messages of all assets or only of the selected ones (and the assets they use), Context=ToolTip}">
-                          <ComboBoxItem Content="{sd:Localize All assets}" Tag="{x:Static logs:AssetLogScope.AllAssets}"/>
-                          <ComboBoxItem Content="{sd:Localize Selected assets}" Tag="{x:Static logs:AssetLogScope.SelectedAssets}"/>
+                                  ToolTip="Show the messages of all assets or only of the selected ones (and the assets they use)">
+                          <ComboBoxItem Content="All assets" Tag="{x:Static logs:AssetLogScope.AllAssets}"/>
+                          <ComboBoxItem Content="Selected assets" Tag="{x:Static logs:AssetLogScope.SelectedAssets}"/>
                         </ComboBox>
                         <Menu VerticalAlignment="Center" Background="Transparent">
                           <MenuItem Header="{Binding SourcesHeader}">
-                            <MenuItem Header="{sd:Localize Show all sources, Context=Menu}" Command="{Binding ShowAllSourcesCommand}"/>
+                            <MenuItem Header="Show all sources" Command="{Binding ShowAllSourcesCommand}"/>
                             <Separator/>
                             <MenuItem Header="{Binding Sources[0].DisplayName}" IsCheckable="True" IsChecked="{Binding Sources[0].IsShown}" StaysOpenOnClick="True"/>
                             <MenuItem Header="{Binding Sources[1].DisplayName}" IsCheckable="True" IsChecked="{Binding Sources[1].IsShown}" StaysOpenOnClick="True"/>
@@ -699,7 +699,7 @@
                         <TextBlock FontWeight="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam},
                                     ConverterParameter={x:Static FontWeights.Bold}, FallbackValue={x:Static FontWeights.Normal}}"
                                    Foreground="{StaticResource SelectedTextBrush}">
-                                    <Run Text="{sd:Localize Build}"/>
+                                    <Run Text="Build"/>
                                     <Run Text="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam}, ConverterParameter=*}"/>
                         </TextBlock>
                       </TabItem.Header>
@@ -713,7 +713,7 @@
                         <TextBlock FontWeight="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam},
                                     ConverterParameter={x:Static FontWeights.Bold}, FallbackValue={x:Static FontWeights.Normal}}"
                                    Foreground="{StaticResource SelectedTextBrush}">
-                                    <Run Text="{sd:Localize Project}"/>
+                                    <Run Text="Project"/>
                                     <Run Text="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam}, ConverterParameter=*}"/>
                         </TextBlock>
                       </TabItem.Header>
@@ -725,7 +725,7 @@
                         <TextBlock FontWeight="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam},
                                     ConverterParameter={x:Static FontWeights.Bold}, FallbackValue={x:Static FontWeights.Normal}}"
                                    Foreground="{StaticResource SelectedTextBrush}">
-                                    <Run Text="{sd:Localize Editor}"/>
+                                    <Run Text="Editor"/>
                                     <Run Text="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam}, ConverterParameter=*}"/>
                         </TextBlock>
                       </TabItem.Header>
@@ -737,7 +737,7 @@
                         <TextBlock FontWeight="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam},
                                     ConverterParameter={x:Static FontWeights.Bold}, FallbackValue={x:Static FontWeights.Normal}}"
                                    Foreground="{StaticResource SelectedTextBrush}">
-                                    <Run Text="{sd:Localize Live-scripting}"/>
+                                    <Run Text="Live-scripting"/>
                                     <Run Text="{Binding HasNewMessages, Mode=OneWay, Converter={sd:BoolToParam}, ConverterParameter=*}"/>
                         </TextBlock>
                       </TabItem.Header>
@@ -762,7 +762,7 @@
             <xcad:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="400">
               <xcad:LayoutAnchorablePane DockHeight="2*">
                 <!-- PROPERTY GRID -->
-                <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="PropertyGrid" Title="{Binding Source={sd:Localize Property grid, Context=View}}"
+                <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="PropertyGrid" Title="{Binding Source=Property grid}"
                                        gh:AvalonDockHelper.IsVisible="{Binding Panels.PropertyGridPanelVisible, Mode=TwoWay,
                                        Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                   <Grid Background="{StaticResource ToolBarBackgroundBrush}" DataContext="{x:Static vm:GameStudioViewModel.GameStudio}">
@@ -777,7 +777,7 @@
                     </Grid.RowDefinitions>
                     <DockPanel Margin="6,6,6,2">
                       <!-- Adding tag -->
-                      <sd:TextBox MinWidth="90" DockPanel.Dock="Right" ValidateOnLostFocus="False" WatermarkContent="{sd:Localize Add new tag}" x:Name="NewTagTextBox"  Visibility="{Binding Session.ActiveAssetView.SelectedAssets.Count, Converter={sd:Chained {sd:NumericToBool}, {sd:VisibleOrCollapsed}}}">
+                      <sd:TextBox MinWidth="90" DockPanel.Dock="Right" ValidateOnLostFocus="False" WatermarkContent="Add new tag" x:Name="NewTagTextBox"  Visibility="{Binding Session.ActiveAssetView.SelectedAssets.Count, Converter={sd:Chained {sd:NumericToBool}, {sd:VisibleOrCollapsed}}}">
                         <i:Interaction.Behaviors>
                           <sd:OnEventCommandBehavior EventName="Validated" Command="{Binding Session.AssetTags.AddTagCommand}" CommandParameter="{Binding Text, ElementName=NewTagTextBox}"/>
                           <sd:OnEventCommandBehavior EventName="Validated" Command="{x:Static sd:TextBox.ClearTextCommand}"/>
@@ -787,10 +787,10 @@
                       <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,6,0" VerticalAlignment="Center">
                         <Button Content="{sd:Image {StaticResource ImagePrevious}, 16, 16, HighQuality}" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding Session.PreviousSelectionCommand}"
-                            ToolTip="{sd:Localize Previous selection, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Session.Editor.Status}" ToolTipService.ShowOnDisabled="True" />
+                            ToolTip="Previous selection" sd:ToolTipHelper.Status="{Binding Session.Editor.Status}" ToolTipService.ShowOnDisabled="True" />
                         <Button Content="{sd:Image {StaticResource ImageNext}, 16, 16, HighQuality}" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding Session.NextSelectionCommand}"
-                            ToolTip="{sd:Localize Next selection, Context=ToolTip}" sd:ToolTipHelper.Status="{Binding Session.Editor.Status}" ToolTipService.ShowOnDisabled="True" />
+                            ToolTip="Next selection" sd:ToolTipHelper.Status="{Binding Session.Editor.Status}" ToolTipService.ShowOnDisabled="True" />
                       </StackPanel>
                       <!-- Description -->
                       <TextBlock TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
@@ -808,7 +808,7 @@
                             <StackPanel Orientation="Horizontal">
                               <TextBlock Margin="2,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" MaxWidth="100" VerticalAlignment="Center" />
                               <TextBlock Text="{Binding Counter}" Cursor="Hand" IsEnabled="{Binding Counter, Converter={sd:Chained {sd:StringEquals}, {sd:InvertBool}, Parameter1={} (all)}}"
-                                         ToolTip="{sd:Localize Add tag to all, Context=ToolTip}">
+                                         ToolTip="Add tag to all">
                             <i:Interaction.Behaviors>
                               <sd:OnEventCommandBehavior EventName="MouseDown" Command="{Binding AddTagToAllCommand}"/>
                             </i:Interaction.Behaviors>
@@ -825,19 +825,19 @@
                         <Grid>
                           <DockPanel Visibility="{Binding Session.ActiveProperties.CanDisplayProperties, Converter={sd:VisibleOrCollapsed}}">
                             <Image Source="{StaticResource ImageEditAsset}" Margin="4" DockPanel.Dock="Left" Width="16" Height="16" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                            <TextBlock Text="{sd:Localize Open this asset in editor}" Margin="0,4,4,4" VerticalAlignment="Center" />
+                            <TextBlock Text="Open this asset in editor" Margin="0,4,4,4" VerticalAlignment="Center" />
                           </DockPanel>
-                          <TextBlock Text="{sd:Localize Show this asset in editor}" Margin="0,4,4,4" VerticalAlignment="Center"
+                          <TextBlock Text="Show this asset in editor" Margin="0,4,4,4" VerticalAlignment="Center"
                                      Visibility="{Binding Session.ActiveProperties.CanDisplayProperties, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}" />
                         </Grid>
                       </Button>
                       <DockPanel Visibility="{Binding Session.ActiveProperties.CanDisplayProperties, Converter={sd:VisibleOrCollapsed}}">
                         <!-- TODO: Disabling this button for now, it is relatively terrible in term of UX -->
                         <ToggleButton Margin="4,0" Height="22" Width="22" Content="{sd:Image {StaticResource ImageAssetOverride}, 16, 16}"
-                                      IsChecked="{Binding Session.ActiveProperties.ShowOverridesOnly}" ToolTip="{sd:Localize Display only overridden properties, Context=ToolTip}"
+                                      IsChecked="{Binding Session.ActiveProperties.ShowOverridesOnly}" ToolTip="Display only overridden properties"
                                       Visibility="Collapsed"/>
                         <AdornerDecorator>
-                          <sd:TextBox UseTimedValidation="True" x:Name="PropertyFilterTextBox" WatermarkContent="{sd:Localize Search properties}">
+                          <sd:TextBox UseTimedValidation="True" x:Name="PropertyFilterTextBox" WatermarkContent="Search properties">
                             <i:Interaction.Behaviors>
                               <sd:ContainTextAdornerBehavior />
                             </i:Interaction.Behaviors>
@@ -864,7 +864,7 @@
                           <Setter Property="ContextMenu">
                             <Setter.Value>
                               <ContextMenu Visibility="{Binding HasItems, RelativeSource={RelativeSource Self}, Converter={sd:VisibleOrHidden}, FallbackValue={sd:Hidden}}">
-                                <MenuItem Header="{sd:Localize Reset to base value, Context=Menu}" Command="{Binding ResetOverride, FallbackValue={x:Static cmd:DisabledCommand.Instance}, Mode=OneWay}"
+                                <MenuItem Header="Reset to base value" Command="{Binding ResetOverride, FallbackValue={x:Static cmd:DisabledCommand.Instance}, Mode=OneWay}"
                                           IsEnabled="{Binding HasBase}"/>
                                 <Separator />
                                 <MenuItem Icon="{sd:Image {StaticResource ImageCopy}}"
@@ -988,7 +988,7 @@
               <xcad:LayoutAnchorablePaneGroup DockHeight="1*">
                 <xcad:LayoutAnchorablePane>
                   <!-- ASSET PREVIEW -->
-                  <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="AssetPreview" Title="{Binding Source={sd:Localize Asset preview, Context=View}}"
+                  <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="AssetPreview" Title="{Binding Source=Asset preview}"
                                          gh:AvalonDockHelper.IsVisible="{Binding Panels.AssetPreviewPanelVisible, Mode=TwoWay,
                                          Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                     <DockPanel LastChildFill="True" DataContext="{x:Static vm:GameStudioViewModel.GameStudio}">
@@ -996,7 +996,7 @@
                     </DockPanel>
                   </xcad:LayoutAnchorable>
                   <!-- ACTION HISTORY -->
-                  <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="ActionHistory" Title="{Binding Source={sd:Localize Edit history, Context=View}}"
+                  <xcad:LayoutAnchorable AutoHideMinWidth="400" ContentId="ActionHistory" Title="{Binding Source=Edit history}"
                                          gh:AvalonDockHelper.IsVisible="{Binding Panels.ActionHistoryPanelVisible, Mode=TwoWay,
                                          Source={x:Static vm:GameStudioViewModel.GameStudio}, FallbackValue={sd:True}}">
                     <ListBox DataContext="{x:Static vm:GameStudioViewModel.GameStudio}" ItemsSource="{Binding Session.ActionHistory.Transactions}" HorizontalContentAlignment="Stretch">
@@ -1059,8 +1059,19 @@
         <Separator Grid.Column="1" Style="{StaticResource StatusBarSeparatorStyle}"/>
         <StatusBarItem Grid.Column="2">
           <TextBlock>
-            <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Session.ActiveAssetView.FilteredContent.Count, Mode=OneWay}, IsStringFormat=True, Context=StatusBar}"/>
-            <Run Text="{sd:Localize ({0} selected), Plural=({0} selected), Count={Binding Session.ActiveAssetView.SelectedContent.Count, Mode=OneWay}, IsStringFormat=True, Context=StatusBar}"/>
+            <Run>
+              <Run.Style>
+                <Style TargetType="Run">
+                  <Setter Property="Text" Value="{Binding Session.ActiveAssetView.FilteredContent.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Session.ActiveAssetView.FilteredContent.Count, Mode=OneWay}" Value="1">
+                      <Setter Property="Text" Value="1 item"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Run.Style>
+            </Run>
+            <Run Text="{Binding Session.ActiveAssetView.SelectedContent.Count, Mode=OneWay, StringFormat=({0} selected)}"/>
           </TextBlock>
         </StatusBarItem>
         <Separator Grid.Column="3" Style="{StaticResource StatusBarSeparatorStyle}"/>

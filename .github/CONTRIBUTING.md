@@ -6,8 +6,6 @@ To report bugs or propose features, please use the [Issues](https://github.com/s
 
 We welcome code contributions via pull requests. Issues tagged with **[`good first issue`](https://github.com/stride3d/stride/labels/good%20first%20issue)** are great starting points for code contributions.
 
-You can help us translate Stride; check out our [Localization Guide](https://doc.stride3d.net/latest/en/contributors/engine/localization.html).
-
 ## Triggering CI tests on a PR
 
 Most CI runs automatically on PR commits, gated by path filters. A few things run only on demand;

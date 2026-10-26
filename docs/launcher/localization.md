@@ -38,7 +38,3 @@ URLs that take a version placeholder (documentation, release notes) typically co
 1. Create `Strings.{locale}.resx` (e.g. `Strings.fr-FR.resx`) and `Urls.{locale}.resx` next to the existing files.
 2. Update [Stride.Launcher.csproj](../../sources/launcher/Stride.Launcher/Stride.Launcher.csproj) to declare them as `EmbeddedResource` (follow the pattern used for `Strings.ja-JP.resx`).
 3. Avalonia does not have a built-in language picker in the launcher — the OS UI culture determines the selected locale via standard .NET satellite assembly resolution.
-
-## Translations workflow
-
-The repository includes `crowdin.yml` at the root, meaning user-facing `.resx` files can be synced with Crowdin. Check that file for which paths are actually covered before renaming or moving a `.resx`.

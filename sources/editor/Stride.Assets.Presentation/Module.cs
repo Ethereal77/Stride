@@ -3,8 +3,6 @@
 using System.Runtime.CompilerServices;
 using Stride.Core.Assets.Quantum;
 using Stride.Core.Reflection;
-using Stride.Core.Translation;
-using Stride.Core.Translation.Providers;
 using Stride.Assets.Entities;
 using Stride.Assets.Presentation.Templates;
 using Stride.Assets.SpriteFont;
@@ -30,8 +28,6 @@ namespace Stride.Assets.Presentation
             AssetPreview.DefaultViewType = typeof(StridePreviewView);
             // Register default template
             StrideTemplates.Register();
-            // Initialize translation
-            TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
         }
     }
 }

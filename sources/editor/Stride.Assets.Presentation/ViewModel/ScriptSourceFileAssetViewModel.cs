@@ -23,7 +23,6 @@ using Stride.Core.Assets.TextAccessors;
 using Stride.Core.Diagnostics;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 using TextDocument = ICSharpCode.AvalonEdit.Document.TextDocument;
 
 namespace Stride.Assets.Presentation.ViewModel
@@ -162,7 +161,7 @@ namespace Stride.Assets.Presentation.ViewModel
         protected override void UpdateDirtiness(bool value)
         {
             // Completely ignore dirty state that is given and use IsTextDocumentDirty instead
-            //  if we don't the file will still be marked dirty after saving it from the text editor, 
+            //  if we don't the file will still be marked dirty after saving it from the text editor,
             //  since it doesn't update the action stack save point when saving only a single asset
             UpdateDirtiness();
         }
@@ -363,7 +362,7 @@ namespace Stride.Assets.Presentation.ViewModel
                     "Yes", "Yes to all", "No", "No to all"
                 });
                 var message = string.Format(
-                            Tr._p("Message", "{0}\r\n\r\nThis file has been changed externally and has unsaved changes inside the editor.\r\nDo you want to reload it and lose your changes?"),
+                            "{0}\r\n\r\nThis file has been changed externally and has unsaved changes inside the editor.\r\nDo you want to reload it and lose your changes?",
                             newDocument.FilePath);
                 var dialogResult = ServiceProvider.Get<IDialogService2>().BlockingMessageBox(message, buttons, MessageBoxImage.Question);
 

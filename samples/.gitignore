@@ -37,9 +37,6 @@ ipch/
 obj/
 Win32
 Win32Debug
-libfreetype.a
-libcore.a
-libbulletc.a
 *.CachedGlyphs
 *.CachedImage
 log

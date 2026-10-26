@@ -10,7 +10,7 @@
                   xmlns:far="clr-namespace:Stride.Core.Assets.Editor.Components.FixAssetReferences"
                   mc:Ignorable="d"
                   ShowInTaskbar="False"
-                  Title="{Binding FixedObjectsCounter, StringFormat={sd:Localize Fix references ({0})}}"
+                  Title="{Binding FixedObjectsCounter, StringFormat=Fix references ({0})}"
                   Height="768" Width="1024" Style="{DynamicResource WindowChromeStyle}"
                   d:DataContext="{d:DesignInstance far:FixAssetReferencesViewModel}">
   <sd:ModalWindow.Resources>
@@ -32,50 +32,50 @@
     <DockPanel Grid.Row="0">
       <Image Margin="10" DockPanel.Dock="Left" Source="{Binding CurrentObjectToReplace.ThumbnailData.Presenter, Mode=OneWay}" Width="64" Height="64"/>
       <TextBlock Margin="10,20" VerticalAlignment="Center" TextWrapping="Wrap"
-                 Text="{Binding CurrentObjectToReplace.Url, StringFormat={sd:Localize The asset {0} is referenced by other assets. Choose how to handle these references.}}"/>
+                 Text="{Binding CurrentObjectToReplace.Url, StringFormat=The asset {0} is referenced by other assets. Choose how to handle these references.}"/>
     </DockPanel>
-    <RadioButton Grid.Row="1" Margin="20" IsChecked="{Binding UseSingleReplace}" Content="{sd:Localize Replace all the references with a reference to a different asset:, Context=Button}"/>
+    <RadioButton Grid.Row="1" Margin="20" IsChecked="{Binding UseSingleReplace}" Content="Replace all the references with a reference to a different asset:"/>
 
     <StackPanel Grid.Row="2" Orientation="Horizontal" IsEnabled="{Binding UseSingleReplace}">
-      <sd:TextBox Text="{Binding SingleReplacementObject, Converter={valueConverters:AssetViewModelToUrl}}" Margin="30,0,4,0" MinWidth="200" WatermarkContent="{sd:Localize Select an asset}"/>
+      <sd:TextBox Text="{Binding SingleReplacementObject, Converter={valueConverters:AssetViewModelToUrl}}" Margin="30,0,4,0" MinWidth="200" WatermarkContent="Select an asset"/>
       <UniformGrid Rows="1">
-        <Button Command="{Binding PickupSingleReplacementObjectCommand}"  Background="Transparent" ToolTip="{sd:Localize Select asset, Context=ToolTip}">
+        <Button Command="{Binding PickupSingleReplacementObjectCommand}"  Background="Transparent" ToolTip="Select asset">
           <Image Source="{StaticResource ImagePickup}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
         </Button>
       </UniformGrid>
     </StackPanel>
     <view:DataGridEx Margin="20" Grid.Row="4" ItemsSource="{Binding CurrentReplacements}" IsEnabled="{Binding UseSingleReplace, Converter={sd:InvertBool}}" AutoGenerateColumns="False" CanUserResizeRows="False"  CanUserReorderColumns="False" RowHeaderWidth="0" IsReadOnly="True">
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="{sd:Localize Referencer}" Width="2*"  >
+        <DataGridTemplateColumn Header="Referencer" Width="2*"  >
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <TextBlock DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}}" d:DataContext="{d:DesignInstance far:AssetReferenceReplacementViewModel}" Text="{Binding Referencer.Url}"></TextBlock>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="{sd:Localize Replacement asset}" Width="3*"  >
+        <DataGridTemplateColumn Header="Replacement asset" Width="3*"  >
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <DockPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}}" d:DataContext="{d:DesignInstance far:AssetReferenceReplacementViewModel}">
                 <Button Command="{Binding PickupReplacementObjectCommand}"
-                    ToolTip="{sd:Localize Select asset, Context=ToolTip}" DockPanel.Dock="Right" Content="{sd:Image {StaticResource ImagePickup}, 16, 16, NearestNeighbor}"
+                    ToolTip="Select asset" DockPanel.Dock="Right" Content="{sd:Image {StaticResource ImagePickup}, 16, 16, NearestNeighbor}"
                     Background="Transparent" IsEnabled="{Binding IsChecked, ElementName=ClearCheckBox, Converter={sd:InvertBool}}"/>
-                <CheckBox x:Name="ClearCheckBox" Content="{sd:Localize Clear this reference, Context=Button}" Margin="10,0" DockPanel.Dock="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                <CheckBox x:Name="ClearCheckBox" Content="Clear this reference" Margin="10,0" DockPanel.Dock="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"
                       IsChecked="{Binding DontFixReference}"/>
                 <sd:TextBox Text="{Binding ReplacementObject, Converter={valueConverters:AssetViewModelToUrl}}"
-                          Margin="10,0" MinWidth="200" WatermarkContent="{sd:Localize Select an asset}" IsEnabled="{Binding IsChecked, ElementName=ClearCheckBox, Converter={sd:InvertBool}}"/>
+                          Margin="10,0" MinWidth="200" WatermarkContent="Select an asset" IsEnabled="{Binding IsChecked, ElementName=ClearCheckBox, Converter={sd:InvertBool}}"/>
               </DockPanel>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
       </DataGrid.Columns>
     </view:DataGridEx>
-    <RadioButton Grid.Row="3" Margin="20" Content="{sd:Localize Replace references individually:, Context=Button}" IsChecked="{Binding UseSingleReplace, Converter={sd:InvertBool}}"/>
+    <RadioButton Grid.Row="3" Margin="20" Content="Replace references individually:" IsChecked="{Binding UseSingleReplace, Converter={sd:InvertBool}}"/>
     <UniformGrid Grid.Row="5" Rows="1" DockPanel.Dock="Bottom" Margin="20">
-      <Button Margin="10,0,0,0" Padding="10,4" Content="{sd:Localize Done, Context=Button}" Command="{Binding FixReferencesCommand}"/>
-      <Button Margin="10,0,0,0" Padding="10,4" Content="{sd:Localize Clear references, Context=Button}" Command="{Binding ClearReferencesCommand}" ToolTip="{sd:Localize Clear the references of the current asset, Context=ToolTip}"/>
-      <Button Margin="10,0,0,0" Padding="10,4" Content="{sd:Localize Clear all references, Context=Button}" Command="{Binding ClearAllReferencesCommand}" ToolTip="{sd:Localize Clear references for all assets being deleted, Context=ToolTip}"/>
-      <Button Margin="10,0,0,0" Padding="10,4" Content="{sd:Localize Cancel, Context=Button}" IsCancel="True" ToolTip="{sd:Localize Cancel operation, Context=ToolTip}">
+      <Button Margin="10,0,0,0" Padding="10,4" Content="Done" Command="{Binding FixReferencesCommand}"/>
+      <Button Margin="10,0,0,0" Padding="10,4" Content="Clear references" Command="{Binding ClearReferencesCommand}" ToolTip="Clear the references of the current asset"/>
+      <Button Margin="10,0,0,0" Padding="10,4" Content="Clear all references" Command="{Binding ClearAllReferencesCommand}" ToolTip="Clear references for all assets being deleted"/>
+      <Button Margin="10,0,0,0" Padding="10,4" Content="Cancel" IsCancel="True" ToolTip="Cancel operation">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
         </i:Interaction.Behaviors>

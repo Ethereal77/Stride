@@ -16,20 +16,20 @@
     </Grid.RowDefinitions>
     <DockPanel Grid.Row="0" Margin="20">
       <TextBlock DockPanel.Dock="Top" Text="{Binding ProgressMessage}" Margin="0,0,0,10" Visibility="{Binding WorkDone, Converter={sd:Chained {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
-      <TextBlock DockPanel.Dock="Top" Text="{sd:Localize Operation completed.}" Margin="0,0,0,10" Visibility="{sd:MultiBinding {Binding WorkDone}, {Binding HasFailed, Converter={sd:InvertBool}}, {Binding IsCancelled, Converter={sd:InvertBool}}, Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
-      <TextBlock DockPanel.Dock="Top" Text="{sd:Localize Operation failed.}" Margin="0,0,0,10" Visibility="{Binding HasFailed, Converter={sd:VisibleOrCollapsed}}"/>
-      <TextBlock DockPanel.Dock="Top" Text="{sd:Localize Operation cancelled.}" Margin="0,0,0,10" Visibility="{Binding IsCancelled, Converter={sd:VisibleOrCollapsed}}"/>
+      <TextBlock DockPanel.Dock="Top" Text="Operation completed." Margin="0,0,0,10" Visibility="{sd:MultiBinding {Binding WorkDone}, {Binding HasFailed, Converter={sd:InvertBool}}, {Binding IsCancelled, Converter={sd:InvertBool}}, Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
+      <TextBlock DockPanel.Dock="Top" Text="Operation failed." Margin="0,0,0,10" Visibility="{Binding HasFailed, Converter={sd:VisibleOrCollapsed}}"/>
+      <TextBlock DockPanel.Dock="Top" Text="Operation cancelled." Margin="0,0,0,10" Visibility="{Binding IsCancelled, Converter={sd:VisibleOrCollapsed}}"/>
       <ProgressBar Height="25" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" Value="{Binding ProgressValue}" IsIndeterminate="{Binding IsIndeterminate}"/>
     </DockPanel>
     <sd:TextLogViewer Grid.Row="1" Margin="20" LogMessages="{Binding Log.Messages}" CanClearLog="False"/>
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
       <UniformGrid Rows="1" Margin="20,0,20,20">
-        <Button Content="{sd:Localize Close, Context=Button}" Margin="10,0,0,0" Padding="16,4" IsCancel="True" IsEnabled="{Binding WorkDone}">
+        <Button Content="Close" Margin="10,0,0,0" Padding="16,4" IsCancel="True" IsEnabled="{Binding WorkDone}">
           <i:Interaction.Behaviors>
             <sd:ButtonCloseWindowBehavior DialogResult="OK"/>
           </i:Interaction.Behaviors>
         </Button>
-        <Button Content="{sd:Localize Cancel, Context=Button}" Margin="10,0,0,0" Padding="16,4" Command="{Binding CancelCommand}" Visibility="{Binding IsCancellable, Converter={sd:VisibleOrCollapsed}}" IsEnabled="{Binding WorkDone, Converter={sd:InvertBool}}">
+        <Button Content="Cancel" Margin="10,0,0,0" Padding="16,4" Command="{Binding CancelCommand}" Visibility="{Binding IsCancellable, Converter={sd:VisibleOrCollapsed}}" IsEnabled="{Binding WorkDone, Converter={sd:InvertBool}}">
           <i:Interaction.Behaviors>
             <sd:ButtonCloseWindowBehavior DialogResult="Cancel"/>
           </i:Interaction.Behaviors>

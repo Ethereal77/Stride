@@ -12,7 +12,7 @@
                   xmlns:viewModels1="clr-namespace:Stride.Core.Presentation.Quantum.ViewModels;assembly=Stride.Core.Presentation.Quantum"
                   mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
                   ShowInTaskbar="False"
-                  Title="{sd:Localize Settings}" Height="768" Width="1024" Style="{DynamicResource WindowChromeStyle}"
+                  Title="Settings" Height="768" Width="1024" Style="{DynamicResource WindowChromeStyle}"
         >
   <Window.Resources>
     <ResourceDictionary>
@@ -23,12 +23,12 @@
   </Window.Resources>
   <DockPanel>
     <UniformGrid Rows="1" DockPanel.Dock="Bottom" Margin="20" HorizontalAlignment="Right">
-      <Button Margin="10,0,0,0" Padding="20,4" Content="{sd:Localize Save and close, Context=Button}">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="Save and close">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior Command="{Binding ValidateChangesCommand}"/>
         </i:Interaction.Behaviors>
       </Button>
-      <Button Margin="10,0,0,0" Padding="20,4" Content="{sd:Localize Cancel, Context=Button}" IsCancel="True">
+      <Button Margin="10,0,0,0" Padding="20,4" Content="Cancel" IsCancel="True">
         <i:Interaction.Behaviors>
           <sd:ButtonCloseWindowBehavior Command="{Binding DiscardChangesCommand}"/>
         </i:Interaction.Behaviors>

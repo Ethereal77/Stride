@@ -10,7 +10,6 @@
   <Folder Name="/30-CoreDesign/">
     <Project Path="../sources/core/Stride.Core.Design/Stride.Core.Design.csproj" />
     <Project Path="../sources/core/Stride.Core.Reflection/Stride.Core.Reflection.csproj" />
-    <Project Path="../sources/core/Stride.Core.Translation/Stride.Core.Translation.csproj" />
     <Project Path="../sources/core/Stride.Core.Yaml/Stride.Core.Yaml.csproj" />
   </Folder>
   <Folder Name="/40-Assets/">

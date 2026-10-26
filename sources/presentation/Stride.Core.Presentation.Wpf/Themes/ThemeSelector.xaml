@@ -616,7 +616,7 @@
               </Grid.RowDefinitions>
               <GroupBox Header="RGBA" VerticalAlignment="Top" Grid.Column="0" HorizontalContentAlignment="Stretch" BorderThickness="0" Margin="2" Focusable="False">
                 <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
-                  <TextBlock Margin="4,0" Text="{sd:Localize R:, Context=RGBA}" ToolTipService.ToolTip="{sd:Localize Red, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource RedBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource RedBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -625,7 +625,7 @@
                       </Rectangle.RenderTransform>
                     </Rectangle>
                   </StackPanel>
-                  <TextBlock Margin="4,0" Text="{sd:Localize G:, Context=RGBA}" ToolTipService.ToolTip="{sd:Localize Green, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource GreenBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource GreenBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -634,7 +634,7 @@
                       </Rectangle.RenderTransform>
                     </Rectangle>
                   </StackPanel>
-                  <TextBlock Margin="4,0" Text="{sd:Localize B:, Context=RGBA}" ToolTipService.ToolTip="{sd:Localize Blue, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource BlueBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource BlueBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -643,7 +643,7 @@
                       </Rectangle.RenderTransform>
                     </Rectangle>
                   </StackPanel>
-                  <TextBlock x:Name="AlphaTextBlock" Margin="4,0" Text="{sd:Localize A:, Context=RGBA}" ToolTipService.ToolTip="{sd:Localize Alpha, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock x:Name="AlphaTextBlock" Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2" x:Name="AlphaValue">
                     <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="255" Margin="0"/>
                     <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -656,7 +656,7 @@
               </GroupBox>
               <GroupBox Header="HSB" VerticalAlignment="Top" d:LayoutOverrides="Width" BorderThickness="0" Grid.Row="1" Margin="2" Focusable="False">
                 <ctrl:KeyValueGrid Focusable="False">
-                  <TextBlock Margin="4,0" Text="{sd:Localize H:, Context=HSB}" ToolTipService.ToolTip="{sd:Localize Hue, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="H:, Context=HSB}" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -665,7 +665,7 @@
                       </Rectangle.RenderTransform>
                     </Rectangle>
                   </StackPanel>
-                  <TextBlock Margin="4,0" Text="{sd:Localize S:, Context=HSB}" ToolTipService.ToolTip="{sd:Localize Saturation, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="S:, Context=HSB}" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -674,7 +674,7 @@
                       </Rectangle.RenderTransform>
                     </Rectangle>
                   </StackPanel>
-                  <TextBlock Margin="4,0" Text="{sd:Localize B:, Context=HSB}" ToolTipService.ToolTip="{sd:Localize Value, Context=ToolTip}" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                  <TextBlock Margin="4,0" Text="B:, Context=HSB}" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                   <StackPanel Margin="0,2">
                     <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                     <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
@@ -1890,7 +1890,7 @@
                           Text="{Binding Value, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:DateTimeToString}}"
                           WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                           WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
-            <ToggleButton Grid.Column="1" Margin="2,0,0,0" x:Name="ToggleButtonPickDate" Width="16" Height="16" Background="Transparent" ToolTip="{sd:Localize Pick date and time, Context=ToolTip}"
+            <ToggleButton Grid.Column="1" Margin="2,0,0,0" x:Name="ToggleButtonPickDate" Width="16" Height="16" Background="Transparent" ToolTip="Pick date and time"
                           ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImagePickDateTime}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </ToggleButton>
@@ -1949,7 +1949,7 @@
       </Setter.Value>
     </Setter>
   </Style>
-  
+
   <Color x:Key="TextBoxFocusBrush">#FF374C5C</Color>
   <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource TextBoxFocusBrush}" />
 
@@ -3932,7 +3932,7 @@
 
   <!--  EDITORS  -->
   <Style x:Key="{x:Static ctrl:VectorEditorResources.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}" x:Shared="False">
-    <Setter Property="ToolTip" Value="{sd:Localize Toggle editing mode, Context=ToolTip}" />
+    <Setter Property="ToolTip" Value="Toggle editing mode" />
     <Style.Triggers>
       <Trigger Property="IsChecked" Value="False">
         <Setter Property="Content" Value="{me:Image {StaticResource ImageUnlocked}, 16, 16, NearestNeighbor}" />
@@ -4188,7 +4188,7 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="{sd:Localize Advanced options, Context=ToolTip}"
+            <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
                                       ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </ToggleButton>
@@ -4197,7 +4197,7 @@
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int2Editor}}" PopupAnimation="Slide" VerticalOffset="2">
               <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
                 <ctrl:KeyValueGrid>
-                  <TextBlock Text="{sd:Localize All components:}" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                   <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
                     <i:Interaction.Behaviors>
                       <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
@@ -4258,7 +4258,7 @@
               </DockPanel>
             </Border>
             <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
-                                      Background="Transparent" ToolTip="{sd:Localize Advanced options, Context=ToolTip}" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                      Background="Transparent" ToolTip="Advanced options" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </ToggleButton>
             <Popup x:Name="Popup" Placement="Bottom" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -4266,7 +4266,7 @@
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int3Editor}}" PopupAnimation="Slide" VerticalOffset="2">
               <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
                 <ctrl:KeyValueGrid>
-                  <TextBlock Text="{sd:Localize All components:}" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                   <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
                     <i:Interaction.Behaviors>
                       <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
@@ -4337,7 +4337,7 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="{sd:Localize Advanced options, Context=ToolTip}"
+            <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
                                       ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </ToggleButton>
@@ -4346,7 +4346,7 @@
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
               <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
                 <ctrl:KeyValueGrid>
-                  <TextBlock Text="{sd:Localize All components:}" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                   <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
                     <i:Interaction.Behaviors>
                       <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
@@ -4532,7 +4532,7 @@
             </Border>
             <!-- TODO: this button is disabled to match the vector editor in term of style, remove it completely if the button are not restored -->
             <!--<Button Grid.Column="6" Margin="2,0,0,0" x:Name="ResetButton" Width="16" Height="16" Background="Transparent"
-                    Command="{x:Static commands:ControlCommands.ResetValueCommand}" ToolTip="{sd:Localize Reset value, Context=ToolTip}">
+                    Command="{x:Static commands:ControlCommands.ResetValueCommand}" ToolTip="Reset value">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageReset}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </Button>-->
           </Grid>
@@ -4630,45 +4630,45 @@
           <DockPanel>
             <ToolBarTray DockPanel.Dock="Top" Visibility="{Binding IsToolBarVisible, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
               <ToolBar ToolBarTray.IsLocked="True" Visibility="{Binding CanClearLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                <Button x:Name="PART_ClearLog" ToolTip="{sd:Localize Clear Log, Context=ToolTip}">
+                <Button x:Name="PART_ClearLog" ToolTip="Clear Log">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryDelete}"/>
                 </Button>
               </ToolBar>
               <ToolBar ToolBarTray.IsLocked="True" Header="Filters:" Visibility="{Binding CanFilterLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                <ToggleButton IsChecked="{Binding ShowDebugMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Debug, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowDebugMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Debug">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogDebugBrush}" Data="{StaticResource GeometryDebugMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowVerboseMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Verbose, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowVerboseMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Verbose">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogVerboseBrush}" Data="{StaticResource GeometryVerboseMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowInfoMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Info, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowInfoMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Info">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogInfoBrush}" Data="{StaticResource GeometryInfoMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowWarningMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Warning, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowWarningMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Warning">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogWarningBrush}" Data="{StaticResource GeometryWarningMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowErrorMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Error, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowErrorMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Error">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogErrorBrush}" Data="{StaticResource GeometryErrorMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowFatalMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Fatal, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowFatalMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Fatal">
                   <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextLogFatalBrush}" Data="{StaticResource GeometryFatalMessage}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowStacktrace, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Toggle Exception Stack Trace, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding ShowStacktrace, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Toggle Exception Stack Trace">
                   <Label Content="(...)" Width="16" Height="12" FontSize="10" HorizontalContentAlignment="Center" />
                 </ToggleButton>
               </ToolBar>
               <ToolBar ToolBarTray.IsLocked="True" Header="Search:" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                 <ctrl:TextBox UseTimedValidation="True" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
-                <Button x:Name="PART_PreviousResult" ToolTip="{sd:Localize Go to previous search result, Context=ToolTip}">
+                <Button x:Name="PART_PreviousResult" ToolTip="Go to previous search result">
                   <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
                 </Button>
-                <Button x:Name="PART_NextResult" ToolTip="{sd:Localize Go to next search result, Context=ToolTip}">
+                <Button x:Name="PART_NextResult" ToolTip="Go to next search result">
                   <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryNext}"/>
                 </Button>
-                <ToggleButton IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Match case, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Match case">
                   <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchCase}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding SearchMatchWord, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="{sd:Localize Match whole word, Context=ToolTip}">
+                <ToggleButton IsChecked="{Binding SearchMatchWord, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTip="Match whole word">
                   <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchWord}"/>
                 </ToggleButton>
               </ToolBar>

@@ -88,9 +88,6 @@ or additional shape (e.g. `CollectionDescriptor`, `DictionaryDescriptor`).
 ## Stride.Core.Yaml
 Fork of <https://github.com/xoofx/SharpYaml> - a Yet Another Markup Language (YAML) serializer.
 
-## Stride.Core.Translation
-A simple translation helper which allows getting translated strings from text files using GNU Gettext or from assembly embedded resources (`.resx`).
-
 ## Stride.Core.Design
 Various subsystems underlying the design time systems.
 

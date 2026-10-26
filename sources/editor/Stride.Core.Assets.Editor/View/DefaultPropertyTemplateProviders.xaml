@@ -33,7 +33,7 @@
                                                             {Binding HasAssociatedData_AbstractNodeMatchingEntries, Converter={sd:InvertBool}},
                                                             Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}, FallbackValue={sd:Collapsed}}"/>
     <Setter Property="Command" Value="{Binding AddNewItem}"/>
-    <Setter Property="ToolTip" Value="{sd:Localize Add..., Context=ToolTip}"/>
+    <Setter Property="ToolTip" Value="Add..."/>
     <Setter Property="ContentTemplate">
       <Setter.Value>
         <DataTemplate>
@@ -58,7 +58,7 @@
 
   <Style x:Key="AbstractTypeSelectionComboBox" BasedOn="{StaticResource {x:Type ComboBox}}" TargetType="ComboBox">
     <Setter Property="IsEditable" Value="False"/>
-    <Setter Property="ToolTip" Value="{sd:Localize Replace..., Context=ToolTip}"/>
+    <Setter Property="ToolTip" Value="Replace..."/>
     <!-- Visible if: we have the command to create a new instance, we're not read-only, we not a collection -->
     <Setter Property="Visibility" Value="{sd:MultiBinding {Binding HasCommand_CreateNewInstance},
                                                             {Binding IsReadOnly, Converter={sd:InvertBool}},
@@ -127,7 +127,7 @@
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Visibility" Value="{sd:MultiBinding {Binding HasCommand_AddNewItem}, {Binding HasCollection}, {Binding HasAssociatedData_AbstractNodeMatchingEntries},
                                                             Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}, FallbackValue={sd:Collapsed}}"/>
-    <Setter Property="ToolTip" Value="{sd:Localize Add..., Context=ToolTip}" />
+    <Setter Property="ToolTip" Value="Add..." />
     <Setter Property="Tag" Value="{StaticResource ImageAdd}"/>
   </Style>
 
@@ -136,7 +136,7 @@
                                                             {Binding HasAssociatedData_ReadOnlyCollection, Converter={sd:InvertBool}},
                                           Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}}"/>
     <Setter Property="Command" Value="{Binding RemoveItem}"/>
-    <Setter Property="ToolTip" Value="{sd:Localize Delete, Context=ToolTip}"/>
+    <Setter Property="ToolTip" Value="Delete"/>
     <Setter Property="ContentTemplate">
       <Setter.Value>
         <DataTemplate>
@@ -303,7 +303,7 @@
         <Setter TargetName="HeaderTextBlock" Property="Opacity" Value="0.5"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-        <Setter TargetName="HeaderTextBlock" Property="Text" Value="{sd:Localize (Different values)}"/>
+        <Setter TargetName="HeaderTextBlock" Property="Text" Value="(Different values)"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding Level, Converter={sd:IsEqual}, ConverterParameter=2}" Value="True">
         <Setter TargetName="PART_Name" Property="Opacity" Value="0.6"/>
@@ -376,7 +376,7 @@
     <DataTemplate>
       <Grid>
         <!-- Fallback when the node has multiple values to display -->
-        <TextBlock Margin="2,0" VerticalAlignment="Center" Text="{sd:Localize (Different values)}"
+        <TextBlock Margin="2,0" VerticalAlignment="Center" Text="(Different values)"
                    Visibility="{Binding NodeValue, Converter={sd:Chained {sd:IsEqualToParam}, {sd:VisibleOrCollapsed},
                                Parameter1={x:Static qvm:NodeViewModel.DifferentValues}}}"/>
         <!-- Fallback when the value does not have an inline property -->
@@ -411,8 +411,19 @@
           </ComboBox>
         </StackPanel>
         <TextBlock Margin="2">
-          <Run Text="{sd:Localize List}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="List"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="Run">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat='{}{0} items'}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -453,7 +464,7 @@
                     <behaviors:OnComboBoxClosedWithSelectionBehavior Command="{Binding AddNewItem}" CommandParameter="{Binding SelectedItem, ElementName=InstanceTypeSelectionComboBox}"/>
                   </i:Interaction.Behaviors>
                 </ComboBox>
-                <TextBlock Text="{Binding DisplayName, StringFormat={sd:Localize Add to {0}}}" TextTrimming="CharacterEllipsis" FontStyle="Italic"/>
+                <TextBlock Text="{Binding DisplayName, StringFormat=Add to {0}}" TextTrimming="CharacterEllipsis" FontStyle="Italic"/>
               </DockPanel>
             </Grid>
           </Grid>
@@ -477,8 +488,19 @@
     <DataTemplate DataType="qvm:NodeViewModel">
       <DockPanel>
         <TextBlock Margin="2">
-          <Run Text="{sd:Localize Array}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Array"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="{x:Type Run}">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -501,7 +523,7 @@
       </Grid>
     </DataTemplate>
   </pvdr:ArrayTemplateProvider>
-  
+
   <!-- Provider for set: Button to add an entry, TextBlock to describe the collection -->
   <pvdr:SetTemplateProvider x:Key="SetPropertyTemplateProvider" edvw:PropertyViewHelper.TemplateCategory="PropertyEditor">
     <DataTemplate DataType="qvm:NodeViewModel">
@@ -515,8 +537,19 @@
           </ComboBox>
         </StackPanel>
         <TextBlock Margin="2">
-          <Run Text="{sd:Localize Set}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Set"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="{x:Type Run}">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -557,7 +590,7 @@
                     <behaviors:OnComboBoxClosedWithSelectionBehavior Command="{Binding AddNewItem}" CommandParameter="{Binding SelectedItem, ElementName=InstanceTypeSelectionComboBox}"/>
                   </i:Interaction.Behaviors>
                 </ComboBox>
-                <TextBlock Text="{Binding DisplayName, StringFormat={sd:Localize Add to {0}}}" TextTrimming="CharacterEllipsis" FontStyle="Italic"/>
+                <TextBlock Text="{Binding DisplayName, StringFormat=Add to {0}}" TextTrimming="CharacterEllipsis" FontStyle="Italic"/>
               </DockPanel>
             </Grid>
           </Grid>
@@ -574,12 +607,23 @@
         <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding AddPrimitiveKey}"
                 Visibility="{sd:MultiBinding {Binding HasCommand_AddPrimitiveKey}, {Binding HasAssociatedData_ReadOnlyCollection, Converter={sd:InvertBool}},
                              Converter={sd:MultiChained {sd:AndMultiConverter}, {sd:VisibleOrCollapsed}}, FallbackValue={sd:Collapsed}}"
-                    ToolTip="{sd:Localize Add a new entry to the dictionary, Context=ToolTip}">
+                    ToolTip="Add a new entry to the dictionary">
           <Image Source="{StaticResource ImageAdd}" Width="16" Height="16" Margin="-1"/>
         </Button>
         <TextBlock Margin="2">
-                    <Run Text="{sd:Localize Dictionary}"/> -
-                    <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Dictionary"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="{x:Type Run}">
+                <Style.Triggers>
+                  <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -600,7 +644,7 @@
               <Grid x:Name="grid">
                 <ToggleButton x:Name="ToggleButton" Width="16" Height="16" Background="Transparent"
                               Focusable="false" ClickMode="Press"
-                              ToolTip="{sd:Localize Add a new entry to the dictionary, Context=ToolTip}" SnapsToDevicePixels="True"
+                              ToolTip="Add a new entry to the dictionary" SnapsToDevicePixels="True"
                               IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                   <Image Source="{StaticResource ImageAdd}" Width="16" Height="16" Margin="-1"/>
                 </ToggleButton>
@@ -611,7 +655,7 @@
                   <DockPanel MaxHeight="{TemplateBinding MaxDropDownHeight}" SnapsToDevicePixels="True"
                              Background="{DynamicResource ControlBackgroundBrush}" Margin="10">
                     <TextBlock DockPanel.Dock="Left" Margin="8,0,0,0" VerticalAlignment="Center"
-                               Text="{sd:Localize Key name:}"/>
+                               Text="Key name:"/>
                     <sd:TextBox sd:FocusManager.IsFocused="{Binding IsOpen, ElementName=Popup}" CancelOnLostFocus="True"
                                   Text="0" Margin="8" SelectAllOnFocus="True" Width="160"
                                   ValidateCommand="{Binding AddPrimitiveKey}" x:Name="TextBox"
@@ -636,8 +680,19 @@
           </ComboBox.Template>
         </ComboBox>
         <TextBlock Margin="2" DockPanel.Dock="Left">
-          <Run Text="{sd:Localize Dictionary}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Dictionary"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="Run">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -658,7 +713,7 @@
               <Grid x:Name="grid">
                 <ToggleButton x:Name="ToggleButton" Width="16" Height="16" Background="Transparent"
                               Focusable="false" ClickMode="Press"
-                              ToolTip="{sd:Localize Add a new entry to the dictionary, Context=ToolTip}" SnapsToDevicePixels="True"
+                              ToolTip="Add a new entry to the dictionary" SnapsToDevicePixels="True"
                               IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                   <Image Source="{StaticResource ImageAdd}" Width="16" Height="16" Margin="-1"/>
                 </ToggleButton>
@@ -669,9 +724,9 @@
                   <DockPanel MaxHeight="{TemplateBinding MaxDropDownHeight}" SnapsToDevicePixels="True"
                              Background="{DynamicResource ControlBackgroundBrush}" Margin="10">
                     <TextBlock DockPanel.Dock="Left" Margin="8,0,0,0" VerticalAlignment="Center"
-                               Text="{sd:Localize Key name:}"/>
+                               Text="Key name:"/>
                     <sd:TextBox sd:FocusManager.IsFocused="{Binding IsOpen, ElementName=Popup}" CancelOnLostFocus="True"
-                                  Text="{sd:Localize New key}" Margin="8" SelectAllOnFocus="True" Width="160"
+                                  Text="New key" Margin="8" SelectAllOnFocus="True" Width="160"
                                   ValidateCommand="{Binding AddPrimitiveKey}" x:Name="TextBox"
                                   ValidateCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"/>
                   </DockPanel>
@@ -687,15 +742,26 @@
                   <Setter Property="Text" TargetName="TextBox" Value="" />
                 </Trigger>
                 <Trigger Property="IsOpen" SourceName="Popup" Value="True">
-                  <Setter Property="Text" TargetName="TextBox" Value="{sd:Localize New key}" />
+                  <Setter Property="Text" TargetName="TextBox" Value="New key" />
                 </Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
           </ComboBox.Template>
         </ComboBox>
         <TextBlock Margin="2" DockPanel.Dock="Left">
-          <Run Text="{sd:Localize Dictionary}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Dictionary"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="Run">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -716,7 +782,7 @@
               <Grid x:Name="grid">
                 <ToggleButton x:Name="ToggleButton" Width="16" Height="16" Background="Transparent"
                               Focusable="false" ClickMode="Press"
-                              ToolTip="{sd:Localize Add a new entry to the dictionary, Context=ToolTip}" SnapsToDevicePixels="True"
+                              ToolTip="Add a new entry to the dictionary" SnapsToDevicePixels="True"
                               IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                   <Image Source="{StaticResource ImageAdd}" Width="16" Height="16" Margin="-1"/>
                 </ToggleButton>
@@ -727,7 +793,7 @@
                   <DockPanel MaxHeight="{TemplateBinding MaxDropDownHeight}" SnapsToDevicePixels="True"
                              Background="{DynamicResource ControlBackgroundBrush}" Margin="10">
                     <TextBlock DockPanel.Dock="Left" Margin="8,0,0,0" VerticalAlignment="Center"
-                               Text="{sd:Localize Key name:}"/>
+                               Text="Key name:"/>
                     <ComboBox Name="EnumKeySelectionComboBox" sd:FocusManager.IsFocused="{Binding IsOpen, ElementName=Popup}" Style="{StaticResource EnumComboBox}" ItemsSource="{Binding DictionaryNodeKeyType, Converter={sd:EnumValues}, Mode=OneWay}" SelectedItem="" MinWidth="60">
                       <i:Interaction.Behaviors>
                         <!-- After selecting an option add it to the dictionary -->
@@ -753,8 +819,19 @@
           </ComboBox.Template>
         </ComboBox>
         <TextBlock Margin="2" DockPanel.Dock="Left">
-          <Run Text="{sd:Localize Dictionary}"/> -
-          <Run Text="{sd:Localize {}{0} item, Plural={}{0} items, Count={Binding Children.Count, Mode=OneWay}, IsStringFormat=True}"/>
+          <Run Text="Dictionary"/> -
+          <Run>
+            <Run.Style>
+              <Style TargetType="Run">
+                <Setter Property="Text" Value="{Binding Children.Count, Mode=OneWay, StringFormat={}{0} items}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Children.Count, Mode=OneWay}" Value="1">
+                    <Setter Property="Text" Value="1 item"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Run.Style>
+          </Run>
         </TextBlock>
       </DockPanel>
     </DataTemplate>
@@ -779,14 +856,14 @@
         </Grid.ColumnDefinitions>
         <TextBox Grid.Column="0" Margin="2" Width="40" TextAlignment="Center"
                  Text="{Binding NodeValue, Converter={sd:CharToString}}"
-                 ToolTip="{sd:Localize Character, Context=ToolTIp}">
+                 ToolTip="Character">
           <i:Interaction.Behaviors>
             <sd:CharInputBehavior/>
           </i:Interaction.Behaviors>
         </TextBox>
         <sd:NumericTextBox x:Name="TextBox" TextAlignment="Center" Grid.Column="1" Margin="2" SelectAllOnFocus="True"
                              Value="{Binding NodeValue, Converter={sd:Chained {cvt:DifferentValuesToNull}, {sd:CharToUnicode}}}"
-                             SmallChange="1" LargeChange="10" DecimalPlaces="0" Minimum="0" ToolTip="{sd:Localize Unicode value, Context=ToolTip}"
+                             SmallChange="1" LargeChange="10" DecimalPlaces="0" Minimum="0" ToolTip="Unicode value"
                              WatermarkContentTemplate="{StaticResource DifferentValuesWatermarkTemplate}"
                              DisplayUpDownButtons="False">
           <i:Interaction.Behaviors>
@@ -797,7 +874,7 @@
       </Grid>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -855,7 +932,7 @@
     </Grid>
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-        <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+        <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
@@ -924,7 +1001,7 @@
     </sd:NumericTextBox>
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-        <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+        <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
@@ -949,7 +1026,7 @@
     </sd:NumericTextBox>
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-        <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+        <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
@@ -988,13 +1065,13 @@
       </sd:DateTimeEditor>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="DateTimeEditor" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="DateTimeEditor" Property="WatermarkContent" Value="(Different values)"/>
           <Setter TargetName="DateTimeEditor" Property="IsEnabled" Value="False"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
   </edvw:TypeMatchTemplateProvider>
-  
+
   <!-- Provider for string editor -->
   <edvw:TypeMatchTemplateProvider x:Key="StringPropertyTemplateProvider" Type="{x:Type s:String}" edvw:PropertyViewHelper.TemplateCategory="PropertyEditor">
     <DataTemplate DataType="qvm:NodeViewModel">
@@ -1003,7 +1080,7 @@
                     WatermarkContentTemplate="{StaticResource DifferentValuesWatermarkTemplate}"/>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1032,7 +1109,7 @@
       </Grid>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1230,7 +1307,7 @@
     <DataTemplate DataType="qvm:NodeViewModel">
       <sd:NumericTextBox x:Name="TextBox" DecimalPlaces="3"
                            Value="{Binding NodeValue, Converter={sd:Chained {cvt:DifferentValuesToNull}, {sd:AngleSingleToDegrees}}}"
-                           ToolTip="{sd:Localize Angle in degrees, Context=ToolTip}"
+                           ToolTip="Angle in degrees"
                            WatermarkContent="≠" WatermarkContentTemplate="{StaticResource DifferentValuesWatermarkTemplate}"
                            DisplayUpDownButtons="False">
         <i:Interaction.Behaviors>
@@ -1240,7 +1317,7 @@
       </sd:NumericTextBox>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1252,7 +1329,7 @@
       <DockPanel>
         <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseDirectory}"
                 Visibility="{Binding HasCommand_BrowseDirectory, Converter={sd:VisibleOrCollapsed}}"
-                ToolTip="{sd:Localize Browse directory, Context=ToolTip}">
+                ToolTip="Browse directory">
           <Image Source="{StaticResource ImageBrowse}" Width="16" Height="16" Margin="-1"/>
         </Button>
         <sd:TextBox x:Name="TextBox" Margin="2" SelectAllOnFocus="True"
@@ -1266,7 +1343,7 @@
       </DockPanel>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1278,7 +1355,7 @@
       <DockPanel>
         <Button Style="{StaticResource ImageButtonStyle}" DockPanel.Dock="Right" Command="{Binding BrowseFile}"
                 Visibility="{Binding HasCommand_BrowseFile, Converter={sd:VisibleOrCollapsed}}"
-                ToolTip="{sd:Localize Browse file, Context=ToolTip}">
+                ToolTip="Browse file">
           <Image Source="{StaticResource ImageBrowse}" Width="16" Height="16" Margin="-1"/>
         </Button>
         <sd:TextBox x:Name="TextBox" Margin="2" SelectAllOnFocus="True"
@@ -1293,7 +1370,7 @@
       </DockPanel>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1308,7 +1385,7 @@
       </Grid>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBlock" Property="Text" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBlock" Property="Text" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1321,7 +1398,7 @@
     </pvdr:EnumTemplateProvider.OverriddenProviderNames>
     <DataTemplate DataType="qvm:NodeViewModel">
       <Grid>
-        <ToggleButton x:Name="ToggleButton" VerticalAlignment="Center" Margin="2" Content="{sd:Localize Change values..., Context=Button}">
+        <ToggleButton x:Name="ToggleButton" VerticalAlignment="Center" Margin="2" Content="Change values...">
           <i:Interaction.Behaviors>
             <sd:ToggleButtonPopupBehavior/>
           </i:Interaction.Behaviors>
@@ -1330,11 +1407,11 @@
           <Grid Background="{StaticResource BackgroundBrush}" MinWidth="200" MaxWidth="400" MaxHeight="200">
             <DockPanel>
               <UniformGrid DockPanel.Dock="Bottom" Columns="3">
-                <Button Content="{sd:Localize All, Context=Button}" ToolTip="{sd:Localize Select all values, Context=ToolTip}"
+                <Button Content="All" ToolTip="Select all values"
                         Command="{Binding FlagEnumSelectAll}" Margin="1"/>
-                <Button Content="{sd:Localize None, Context=Button}" ToolTip="{sd:Localize Clear selection, Context=ToolTip}"
+                <Button Content="None" ToolTip="Clear selection"
                         Command="{Binding FlagEnumSelectNone}" Margin="1"/>
-                <Button Content="{sd:Localize Invert, Context=Button}" ToolTip="{sd:Localize Invert selection, Context=ToolTip}"
+                <Button Content="Invert" ToolTip="Invert selection"
                         Command="{Binding FlagEnumSelectInvert}" Margin="1"/>
               </UniformGrid>
               <ListBox Margin="0" Padding="2" Background="Transparent" BorderThickness="0" SelectionMode="Multiple"
@@ -1373,7 +1450,7 @@
       </Grid>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="ToggleButton" Property="Content" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="ToggleButton" Property="Content" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1451,17 +1528,17 @@
 
   <ContextMenu x:Key="ReferenceContextMenu">
     <MenuItem Icon="{sd:Image {StaticResource ImageFetchAsset}}"
-              Header="{sd:Localize Select the referenced asset}"
+              Header="Select the referenced asset"
               Command="{Binding FetchAsset}"
               IsEnabled="{Binding NodeValue, Converter={sd:Chained {cvt:DifferentValuesToNull}, {sd:ObjectToBool}}}"
               Visibility="{Binding HasCommand_FetchAsset, Converter={sd:VisibleOrCollapsed}, FallbackValue=Collapsed}"/>
     <MenuItem Icon="{sd:Image {StaticResource ImagePickup}}"
-              Header="{sd:Localize Select an asset}"
+              Header="Select an asset"
               Command="{Binding PickupAsset}"
               CommandParameter="{Binding Type}"
               Visibility="{Binding HasCommand_PickupAsset, Converter={sd:VisibleOrCollapsed}, FallbackValue=Collapsed}"/>
     <MenuItem Icon="{sd:Image {StaticResource ImageClear}}"
-              Header="{sd:Localize Clear this reference}"
+              Header="Clear this reference"
               Command="{Binding CreateNewInstance}"
               CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
               Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}, FallbackValue=Collapsed}"/>
@@ -1471,15 +1548,15 @@
     <DockPanel>
       <UniformGrid Rows="1" DockPanel.Dock="Right">
         <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding PickupAsset}" CommandParameter="{Binding Type}"
-                ToolTip="{sd:Localize Select an asset, Context=ToolTip}" Visibility="{Binding IsReadOnly, Converter={sd:VisibleOrCollapsed}, ConverterParameter={sd:False}, Mode=OneWay}">
+                ToolTip="Select an asset" Visibility="{Binding IsReadOnly, Converter={sd:VisibleOrCollapsed}, ConverterParameter={sd:False}, Mode=OneWay}">
           <Image Source="{StaticResource ImagePickup}" Width="16" Height="16" Margin="-1"/>
         </Button>
         <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding CreateNewInstance}" CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
-                ToolTip="{sd:Localize Clear the reference, Context=ToolTip}" Visibility="{Binding IsReadOnly, Converter={sd:VisibleOrCollapsed}, ConverterParameter={sd:False}, Mode=OneWay}">
+                ToolTip="Clear the reference" Visibility="{Binding IsReadOnly, Converter={sd:VisibleOrCollapsed}, ConverterParameter={sd:False}, Mode=OneWay}">
           <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
         </Button>
         <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding FetchAsset}"
-                ToolTip="{sd:Localize Select the referenced asset, Context=ToolTip}">
+                ToolTip="Select the referenced asset">
           <Image Source="{StaticResource ImageFetchAsset}" Width="16" Height="16" Margin="-1"/>
         </Button>
       </UniformGrid>
@@ -1534,7 +1611,7 @@
         <Border BorderThickness="1" BorderBrush="Black" Background="Transparent" DockPanel.Dock="Right"
                 Cursor="Hand" Margin="0,1" ContextMenu="{StaticResource ReferenceContextMenu}">
           <Grid>
-            <Border Width="64" Height="64" Background="Transparent" ToolTip="{sd:Localize Select the referenced asset, Context=ToolTip}"
+            <Border Width="64" Height="64" Background="Transparent" ToolTip="Select the referenced asset"
                     Visibility="{Binding Visibility,ElementName=ThumbnailImage}">
               <Image x:Name="ThumbnailImage" DataContext="{Binding NodeValue, Converter={cvt:ContentReferenceToAsset}}" Width="64" Height="64"
                      Source="{Binding ThumbnailData.Presenter, Mode=OneWay}"/>
@@ -1545,7 +1622,7 @@
             <ProgressBar DataContext="{Binding NodeValue, Converter={cvt:ContentReferenceToAsset}}" Width="16" Height="4" IsIndeterminate="True"
                          Visibility="{Binding ThumbnailData, Mode=OneWay, FallbackValue={sd:Collapsed},
                                                           Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrHidden}}}"/>
-            <Border Width="64" Height="64" Background="Transparent" ToolTip="{sd:Localize Select an asset, Context=ToolTip}"
+            <Border Width="64" Height="64" Background="Transparent" ToolTip="Select an asset"
                     Visibility="{Binding Visibility,ElementName=PickupImage}">
               <Image x:Name="PickupImage" Source="{StaticResource ImagePickup}" Width="16" Height="16"
                      DataContext="{Binding NodeValue, Converter={cvt:ContentReferenceToAsset}}"
@@ -1600,12 +1677,12 @@
           </Grid>
           <UniformGrid Rows="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6,0">
             <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding PickupAsset}" CommandParameter="{Binding Type}"
-                    ToolTip="{sd:Localize Select an asset, Context=ToolTip}" Visibility="{Binding HasCommand_PickupAsset, Converter={sd:VisibleOrCollapsed}}">
+                    ToolTip="Select an asset" Visibility="{Binding HasCommand_PickupAsset, Converter={sd:VisibleOrCollapsed}}">
               <Image Source="{StaticResource ImagePickup}" Width="16" Height="16" Margin="-1"/>
             </Button>
             <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding CreateNewInstance}"
                     CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
-                    ToolTip="{sd:Localize Clear the reference, Context=ToolTip}" Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}}">
+                    ToolTip="Clear the reference" Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}}">
               <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
             </Button>
           </UniformGrid>
@@ -1618,19 +1695,19 @@
     <DataTemplate>
       <DockPanel>
         <StackPanel DockPanel.Dock="Right" Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}}" Orientation="Horizontal">
-          <Button Style="{StaticResource ImageButtonStyle}" ToolTip="{sd:Localize Create an instance of this structure, Context=ToolTip}"
+          <Button Style="{StaticResource ImageButtonStyle}" ToolTip="Create an instance of this structure"
                   Command="{Binding CreateNewInstance, Mode=OneWay}" CommandParameter="{Binding Type, Converter={sd:UnderlyingType}, Mode=OneWay}"
                   Visibility="{Binding NodeValue, Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrCollapsed}}}">
             <Image Source="{StaticResource ImageCreateInstance}" Width="16" Height="16" Margin="-1"/>
           </Button>
-          <Button Style="{StaticResource ImageButtonStyle}" ToolTip="{sd:Localize Clear value (set to null), Context=ToolTip}"
+          <Button Style="{StaticResource ImageButtonStyle}" ToolTip="Clear value (set to null)"
                   Command="{Binding CreateNewInstance, Mode=OneWay}" CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
                   Visibility="{Binding NodeValue, Converter={sd:Chained {sd:ObjectToBool}, {sd:VisibleOrCollapsed}}}"
                   VerticalAlignment="Center">
             <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
           </Button>
         </StackPanel>
-        <TextBlock Text="{sd:Localize (null)}"  Visibility="{Binding NodeValue, Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
+        <TextBlock Text="(null)"  Visibility="{Binding NodeValue, Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrCollapsed}}}"/>
         <ContentControl Visibility="{Binding NodeValue, Converter={sd:Chained {sd:ObjectToBool}, {sd:VisibleOrCollapsed}}}"  Content="{Binding}"
                         ContentTemplateSelector="{x:Static edvw:PropertyViewHelper.EditorProviders}"/>
       </DockPanel>
@@ -1659,10 +1736,12 @@
   <sd:DefaultTemplateProvider x:Key="ObjectPropertyTemplateProvider" edvw:PropertyViewHelper.TemplateCategory="PropertyEditor" OverrideRule="None">
     <DataTemplate DataType="qvm:NodeViewModel">
       <TextBlock Margin="2,0" VerticalAlignment="Center" x:Name="DefaultTextBlock"
-                 Text="{sd:PriorityBinding {Binding AttributeDisplayName, Mode=OneWay}, {Binding Type, Mode=OneWay, StringFormat={sd:Localize {}{0} (Not supported)}, Converter={sd:NotSupportedTypeToTypeName}}, {Binding NodeValue, Mode=OneWay, Converter={sd:ObjectToTypeName}}}"/>
+                 Text="{sd:PriorityBinding {Binding AttributeDisplayName, Mode=OneWay},
+                                           {Binding Type, Mode=OneWay, StringFormat={}{0} (Not supported), Converter={sd:NotSupportedTypeToTypeName}},
+                                           {Binding NodeValue, Mode=OneWay, Converter={sd:ObjectToTypeName}}}"/>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="DefaultTextBlock" Property="Text" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="DefaultTextBlock" Property="Text" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -1675,7 +1754,7 @@
           <StackPanel Orientation="Vertical">
             <TextBlock Foreground="Orange" Margin="8" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis">
               <TextBlock.Text>
-                <MultiBinding StringFormat="{sd:Localize Unable to load the object of type {0} from assembly {1}}">
+                <MultiBinding StringFormat="Unable to load the object of type {0} from assembly {1}">
                   <Binding Path="NodeValue.TypeName" />
                   <Binding Path="NodeValue.AssemblyName" />
                 </MultiBinding>

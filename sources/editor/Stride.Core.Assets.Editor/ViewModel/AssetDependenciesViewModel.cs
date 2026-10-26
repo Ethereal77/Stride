@@ -1,14 +1,9 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Analysis;
 using Stride.Core.Extensions;
 using Stride.Core.Presentation.Commands;
 using Stride.Core.Presentation.ViewModels;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.ViewModel
 {
@@ -79,8 +74,8 @@ namespace Stride.Core.Assets.Editor.ViewModel
         /// Gets the inclusion description shown for a root asset, naming the packages that root it.
         /// </summary>
         public string RootInclusionDescription => ForcedRoot
-            ? Tr._p("Message", "Included in build as root (always)")
-            : string.Format(Tr._p("Message", "Included in build as root (in {0})"), string.Join(", ", RootPackages.Select(x => x.Name)));
+            ? "Included in build as root (always)"
+            : string.Format("Included in build as root (in {0})", string.Join(", ", RootPackages.Select(x => x.Name)));
 
         /// <summary>
         /// Gets whether this asset will be compiled as a dependency of an asset that has <see cref="IsRoot"/> set to <c>true</c>.

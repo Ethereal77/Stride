@@ -22,7 +22,6 @@ using Stride.Core.IO;
 using Stride.Core.Presentation.Dirtiables;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.ViewModels;
-using Stride.Core.Translation;
 using RoslynWorkspace = Stride.Assets.Presentation.AssetEditors.ScriptEditor.RoslynWorkspace;
 
 namespace Stride.Assets.Presentation.ViewModel
@@ -234,7 +233,7 @@ namespace Stride.Assets.Presentation.ViewModel
             {
                 var dialogResult = projectViewModel.Session.Dialogs.BlockingMessageBox(
                     string.Format(
-                        Tr._p("Message", "Game Studio can't auto-reload the project file {0} because you have local changes such as new or deleted scripts.\r\n\r\nClick OK to keep reloading or Cancel to keep the current version."),
+                        "Game Studio can't auto-reload the project file {0} because you have local changes such as new or deleted scripts.\r\n\r\nClick OK to keep reloading or Cancel to keep the current version.",
                         Path.GetFileName(project.FilePath)), MessageBoxButton.OKCancel);
                 if (dialogResult == MessageBoxResult.Cancel)
                     return;
@@ -284,7 +283,7 @@ namespace Stride.Assets.Presentation.ViewModel
                 // Check if user is OK with deleting those dirty assets?
                 var dialogResult = projectViewModel.Session.Dialogs.BlockingMessageBox(
                     string.Format(
-                        Tr._p("Message", "The following source files in the {0} project have been deleted externally, but have unsaved changes in Game Studio. Do you want to delete these files?\r\n\r\n{1}"),
+                        "The following source files in the {0} project have been deleted externally, but have unsaved changes in Game Studio. Do you want to delete these files?\r\n\r\n{1}",
                        Path.GetFileName(project.FilePath), string.Join("\r\n", dirtyAssetsToDelete.Select(x => x.AssetItem.FullPath.ToOSPath()))),
                     MessageBoxButton.OKCancel);
                 if (dialogResult == MessageBoxResult.Cancel)

@@ -41,19 +41,19 @@
         <UniformGrid Rows="1" DockPanel.Dock="Right">
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding PickupEntity}"
                   CommandParameter="{sd:MultiBinding {Binding OwnerAsset}, {Binding Source={x:Null}}, Converter={sd:MultiBindingToTuple}}"
-                  ToolTip="{sd:Localize Select an asset, Context=ToolTip}"
+                  ToolTip="Select an asset"
                   Visibility="{Binding HasCommand_PickupEntity, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImagePickup}" Width="16" Height="16" Margin="-1"/>
           </Button>
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding CreateNewInstance}"
                   CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
-                  ToolTip="{sd:Localize Clear the reference, Context=ToolTip}"
+                  ToolTip="Clear the reference"
                   Visibility="{Binding HasCommand_PickupEntity, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
           </Button>
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding FetchEntity}"
                   CommandParameter="{Binding OwnerAsset}"
-                  ToolTip="{sd:Localize Select the referenced asset, Context=ToolTip}"
+                  ToolTip="Select the referenced asset"
                   Visibility="{Binding HasCommand_FetchEntity, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImageFetchAsset}" Width="16" Height="16" Margin="-1"/>
           </Button>
@@ -68,7 +68,7 @@
       </DockPanel>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -81,19 +81,19 @@
         <UniformGrid Rows="1" DockPanel.Dock="Right">
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding PickupComponent}"
                   CommandParameter="{sd:MultiBinding {Binding OwnerAsset}, {Binding Type}, Converter={sd:MultiBindingToTuple}}"
-                  ToolTip="{sd:Localize Select an asset, Context=ToolTip}"
+                  ToolTip="Select an asset"
                   Visibility="{Binding HasCommand_PickupComponent, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImagePickup}" Width="16" Height="16" Margin="-1"/>
           </Button>
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding CreateNewInstance}"
                   CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
-                  ToolTip="{sd:Localize Clear the reference, Context=ToolTip}"
+                  ToolTip="Clear the reference"
                   Visibility="{Binding HasCommand_PickupComponent, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
           </Button>
           <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding FetchEntity}"
                   CommandParameter="{Binding OwnerAsset}"
-                  ToolTip="{sd:Localize Select the referenced asset, Context=ToolTip}"
+                  ToolTip="Select the referenced asset"
                   Visibility="{Binding HasCommand_FetchEntity, Converter={sd:VisibleOrCollapsed}}">
             <Image Source="{StaticResource ImageFetchAsset}" Width="16" Height="16" Margin="-1"/>
           </Button>
@@ -108,7 +108,7 @@
       </DockPanel>
       <DataTemplate.Triggers>
         <DataTrigger Binding="{Binding NodeValue}" Value="{x:Static qvm:NodeViewModel.DifferentValues}">
-          <Setter TargetName="TextBox" Property="WatermarkContent" Value="{sd:Localize (Different values)}"/>
+          <Setter TargetName="TextBox" Property="WatermarkContent" Value="(Different values)"/>
         </DataTrigger>
       </DataTemplate.Triggers>
     </DataTemplate>
@@ -120,7 +120,7 @@
       <Border sd:PropertyViewHelper.Increment="0" sd:PropertyViewHelper.IsExpanded="True"
           Visibility="{Binding IsVisible, Converter={sd:VisibleOrCollapsed}}">
         <Border x:Name="PART_Name" Background="{Binding Background}" MinHeight="26" Margin="4,4,1,8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ToolTip="{Binding Documentation}">
-          <localView:AddEntityComponentUserControl 
+          <localView:AddEntityComponentUserControl
             AvailableComponentTypes="{Binding EntityComponentAvailableTypes}"
             AvailableComponentTypeGroups="{Binding EntityComponentAvailableTypeGroups}"
             AddNewItemCommand="{Binding AddNewItem}"
@@ -165,7 +165,7 @@
         <Border BorderThickness="1" BorderBrush="Black" Background="Transparent" DockPanel.Dock="Right"
                 Cursor="Hand" Margin="0,1" ContextMenu="{StaticResource ReferenceContextMenu}">
           <Grid>
-            <Border Width="64" Height="64" Background="Transparent" ToolTip="{sd:Localize Select the referenced asset, Context=ToolTip}"
+            <Border Width="64" Height="64" Background="Transparent" ToolTip="Select the referenced asset"
                 Visibility="{Binding Visibility, ElementName=ThumbnailImage}">
               <Image x:Name="ThumbnailImage" DataContext="{Binding NodeValue, Converter={sd:ContentReferenceToAsset}}" Width="64" Height="64"
                      Source="{Binding ThumbnailData.Presenter, Mode=OneWay}"/>
@@ -179,7 +179,7 @@
             <ProgressBar DataContext="{Binding NodeValue, Converter={sd:ContentReferenceToAsset}}" Width="16" Height="4" IsIndeterminate="True"
                          Visibility="{Binding ThumbnailData, Mode=OneWay, FallbackValue={sd:Collapsed},
                                                           Converter={sd:Chained {sd:ObjectToBool}, {sd:InvertBool}, {sd:VisibleOrHidden}}}"/>
-            <Border Width="64" Height="64" Background="Transparent" ToolTip="{sd:Localize Select an asset, Context=ToolTip}"
+            <Border Width="64" Height="64" Background="Transparent" ToolTip="Select an asset"
                     Visibility="{Binding Visibility,ElementName=PickupImage}">
               <Image x:Name="PickupImage" Source="{StaticResource ImagePickup}" Width="16" Height="16"
                      DataContext="{Binding NodeValue, Converter={sd:ContentReferenceToAsset}}"
@@ -213,16 +213,16 @@
           </Grid>
           <UniformGrid Rows="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6,0">
             <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding HighlightMaterial}" CommandParameter="{Binding Editor}"
-                    ToolTip="{sd:Localize Highlight this material in the scene editor, Context=ToolTip}" Visibility="{Binding HasCommand_HighlightMaterial, Converter={sd:VisibleOrCollapsed}}">
+                    ToolTip="Highlight this material in the scene editor" Visibility="{Binding HasCommand_HighlightMaterial, Converter={sd:VisibleOrCollapsed}}">
               <Image Source="{StaticResource ImageHighlightMaterial}" Width="16" Height="16" Margin="-1"/>
             </Button>
             <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding PickupAsset}" CommandParameter="{Binding Type}"
-                    ToolTip="{sd:Localize Select an asset, Context=ToolTip}" Visibility="{Binding HasCommand_PickupAsset, Converter={sd:VisibleOrCollapsed}}">
+                    ToolTip="Select an asset" Visibility="{Binding HasCommand_PickupAsset, Converter={sd:VisibleOrCollapsed}}">
               <Image Source="{StaticResource ImagePickup}" Width="16" Height="16" Margin="-1"/>
             </Button>
             <Button Style="{StaticResource ImageButtonStyle}" Command="{Binding CreateNewInstance}"
                     CommandParameter="{x:Static assetCommands:AbstractNodeValue.Null}"
-                    ToolTip="{sd:Localize Clear the reference, Context=ToolTip}" Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}}">
+                    ToolTip="Clear the reference" Visibility="{Binding HasCommand_CreateNewInstance, Converter={sd:VisibleOrCollapsed}}">
               <Image Source="{StaticResource ImageClear}" Width="16" Height="16" Margin="-1"/>
             </Button>
           </UniformGrid>
@@ -257,7 +257,7 @@
   <tp:GameSettingAddConfigurationTemplateProvider x:Key="GameSettingAddConfigurationTemplateProviderFooter" OverrideRule="All" sd:PropertyViewHelper.TemplateCategory="PropertyFooter">
     <DataTemplate>
       <StackPanel Margin="10,2,5,2" Orientation="Horizontal">
-        <TextBlock Text="{sd:Localize Add configuration}" TextTrimming="CharacterEllipsis" FontStyle="Italic" Margin="0,0,2,0"/>
+        <TextBlock Text="Add configuration" TextTrimming="CharacterEllipsis" FontStyle="Italic" Margin="0,0,2,0"/>
         <Button Style="{StaticResource AddNewItemButtonStyle}"/>
         <ComboBox x:Name="InstanceTypeSelectionComboBox" Style="{StaticResource AddItemComboBox}"
             ItemsSource="{Binding AbstractNodeMatchingEntries}" Margin="2,0">

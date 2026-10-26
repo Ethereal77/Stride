@@ -1,10 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
 using Stride.Core.IO;
 using Stride.Core.Settings;
 using Stride.Core.Assets.Editor.Settings;
-using Stride.Core.Translation;
 using Stride.GameStudio.Remote;
 using Stride.GameStudio.Helpers;
 
@@ -13,7 +11,7 @@ namespace Stride.GameStudio
     public static class StrideEditorSettings
     {
         // Categories
-        public static readonly string Remote = Tr._p("Settings", "Remote");
+        public static readonly string Remote = "Remote";
 
         static StrideEditorSettings()
         {
@@ -21,35 +19,35 @@ namespace Stride.GameStudio
             StartupSession = new SettingsKey<UFile>("Interface/StartupSession" + StrideGameStudio.EditorVersion, EditorSettings.SettingsContainer, "")
             {
                 // Note: the name of this settings is based on the editor version, because we want to force displaying the release notes on a new version.
-                DisplayName = $"{EditorSettings.Interface}/{Tr._p("Settings", "Default session to load")}"
+                DisplayName = $"{EditorSettings.Interface}/Default session to load"
             };
             Host = new SettingsKey<string>("Remote/Credentials/Host", EditorSettings.SettingsContainer, "")
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Host")}"
+                DisplayName = $"{Remote}/Host"
             };
             Port = new SettingsKey<int>("Remote/Credentials/Port", EditorSettings.SettingsContainer, 22)
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Port")}"
+                DisplayName = $"{Remote}/Port"
             };
             Username = new SettingsKey<string>("Remote/Credentials/Username", EditorSettings.SettingsContainer, "")
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Username")}"
+                DisplayName = $"{Remote}/Username"
             };
             Password = new SettingsKey<string>("Remote/Credentials/Password", EditorSettings.SettingsContainer, "")
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Password")}"
+                DisplayName = $"{Remote}/Password"
             };
             Location = new SettingsKey<string>("Remote/Location", EditorSettings.SettingsContainer, "Projects")
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Location")}"
+                DisplayName = $"{Remote}/Location"
             };
             AskForCredentials = new SettingsKey<bool>("Remote/Credentials/AskForCredentials", EditorSettings.SettingsContainer, true)
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "Ask for credentials when deploying game")}"
+                DisplayName = $"{Remote}/Ask for credentials when deploying game"
             };
             Display = new SettingsKey<string>("Remote/Display", EditorSettings.SettingsContainer, ":0.0")
             {
-                DisplayName = $"{Remote}/{Tr._p("Settings", "X Display")}"
+                DisplayName = $"{Remote}/X Display"
             };
         }
 

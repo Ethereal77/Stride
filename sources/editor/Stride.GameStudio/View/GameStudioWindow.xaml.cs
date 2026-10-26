@@ -1,13 +1,8 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -24,7 +19,6 @@ using Stride.Core.Presentation.Extensions;
 using Stride.Core.Presentation.Interop;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 using AvalonDock.Layout;
 using Stride.GameStudio.ViewModels;
 using Stride.GameStudio.Helpers;
@@ -83,7 +77,7 @@ namespace Stride.GameStudio.View
             var assets = assetEditorsManager.OpenedAssets.Select(x => x.Id).ToList();
             if (assets.Count > 0)
             {
-                var message = Tr._p("Message", "To reset the layout, Game Studio needs to close and re-open all asset and document editors. You won't lose unsaved changes.");
+                var message = "To reset the layout, Game Studio needs to close and re-open all asset and document editors. You won't lose unsaved changes.";
                 var buttons = DialogHelper.CreateButtons(new[] { "Reset layout", "Cancel" }, 1, 2);
                 var result = await Editor.ServiceProvider.Get<IDialogService>().MessageBoxAsync(message, buttons);
                 if (result != 1)
@@ -196,7 +190,7 @@ namespace Stride.GameStudio.View
             var workArea = this.GetWorkArea();
 
             AdjustMaxSizeWithTaskbar();
-            
+
             if (wasWindowMaximized || previousWorkAreaWidth > (int)workArea.Width || previousWorkAreaHeight > (int)workArea.Height)
             {
                 // Resolution has changed (and is now smaller), let's make the window fill all available space.

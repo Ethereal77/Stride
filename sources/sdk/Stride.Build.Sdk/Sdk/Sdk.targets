@@ -273,37 +273,6 @@
   <Import Project="$(StrideRoot)sources\targets\Stride.AutoPackDeploy.targets" />
 
   <!-- ================================================================ -->
-  <!-- Localization Satellite Assemblies -->
-  <!-- ================================================================ -->
-  <PropertyGroup>
-    <StrideBuildLocalization Condition="'$(StrideBuildLocalization)' == '' And '$(StridePackageBuild)' == 'true'">true</StrideBuildLocalization>
-  </PropertyGroup>
-  <Target Name="StrideGenerateLocalizationSatelliteDlls"
-          BeforeTargets="SatelliteDllsProjectOutputGroup"
-          AfterTargets="Build"
-          Returns="@(SatelliteDllsProjectOutputGroupOutput)"
-          Condition="'$(StrideLocalized)' == 'true' And '$(StrideBuildLocalization)' == 'true'">
-    <ItemGroup>
-      <StrideTranslations Include="fr;ja;es;de;ru;it;ko"/>
-      <StrideTranslations Include="zh-Hans">
-        <Source>zh_HANS-CN</Source>
-      </StrideTranslations>
-      <_StrideTranslations Include="@(StrideTranslations)">
-        <Source Condition="%(StrideTranslations.Source) == ''">%(StrideTranslations.Identity)</Source>
-      </_StrideTranslations>
-    </ItemGroup>
-    <Message Importance="High" Text="Generating translation for %(_StrideTranslations.Identity)"/>
-    <Exec Condition="Exists('$(StrideRoot)sources\localization\%(_StrideTranslations.Source)\$(TargetName).%(_StrideTranslations.Source).po')"
-          Command="&quot;$(StrideRoot)deps\Gettext.Net\GNU.Gettext.Msgfmt.exe&quot; -r $(TargetName) -d &quot;$(TargetDir)\&quot; -l %(_StrideTranslations.Identity) -L &quot;$(StrideRoot)deps\Gettext.Net&quot; &quot;$(StrideRoot)sources\localization\%(_StrideTranslations.Source)\$(TargetName).%(_StrideTranslations.Source).po&quot;" />
-    <ItemGroup>
-      <SatelliteDllsProjectOutputGroupOutputIntermediate Include="$(OutDir)%(_StrideTranslations.Identity)\$(TargetName).Messages.resources.dll" Condition="Exists('$(OutDir)%(_StrideTranslations.Identity)\$(TargetName).Messages.resources.dll')">
-        <TargetPath>%(_StrideTranslations.Identity)\$(TargetName).Messages.resources.dll</TargetPath>
-        <Culture>%(_StrideTranslations.Identity)</Culture>
-      </SatelliteDllsProjectOutputGroupOutputIntermediate>
-    </ItemGroup>
-  </Target>
-
-  <!-- ================================================================ -->
   <!-- Swap SharedAssemblyInfo.cs -> SharedAssemblyInfo.Generated.cs    -->
   <!-- ================================================================ -->
   <!-- The single place that swaps the version template for the generated overlay, so the StrideVersion.* consts

@@ -5,13 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Stride.Core.Assets;
-using Stride.Core.Assets.Editor.Resources.Strings;
 using Stride.Core.Assets.Templates;
 using Stride.Core;
 using Stride.Core.Reflection;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Presentation.Windows;
-using Stride.Core.Translation;
 using Stride.Assets.Scripts;
 using EditorViewModel = Stride.Core.Assets.Editor.ViewModel.EditorViewModel;
 using System.Linq;
@@ -111,10 +109,10 @@ namespace Stride.Assets.Presentation.Templates
                 {
                     var buttons = DialogHelper.CreateButtons(new[]
                     {
-                        Tr._p("Button", "Save"),
-                        Tr._p("Button", "Cancel")
+                        "Save",
+                        "Cancel"
                     }, 1, 2);
-                    var message = Tr._p("Message", "You can't use scripts until you save them. Do you want to save now?");
+                    var message = "You can't use scripts until you save them. Do you want to save now?";
                     var checkedMessage = Stride.Core.Assets.Editor.Settings.EditorSettings.AlwaysSaveNewScriptsWithoutAsking;
                     var result = await EditorViewModel.Instance.ServiceProvider.Get<IDialogService>().CheckedMessageBoxAsync(message, false, checkedMessage, buttons, MessageBoxImage.Question);
 

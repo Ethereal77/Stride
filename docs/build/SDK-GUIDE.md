@@ -392,7 +392,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 | `StridePublicApi` | Generate .usrdoc documentation files | Project (.csproj) |
 | `StridePackageBuild` | Building for NuGet release | Build script |
 | `StrideSkipUnitTests` | Skip test projects (faster builds) | Command line |
-| `StrideLocalized` | Project has localization satellite assemblies | Project (.csproj) |
 
 ### Frameworks
 

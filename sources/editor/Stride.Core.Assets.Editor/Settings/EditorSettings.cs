@@ -1,16 +1,12 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Stride.Core.Annotations;
 using Stride.Core.CodeEditorSupport;
 using Stride.Core.Diagnostics;
 using Stride.Core.IO;
 using Stride.Core.Presentation.Quantum.ViewModels;
 using Stride.Core.Settings;
-using Stride.Core.Translation;
 
 namespace Stride.Core.Assets.Editor.Settings
 {
@@ -21,25 +17,25 @@ namespace Stride.Core.Assets.Editor.Settings
         /// <summary>
         /// Always delete {0} without asking
         /// </summary>
-        public static readonly string AlwaysDeleteWithoutAsking = Tr._p("Settings", "Always delete {0} without asking");
-        public static readonly string AlwaysSaveNewScriptsWithoutAsking = Tr._p("Settings", "Always save new scripts without asking");
+        public static readonly string AlwaysDeleteWithoutAsking = "Always delete {0} without asking";
+        public static readonly string AlwaysSaveNewScriptsWithoutAsking = "Always save new scripts without asking";
 
         // Categories
-        public static readonly string Environment = Tr._p("Settings", "Environment");
-        public static readonly string ExternalTools = Tr._p("Settings", "External tools");
-        public static readonly string Interface = Tr._p("Settings", "Interface");
-        public static readonly string Logging = Tr._p("Settings", "Logging");
-        public static readonly string Tools = Tr._p("Settings", "Tools");
+        public static readonly string Environment = "Environment";
+        public static readonly string ExternalTools = "External tools";
+        public static readonly string Interface = "Interface";
+        public static readonly string Logging = "Logging";
+        public static readonly string Tools = "Tools";
 
         static EditorSettings()
         {
             DefaultTextEditor = new SettingsKey<UFile>("ExternalTools/DefaultTextEditor", SettingsContainer, new UFile(@"%windir%\system32\notepad.exe"))
             {
-                DisplayName = $"{ExternalTools}/{Tr._p("Settings", "Default text editor")}",
+                DisplayName = $"{ExternalTools}/{"Default text editor"}",
             };
             ShaderEditor = new SettingsKey<UFile>("ExternalTools/ShaderEditor", SettingsContainer, new UFile(@"%windir%\system32\notepad.exe"))
             {
-                DisplayName = $"{ExternalTools}/{Tr._p("Settings", "Shader editor")}",
+                DisplayName = $"{ExternalTools}/{"Shader editor"}",
             };
             DefaultIDE = new SettingsKey<string>("ExternalTools/DefaultIDE", SettingsContainer, IDEInfo.DefaultIDE.DisplayName)
             {
@@ -49,50 +45,50 @@ namespace Stride.Core.Assets.Editor.Settings
                     names.AddRange(IDEInfoVersions.AvailableIDEs().Where(x => x.HasProgram).Select(x => x.DisplayName));
                     return names;
                 },
-                DisplayName = $"{ExternalTools}/{Tr._p("Settings", "Default IDE")}",
+                DisplayName = $"{ExternalTools}/{"Default IDE"}",
             };
             AskBeforeDeletingAssets = new SettingsKey<bool>("Interface/AskBeforeDeletingAssets", SettingsContainer, true)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Ask before deleting assets")}",
-                Description = Tr._p("Settings", "Ask before deleting assets"),
+                DisplayName = $"{Interface}/{"Ask before deleting assets"}",
+                Description = "Ask before deleting assets",
             };
             AskBeforeReloadingAssemblies = new SettingsKey<bool>("Interface/AskBeforeReloadingAssemblies", SettingsContainer, true)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Ask before reloading assemblies")}",
-                Description = Tr._p("Settings", "Ask before reloading assemblies"),
+                DisplayName = $"{Interface}/{"Ask before reloading assemblies"}",
+                Description = "Ask before reloading assemblies",
             };
             AutoReloadAssemblies = new SettingsKey<bool>("Interface/AutoReloadAssemblies", SettingsContainer, true)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Automatically reload assemblies")}",
-                Description = Tr._p("Settings", "Automatically reload assemblies"),
+                DisplayName = $"{Interface}/{"Automatically reload assemblies"}",
+                Description = "Automatically reload assemblies",
             };
             AskBeforeSavingNewScripts = new SettingsKey<bool>("Interface/AskBeforeSavingNewScripts", SettingsContainer, true)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Ask before saving new scripts")}",
-                Description = Tr._p("Settings", "Ask before saving new scripts"),
+                DisplayName = $"{Interface}/{"Ask before saving new scripts"}",
+                Description = "Ask before saving new scripts",
             };
             Language = new SettingsKey<SupportedLanguage>("Interface/Language", SettingsContainer, SupportedLanguage.MachineDefault)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Language")}",
+                DisplayName = $"{Interface}/{"Language"}",
             };
             ResetEditorLayout = new SettingsCommand("Interface/ResetEditorLayout")
             {
-                ActionName = Tr._p("Settings", "Reset"),
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Reset Game Studio layout")}"
+                ActionName = "Reset",
+                DisplayName = $"{Interface}/{"Reset Game Studio layout"}",
             };
             FallbackBuildCacheDirectory = new UDirectory(Path.Combine(EditorPath.DefaultTempPath, "BuildCache"));
 
             UseEffectCompilerServer = new SettingsKey<bool>("Tools/UseEffectCompilerServer", SettingsContainer, false)
             {
-                DisplayName = $"{Tools}/{Tr._p("Settings", "Use effect compiler server")}",
+                DisplayName = $"{Tools}/{"Use effect compiler server"}",
             };
             ReloadLastSession = new SettingsKey<bool>("Interface/ReloadLastSession", SettingsContainer, false)
             {
-                DisplayName = $"{Interface}/{Tr._p("Settings", "Automatically reload last session at startup")}",
+                DisplayName = $"{Interface}/{"Automatically reload last session at startup"}",
             };
             GraphicsApi = new SettingsKey<string>("Environment/GraphicsApi", SettingsContainer, GraphicsApiDefault)
             {
-                DisplayName = $"{Environment}/{Tr._p("Settings", "Graphics API (Game Studio only)")}",
+                DisplayName = $"{Environment}/{"Graphics API (Game Studio only)"}",
                 // "Default" follows the platform default; Windows also offers all three explicitly, other platforms only Vulkan.
                 GetAcceptableValues = () => OperatingSystem.IsWindows()
                     ? new List<string> { GraphicsApiDefault, "Direct3D11", "Direct3D12", "Vulkan" }
@@ -100,8 +96,8 @@ namespace Stride.Core.Assets.Editor.Settings
             };
             DebugOutputLevel = new SettingsKey<LogMessageType>("Logging/DebugOutputLevel", SettingsContainer, LogMessageType.Warning)
             {
-                DisplayName = $"{Logging}/{Tr._p("Settings", "Debugger output level (Game Studio only)")}",
-                Description = Tr._p("Settings", "Minimum level of the messages Game Studio writes to the attached debugger's output"),
+                DisplayName = $"{Logging}/{"Debugger output level (Game Studio only)"}",
+                Description = "Minimum level of the messages Game Studio writes to the attached debugger's output",
             };
             // The module maps are edited in the settings file only: a display name without a category keeps them out of the dialog.
             DebugOutputModuleLevels = new SettingsKey<Dictionary<string, LogMessageType>>("Logging/DebugOutputModuleLevels", SettingsContainer, () => new Dictionary<string, LogMessageType>

@@ -1,7 +1,7 @@
 <UserControl x:Class="Stride.Assets.Presentation.AssetEditors.GraphicsCompositorEditor.Views.GraphicsCompositorEditorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:graphx="clr-namespace:GraphX.Controls;assembly=GraphX.WPF.Controls"
@@ -30,7 +30,7 @@
       </Style>
 
       <ContextMenu x:Key="EditorViewContextMenu">
-        <MenuItem Header="{sd:Localize Create, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Create" Style="{StaticResource MenuGroupSeparatorStyle}"/>
         <MenuItem ItemsSource="{Binding SharedRendererFactories}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -46,8 +46,8 @@
             </ControlTemplate>
           </MenuItem.Template>
         </MenuItem>
-        <MenuItem Header="{sd:Localize Action, Context=Menu}" Style="{StaticResource MenuGroupSeparatorStyle}"/>
-        <MenuItem Header="{sd:Localize Delete selection, Context=Menu}" Command="{Binding DeleteSelectionCommand}"/>
+        <MenuItem Header="Action" Style="{StaticResource MenuGroupSeparatorStyle}"/>
+        <MenuItem Header="Delete selection" Command="{Binding DeleteSelectionCommand}"/>
       </ContextMenu>
 
 
@@ -90,7 +90,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Ellipse Grid.Column="0" x:Name="connector" DataContext="{Binding}" AllowDrop="True" StrokeThickness="4"
-                                                             Stroke="{StaticResource FallbackConnector}" 
+                                                             Stroke="{StaticResource FallbackConnector}"
                                                              Fill="{StaticResource FallbackConnector}"
                                                              VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                               <i:Interaction.Behaviors>
@@ -129,7 +129,7 @@
 
                             <ContentPresenter Grid.Column="0" Content="{Binding}" Margin="10,0,2,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             <Ellipse Grid.Column="1" x:Name="connector" DataContext="{Binding}" AllowDrop="True" StrokeThickness="4"
-                                                             Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}" 
+                                                             Stroke="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                                              Fill="{Binding Kind, Converter={sd:Chained {sd:StringConcat}, {sd:StaticResourceConverter}, Parameter1=Connector}, FallbackValue={StaticResource FallbackConnector}}"
                                                              VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                               <i:Interaction.Behaviors>
@@ -199,7 +199,7 @@
             <Button Margin="2" Content="{sd:Image {StaticResource ImageAdd}, 16, 16, NearestNeighbor}" Command="{Binding AddNewRenderStageCommand}"/>
             <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedRenderStagesCommand}"/>
           </UniformGrid>
-          <TextBlock Text="{sd:Localize Render stages:}" VerticalAlignment="Center"/>
+          <TextBlock Text="Render stages:" VerticalAlignment="Center"/>
         </DockPanel>
         <sd:EditableContentListBox Margin="8" ItemsSource="{Binding RenderStages}" SelectionMode="Extended"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -251,7 +251,7 @@
             </ComboBox>
             <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedRenderFeaturesCommand}"/>
           </UniformGrid>
-          <TextBlock Text="{sd:Localize Render features:}" VerticalAlignment="Center"/>
+          <TextBlock Text="Render features:" VerticalAlignment="Center"/>
         </DockPanel>
         <ListBox Margin="8" ItemsSource="{Binding RenderFeatures}" SelectionMode="Extended"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -275,7 +275,7 @@
             <Button Margin="2" Content="{sd:Image {StaticResource ImageAdd}, 16, 16, NearestNeighbor}" Command="{Binding AddNewCameraSlotCommand}"/>
             <Button Margin="2" Content="{sd:Image {StaticResource ImageRemove}, 16, 16, NearestNeighbor}" Command="{Binding RemoveSelectedCameraSlotsCommand}"/>
           </UniformGrid>
-          <TextBlock Text="{sd:Localize Camera slots:}" VerticalAlignment="Center"/>
+          <TextBlock Text="Camera slots:" VerticalAlignment="Center"/>
         </DockPanel>
         <sd:EditableContentListBox Margin="8" ItemsSource="{Binding CameraSlots}" SelectionMode="Extended"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -334,4 +334,3 @@
     </graphx:ZoomControl>
   </Grid>
 </UserControl>
-

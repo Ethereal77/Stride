@@ -1,13 +1,11 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
 using System.Net.Sockets;
 using System.Windows;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using Stride.Core.Assets.Editor.Services;
 using Stride.GameStudio.Services;
-using Stride.Core.Translation;
 using MessageBoxButton = Stride.Core.Presentation.Services.MessageBoxButton;
 using MessageBoxImage = Stride.Core.Presentation.Services.MessageBoxImage;
 using Stride.GameStudio.Remote;
@@ -72,19 +70,19 @@ namespace Stride.GameStudio.View
             {
                 case CredentialError.None:
                     messageBoxImage = MessageBoxImage.Information;
-                    message = Tr._p("Credentials", "Your credentials are correct.");
+                    message = "Your credentials are correct.";
                     break;
                 case CredentialError.InvalidHost:
-                    message = Tr._p("Credentials", "Couldn't reach the specified host.");
+                    message = "Couldn't reach the specified host.";
                     break;
                 case CredentialError.InvalidUserOrPassword:
-                    message = Tr._p("Credentials", "Invalid credentials.");
+                    message = "Invalid credentials.";
                     break;
                 case CredentialError.InvalidPath:
-                    message = Tr._p("Credentials", "The location you specified doesn't exist.");
+                    message = "The location you specified doesn't exist.";
                     break;
                 default:
-                    message = Tr._p("Credentials", "An unknown error occurred.");
+                    message = "An unknown error occurred.";
                     break;
             }
             Service.MessageBoxAsync(message, MessageBoxButton.OK, messageBoxImage);

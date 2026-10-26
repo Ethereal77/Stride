@@ -1,12 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Stride.Core.Assets.Analysis;
 using Stride.Core.Assets.Diagnostics;
 using Stride.Core.Assets.Editor.Components.Properties;
@@ -25,7 +20,6 @@ using Stride.Core.Presentation.Dirtiables;
 using Stride.Core.Presentation.Quantum;
 using Stride.Core.Presentation.Services;
 using Stride.Core.Quantum;
-using Stride.Core.Translation;
 using System.IO;
 using Stride.Core.Packages;
 using Stride.Core.Presentation.ViewModels;
@@ -451,7 +445,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             var generator = TemplateManager.FindTemplateGenerator(parameters);
             if (generator == null)
             {
-                await ServiceProvider.Get<IDialogService>().MessageBoxAsync(Tr._p("Message", "Unable to retrieve template generator for the selected template. Aborting."), MessageBoxButton.OK, MessageBoxImage.Error);
+                await ServiceProvider.Get<IDialogService>().MessageBoxAsync("Unable to retrieve template generator for the selected template. Aborting.", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -655,7 +649,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
             string error;
             if (!IsValidName(newName, out error))
             {
-                ServiceProvider.Get<IDialogService2>().BlockingMessageBox(string.Format(Tr._p("Message", "This package couldn't be renamed. {0}"), error), MessageBoxButton.OK, MessageBoxImage.Information);
+                ServiceProvider.Get<IDialogService2>().BlockingMessageBox(string.Format("This package couldn't be renamed. {0}", error), MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             var newPath = UFile.Combine(PackagePath.GetFullDirectory(), newName + PackagePath.GetFileExtension());
@@ -686,7 +680,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
 
             if (Session.AllPackages.Any(x => x != this && string.Equals(x.Name, value, StringComparison.InvariantCultureIgnoreCase)))
             {
-                error = Tr._p("Message", "A package with the same name already exists in the session.");
+                error = "A package with the same name already exists in the session.";
                 return false;
             }
 

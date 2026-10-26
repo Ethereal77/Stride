@@ -73,9 +73,6 @@ See [projects.md](projects.md) for the full layout and each file's role.
 > - Persisting a new user preference?
 >   → **`LauncherSettings`** (launcher-owned) or **`GameStudioSettings`** (shared with Game Studio). See [settings.md](settings.md).
 >
-> - Adding a new localized string or URL?
->   → **`Assets/Localization/Strings.resx` / `Urls.resx`** (+ `.ja-JP` variants). See [localization.md](localization.md).
->
 > - Working on the Windows installer or prerequisites bundle?
 >   → **Advanced Installer projects under `Prerequisites/` and `Setup/`.** See [packaging.md](packaging.md).
 
@@ -90,7 +87,6 @@ See [projects.md](projects.md) for the full layout and each file's role.
 | [versions.md](versions.md) | Version discovery, install/uninstall flow through `NugetStore`, framework selection, beta filter, dev redirects |
 | [self-update.md](self-update.md) | Launcher self-update: NuGet update probe, update rules, reinstall, file swap, restart |
 | [settings.md](settings.md) | `LauncherSettings`, `GameStudioSettings`, config file locations |
-| [localization.md](localization.md) | `Strings.resx` / `Urls.resx`, designer classes, adding a new language |
 | [packaging.md](packaging.md) | `Stride.Launcher.nuspec`, Advanced Installer projects, `StrideSetup.exe`, versioning |
 | [cross-platform.md](cross-platform.md) | Windows-only code paths, Registry usage, cross-platform porting status (xplat-launcher) |
 | [port-status.md](port-status.md) | Full delta vs the WPF launcher on `master` — including silent regressions — and a phased roadmap to close the gap |
