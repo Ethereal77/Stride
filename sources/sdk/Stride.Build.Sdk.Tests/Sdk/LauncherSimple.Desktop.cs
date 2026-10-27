@@ -1,7 +1,7 @@
-namespace xunit.runner.stride
+namespace xunit.runner.stride;
+
+class Program
 {
-    class Program
-    {
-        public static void Main(string[] args) => StrideXunitRunner.Main(args);
-    }
+    public static void Main(string[] args) => StrideXunitRunner.Main(args);
 }
+

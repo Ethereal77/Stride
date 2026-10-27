@@ -1,21 +1,27 @@
+<!--
+***********************************************************************************************
+  Stride.Dependencies.targets
+
+  Build file post-included after the building of that manages native libraries and content
+  files that travel alongside managed assemblies via .ssdeps manifest files.
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    ================================================================
-    Stride.Dependencies.targets - Native Dependency System (.ssdeps)
-    ================================================================
+    Two workflows:
 
-    Manages native libraries that travel alongside managed assemblies via .ssdeps manifest
-    files. Two workflows:
-      1. READING: when referencing assemblies that have .ssdeps siblings, reads them and
-         either copies natives to output (desktop) or hands them to platform-specific item
-         types (NativeReference).
-      2. WRITING: when a project declares StrideNativeLib items, writes a .ssdeps next to the
-         produced assembly and copies natives into the output's runtimes/<rid>/native/ tree.
+    1. READING: When referencing assemblies that have .ssdeps files,
+       reads them and either copies native libs/content to output directory (desktop platforms)
+       or hands them to platform-specific item types (NativeReference).
 
-    Platform-specific consumption:
-    - Desktop (Windows): natives copied to output runtime asset path.
-    ================================================================
+    2. WRITING: When a project declares StrideNativeLib items, a .ssdeps file is generated
+       next to the produced assembly and native files are copied into the output's "runtimes/<rid>/native/" tree.
+
+    Platform-specific handling:
+    - Desktop (Windows): Native libs copied to output runtime asset path.
   -->
 
   <PropertyGroup>
@@ -28,132 +34,192 @@
   <!-- Dependencies reading (from .ssdeps)                              -->
   <!-- ================================================================ -->
 
-  <!-- List dependency files from .ssdeps -->
-  <!-- When the current build targets a specific StrideGraphicsApi, drop candidate paths whose
-       parent directory is a non-current API folder. Otherwise a non-API-dependent middle project
-       (say Stride.Engine, built with default API=Direct3D11) re-exports its CopyLocal'd
-       Stride.Graphics.ssdeps through the reference graph, and the direct API-dependent reference
-       also provides one — both land on the same filename in the output folder and race. -->
+  <!--
+    List dependency files from .ssdeps
+
+    When the current build targets a specific StrideGraphicsApi, drop candidate paths
+    whose parent directory is a non-current API folder.
+    Otherwise a non-API-dependent middle project (say Stride.Engine, built with default API=Direct3D11)
+    re-exports its CopyLocal'd Stride.Graphics.ssdeps through the reference graph, and
+    the direct API-dependent reference also provides one (both land on the same filename
+    in the output folder and race).
+  -->
   <Target Name="_StrideListDepsFiles" DependsOnTargets="ResolveAssemblyReferences">
+
     <ItemGroup>
       <_StrideDepsFile Include="@(ReferencePath->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(ReferencePath.CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
       <_StrideDepsFile Include="@(ReferenceDependencyPaths->'%(RootDir)%(Directory)%(Filename).ssdeps')" Condition="'%(ReferenceDependencyPaths.CopyLocal)' != 'false' And Exists('%(RootDir)%(Directory)%(Filename).ssdeps')"/>
     </ItemGroup>
+
     <ItemGroup Condition="'$(StrideGraphicsApi)' != ''">
-      <!-- Path-separator check normalized to '/' so other hosts filter correctly. -->
+      <!-- Path-separator check normalized to '/' -->
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D11/')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Direct3D12/')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_StrideDepsFile Remove="@(_StrideDepsFile)" Condition="$([System.String]::Copy('%(Identity)').Replace('\','/').Contains('/Vulkan/')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
     </ItemGroup>
+
     <ItemGroup>
       <None Include="@(_StrideDepsFile)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
+
   </Target>
 
-  <!-- Filter transitive CopyToOutput items coming from non-API-dependent project references.
-       They would otherwise pull the default-API variant (e.g. Direct3D11) of API-dependent
-       side files (Stride.Graphics.ssdeps, Stride.VirtualReality.ssdeps, and the native libs
-       they manifest) through the reference graph, colliding in the consumer's output folder
-       with the direct API-dependent reference's correct variant. -->
+  <!--
+    Filter transitive CopyToOutput items coming from non-API-dependent project references.
+
+    They would otherwise pull the default-API variant (e.g. Direct3D11) of API-dependent side files
+    (Stride.Graphics.ssdeps, and the native libs they manifest) through the reference graph,
+    colliding in the consumer's output directory with the direct API-dependent reference's correct variant.
+  -->
   <Target Name="_StrideFilterTransitiveCopyToOutputDirectoryItems"
           BeforeTargets="_CopyOutOfDateSourceItemsToOutputDirectory;_CopyOutOfDateSourceItemsToOutputDirectoryAlways"
           DependsOnTargets="GetCopyToOutputDirectoryItems"
           Condition="'$(StrideGraphicsApi)' != ''">
+
     <ItemGroup>
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Direct3D11\')) And '$(StrideGraphicsApi)' != 'Direct3D11'" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Direct3D12\')) And '$(StrideGraphicsApi)' != 'Direct3D12'" />
       <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" Condition="$([System.String]::Copy('%(Identity)').Contains('\Vulkan\')) And '$(StrideGraphicsApi)' != 'Vulkan'" />
     </ItemGroup>
+
   </Target>
 
-  <!-- _StrideReadDepsFiles + _StrideDistinctByFilename UsingTasks, _StrideBuildDependencies
-       (.ssdeps parser), all live in the shared file so Stride.Core.targets (NuGet PackageReference path)
-       and this (engine self-build path) use one implementation. -->
+  <!--
+    _StrideReadDepsFiles + _StrideDistinctByFilename UsingTasks, and
+    _StrideBuildDependencies (.ssdeps parser) all live in the shared file so
+    Stride.Core.targets (NuGet PackageReference path) and this (engine self-build path)
+    use one implementation.
+  -->
   <Import Project="$(StrideRoot)sources/core/Stride.Core/build/Stride.Core.NativeLibraries.targets" />
 
   <!-- ================================================================ -->
   <!-- Native libraries setup (from .ssdeps)                            -->
   <!-- ================================================================ -->
-  <!-- The natural fit would be <None Include=...> with BeforeTargets="AssignTargetPaths" so the
-       .NET pipeline picks them up via GetCopyToOutputDirectoryItems, but that creates a cycle
-       through our DependsOn chain (_StrideListDepsFiles needs ResolveAssemblyReferences, which
-       transitively brings AssignTargetPaths back through it). Instead we wait until GCTODI has
-       run and contribute directly to _SourceItemsToCopyToOutputDirectory — same as the
-       _StrideFilterAndFlattenRuntimes target in Stride.Build.Sdk.Tests does. -->
-  <Target Name="_StrideSetupNativeLibraries" DependsOnTargets="_StrideBuildDependencies;GetCopyToOutputDirectoryItems"
+
+  <!--
+    The natural fit would be <None Include=...> with BeforeTargets="AssignTargetPaths"
+    so the .NET pipeline picks them up via GetCopyToOutputDirectoryItems, but that creates
+    a cycle through our DependsOn chain
+    (_StrideListDepsFiles needs ResolveAssemblyReferences, which transitively brings AssignTargetPaths
+    back through it).
+
+    Instead we wait until GetCopyToOutputDirectoryItems has run and contribute directly
+    to _SourceItemsToCopyToOutputDirectory (same as the _StrideFilterAndFlattenRuntimes target
+   in Stride.Build.Sdk.Tests does).
+  -->
+  <Target Name="_StrideSetupNativeLibraries"
+          DependsOnTargets="_StrideBuildDependencies;GetCopyToOutputDirectoryItems"
           BeforeTargets="_CopyOutOfDateSourceItemsToOutputDirectory;_CopyOutOfDateSourceItemsToOutputDirectoryAlways;_CopyFilesMarkedCopyLocal"
           Condition="'$(StrideDependenciesCopy)' != 'false'">
 
-    <ItemGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">
-      <!-- When RuntimeIdentifier is set, drop runtimes/<rid'>/native/X items whose <rid'> isn't ours
-           and flatten the kept ones to the output root (matching .NET's RID-aware NuGet flattening).
-           NativeLibraryHelper probes both the runtimes/<rid>/native/ subdir and the bare root, so
-           both layouts resolve. -->
-      <!-- .ssdeps is normalized to '/' at write time (see _StrideGenerateDependenciesCore), so this
-           is a plain substring check — no path-separator normalization needed at read time. -->
-      <_StrideDependencyNativeLibFiltered Include="@(_StrideDependencyNativeLib)"
-          Condition="'$(RuntimeIdentifier)' == '' Or $([System.String]::Copy('%(_StrideDependencyNativeLib.Link)').Contains('/$(RuntimeIdentifier)/'))" />
+    <ItemGroup Condition="'$(StrideTargetFramework)' == '$(StrideFramework)' Or
+                          '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'">
+      <!--
+        When RuntimeIdentifier is set, drop "runtimes/<rid'>/native/X" items whose <rid'> isn't ours
+        and flatten the kept ones to the output root (matching .NET's RID-aware NuGet flattening).
+
+        NativeLibraryHelper probes both the "runtimes/<rid>/native/" subdir and the bare root,
+        so both layouts resolve.
+      -->
+
+      <!--
+        .ssdeps is normalized to '/' at write time (see _StrideGenerateDependenciesCore),
+        so this is a plain substring check (no path-separator normalization needed at read time).
+      -->
+      <_StrideDependencyNativeLibFiltered
+          Include="@(_StrideDependencyNativeLib)"
+          Condition="'$(RuntimeIdentifier)' == '' Or
+                     $([System.String]::Copy('%(_StrideDependencyNativeLib.Link)').Contains('/$(RuntimeIdentifier)/'))" />
+
       <_SourceItemsToCopyToOutputDirectory Include="@(_StrideDependencyNativeLibFiltered)">
         <TargetPath Condition="'$(RuntimeIdentifier)' == ''">%(_StrideDependencyNativeLibFiltered.Link)</TargetPath>
         <TargetPath Condition="'$(RuntimeIdentifier)' != ''">%(_StrideDependencyNativeLibFiltered.Filename)%(_StrideDependencyNativeLibFiltered.Extension)</TargetPath>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </_SourceItemsToCopyToOutputDirectory>
     </ItemGroup>
+
   </Target>
 
-  <!-- StrideToolingHost (AssetCompiler, GameStudio): drop runtimes/<rid>/ assets that this desktop
-       host can't use from its no-RID output — other platforms on the Windows-only net10.0-windows.
-       Covers NuGet assets (ReferenceCopyLocalPaths), .ssdeps natives and Content copies
-       (_SourceItemsToCopyToOutputDirectory[Always]); items outside runtimes/ are untouched.
-       Normalize '\'→'/' — Replace('/','\\') yields a double backslash here,
-       so 'runtimes/win-x64' would fail StartsWith('runtimes\win') and drop the win natives. -->
+  <!--
+    StrideToolingHost (AssetCompiler, GameStudio):
+
+    Drop "runtimes/<rid>/" assets that this desktop host can't use from its no-RID output
+    (other platforms on the Windows-only net10.0-windows).
+
+    Covers NuGet assets (ReferenceCopyLocalPaths), .ssdeps natives and Content copies
+    (_SourceItemsToCopyToOutputDirectory[Always]);
+    items outside "runtimes/" are untouched.
+
+    Normalize '\' to '/' (string.Replace('/','\\') yields a double backslash here,
+    so 'runtimes/win-x64' would fail a StartsWith('runtimes\win') and drop the win natives).
+  -->
   <Target Name="_StrideTrimToolingHostRuntimeAssets"
           DependsOnTargets="GetCopyToOutputDirectoryItems"
           BeforeTargets="_CopyOutOfDateSourceItemsToOutputDirectory;_CopyOutOfDateSourceItemsToOutputDirectoryAlways;_CopyFilesMarkedCopyLocal"
           Condition="'$(StrideToolingHost)' == 'true' And '$(RuntimeIdentifier)' == ''">
+
     <ItemGroup>
-      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
-          Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/'))
-                     And !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
-      <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)"
-          Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
-                     And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
-      <_SourceItemsToCopyToOutputDirectoryAlways Remove="@(_SourceItemsToCopyToOutputDirectoryAlways)"
-          Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/'))
-                     And !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/win'))
-                     And ('$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')" />
+      <ReferenceCopyLocalPaths
+          Remove="@(ReferenceCopyLocalPaths)"
+          Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/')) And
+                     !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubPath)').Replace('\','/').StartsWith('runtimes/win')) And
+                     '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'" />
+
+      <_SourceItemsToCopyToOutputDirectory
+          Remove="@(_SourceItemsToCopyToOutputDirectory)"
+          Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/')) And
+                     !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/win')) And
+                     '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'" />
+
+      <_SourceItemsToCopyToOutputDirectoryAlways
+          Remove="@(_SourceItemsToCopyToOutputDirectoryAlways)"
+          Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/')) And
+                     !$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectoryAlways.TargetPath)').Replace('\','/').StartsWith('runtimes/win')) And
+                     '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'" />
     </ItemGroup>
+
   </Target>
 
-  <!-- Track deployed native libraries in the fast up-to-date check as copied outputs, each paired with its
-       source via Original metadata. Unlike a plain UpToDateCheckInput, the re-copy on rebuild makes the output
-       at least as new as the source, so the check clears instead of looping; and a changed vendored binary
-       rebuilds and re-deploys. Emitted in the design-time built collection (references are resolved there); the
-       depended-on targets only read .ssdeps and compute item paths, so there are no file-system side effects. -->
+  <!--
+    Track deployed native libraries in the fast up-to-date check as copied outputs,
+    each paired with its source via Original metadata.
+
+    Unlike a plain UpToDateCheckInput, the re-copy on rebuild makes the output at least as new as the source,
+    so the check clears instead of looping; and a changed vendored binary rebuilds and re-deploys.
+
+    Emitted in the design-time built collection (references are resolved there);
+    the depended-on targets only read .ssdeps and compute item paths, so there are no file-system side effects.
+   -->
   <PropertyGroup>
     <CollectUpToDateCheckBuiltDesignTimeDependsOn>$(CollectUpToDateCheckBuiltDesignTimeDependsOn);_StrideCollectNativeUpToDateCheckBuilt</CollectUpToDateCheckBuiltDesignTimeDependsOn>
   </PropertyGroup>
+
   <Target Name="_StrideCollectNativeUpToDateCheckBuilt"
           DependsOnTargets="_StrideSetupNativeLibraries;_StrideFilterTransitiveCopyToOutputDirectoryItems;_StrideTrimToolingHostRuntimeAssets">
-    <!-- This project's own StrideNativeLib, deployed to its output by _StrideGenerateDependenciesCore. -->
+
+    <!-- This project's own StrideNativeLib, deployed to its output by _StrideGenerateDependenciesCore -->
     <AssignTargetPath RootFolder="$(OutputPath)" Files="@(StrideNativeLib)">
       <Output TaskParameter="AssignedFiles" ItemName="_StrideNativeLibBuiltCheck" />
     </AssignTargetPath>
+
     <ItemGroup>
-      <UpToDateCheckBuilt Include="@(_StrideNativeLibBuiltCheck->'$(OutDir)%(TargetPath)')" Original="%(_StrideNativeLibBuiltCheck.FullPath)" />
-      <!-- Natives copied in from referenced .ssdeps, after RID filtering and tooling-host trimming. -->
+      <UpToDateCheckBuilt Include="@(_StrideNativeLibBuiltCheck->'$(OutDir)%(TargetPath)')"
+                          Original="%(_StrideNativeLibBuiltCheck.FullPath)" />
+
+      <!-- Natives copied in from referenced .ssdeps, after RID filtering and tooling-host trimming -->
       <UpToDateCheckBuilt Include="@(_SourceItemsToCopyToOutputDirectory->'$(OutDir)%(TargetPath)')"
                           Original="%(_SourceItemsToCopyToOutputDirectory.FullPath)"
                           Condition="$([System.String]::Copy('%(_SourceItemsToCopyToOutputDirectory.TargetPath)').Replace('\','/').StartsWith('runtimes/'))" />
     </ItemGroup>
+
   </Target>
 
   <!-- ================================================================ -->
   <!-- Dependencies generation (to .ssdeps)                             -->
   <!-- ================================================================ -->
+
   <Target Name="_StrideGenerateDependenciesCore">
+
     <AssignTargetPath RootFolder="$(OutputPath)" Files="@(StrideNativeLib)">
       <Output TaskParameter="AssignedFiles" ItemName="_StrideNativeLibAssigned"/>
     </AssignTargetPath>
@@ -164,13 +230,19 @@
         <Destination>$(OutDir)%(TargetPath)</Destination>
       </_StrideDependencyToCopy>
 
-      <_StrideDependencyToCopy Remove="@(_StrideNativeLibAssigned)" Condition=" '$(StridePackageBuild)' == 'true' And '%(_StrideNativeLibAssigned.Extension)' == '.pdb' "/>
+      <_StrideDependencyToCopy
+          Remove="@(_StrideNativeLibAssigned)"
+          Condition="'$(StridePackageBuild)' == 'true' And
+                     '%(_StrideNativeLibAssigned.Extension)' == '.pdb'"/>
     </ItemGroup>
 
-    <!-- Normalize TargetPath to forward slashes for .ssdeps emission. AssignTargetPath
-         uses the host's directory separator, so a Windows-built NuGet would otherwise ship .ssdeps
-         entries with '\' that don't match other consumer's substring checks. Pinning one
-         separator at write time lets every reader assume '/' without normalization. -->
+    <!--
+      Normalize TargetPath to forward slashes for .ssdeps emission.
+
+      AssignTargetPath uses the host's directory separator, so a Windows-built NuGet
+      would otherwise ship .ssdeps entries with '\'.
+      Pinning one separator at write time lets every reader assume '/' without normalization.
+    -->
     <ItemGroup>
       <_StrideDependencyToCopy>
         <TargetPathNormalized>$([System.String]::Copy('%(TargetPath)').Replace('\','/'))</TargetPathNormalized>
@@ -179,39 +251,68 @@
 
     <!-- Copy files -->
     <Copy
-      SourceFiles = "@(_StrideDependencyToCopy)"
-      DestinationFiles = "@(_StrideDependencyToCopy->'%(Destination)')"
-      OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
-      Retries="$(CopyRetryCount)"
-      RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
-      UseHardlinksIfPossible="$(CreateHardLinksForAdditionalFilesIfPossible)">
+        SourceFiles = "@(_StrideDependencyToCopy)"
+        DestinationFiles = "@(_StrideDependencyToCopy->'%(Destination)')"
+        OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+        Retries="$(CopyRetryCount)"
+        RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
+        UseHardlinksIfPossible="$(CreateHardLinksForAdditionalFilesIfPossible)">
+
       <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
     </Copy>
 
-    <!-- Write file containing list of dependent files (or delete it if nothing) -->
-    <!-- Format: "Type;Path". The reader derives the deployment Link from Path (strips leading "./").
-         Older .ssdeps files had a third column duplicating Path; the reader tolerates it but
-         ignores it, so we don't emit it anymore. -->
-    <WriteLinesToFile Condition="'@(_StrideDependencyToCopy)' != ''" File="$(OutputPath)$(TargetName).ssdeps" Lines="@(_StrideDependencyToCopy->'%(Type);%(TargetPathNormalized)')" Overwrite="true"/>
-    <Delete Condition="'@(_StrideDependencyToCopy)' == ''" Files="$(OutputPath)$(TargetName).ssdeps"/>
+    <!--
+      Write file containing list of dependent files (or delete it if nothing)
+
+      Format: "Type;Path".
+      The reader derives the deployment Link from Path (strips leading "./").
+      Older .ssdeps files had a third column duplicating Path; the reader tolerates it but ignores it, so we don't emit it anymore.
+    -->
+    <WriteLinesToFile
+        Condition="'@(_StrideDependencyToCopy)' != ''"
+        File="$(OutputPath)$(TargetName).ssdeps"
+        Lines="@(_StrideDependencyToCopy->'%(Type);%(TargetPathNormalized)')"
+        Overwrite="true"/>
+
+    <Delete Condition="'@(_StrideDependencyToCopy)' == ''"
+            Files="$(OutputPath)$(TargetName).ssdeps"/>
+
   </Target>
 
   <!-- Build -->
-  <Target Name="_StrideGenerateDependencies" Condition="'$(TargetFramework)' != '' Or '$(StrideProjectType)' == 'Cpp'" DependsOnTargets="_StrideGenerateDependenciesCore" AfterTargets="CopyFilesToOutputDirectory"/>
+  <Target Name="_StrideGenerateDependencies"
+          Condition="'$(TargetFramework)' != '' Or '$(StrideProjectType)' == 'Cpp'"
+          DependsOnTargets="_StrideGenerateDependenciesCore"
+          AfterTargets="CopyFilesToOutputDirectory"/>
+
   <!-- Packaging -->
-  <Target Name="_StrideRegisterDependenciesOutputs" Condition="'$(TargetFramework)' != ''" DependsOnTargets="_StrideGenerateDependenciesCore">
+  <Target Name="_StrideRegisterDependenciesOutputs"
+          Condition="'$(TargetFramework)' != ''"
+          DependsOnTargets="_StrideGenerateDependenciesCore">
+
     <ItemGroup Condition="'@(_StrideDependencyToCopy)' != ''">
       <BuildOutputInPackage Include="$(OutputPath)$(AssemblyName).ssdeps" />
     </ItemGroup>
+
   </Target>
-  <Target Name="_StrideRegisterPackageFiles" Condition="'$(TargetFramework)' != ''" DependsOnTargets="_StrideGenerateDependenciesCore">
+
+  <Target Name="_StrideRegisterPackageFiles"
+          Condition="'$(TargetFramework)' != ''"
+          DependsOnTargets="_StrideGenerateDependenciesCore">
+
     <ItemGroup Condition="'@(_StrideDependencyToCopy)' != ''">
-      <!-- Native dependencies go to the runtimes/RID/native folder. PackagePath is the target directory
-           (trailing slash required): NuGet reads an extensionless PackagePath as a folder and would nest
-           extensionless natives one level too deep. -->
-      <TfmSpecificPackageFile Include="@(_StrideDependencyToCopy)" Condition="'%(_StrideDependencyToCopy.Pack)' != 'false'"
-                              PackagePath="$([System.IO.Path]::GetDirectoryName('%(_StrideDependencyToCopy.TargetPath)'))/" />
+      <!--
+        Native dependencies go to the "runtimes/RID/native" directory.
+
+        PackagePath is the target directory (trailing slash required): NuGet reads an extensionless PackagePath
+        as a directory and would nest extensionless natives one level too deep.
+      -->
+      <TfmSpecificPackageFile
+          Include="@(_StrideDependencyToCopy)"
+          Condition="'%(_StrideDependencyToCopy.Pack)' != 'false'"
+          PackagePath="$([System.IO.Path]::GetDirectoryName('%(_StrideDependencyToCopy.TargetPath)'))/" />
     </ItemGroup>
+
   </Target>
 
 </Project>

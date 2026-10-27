@@ -1,27 +1,30 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.Platform.targets
+
+  This file applies platform-specific compiler defines and build settings.
+  EVALUATION PHASE: Late (AFTER project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!--
-    ================================================================
-    Stride.Sdk - Platform-Specific Build Logic (Sdk.Platform.targets)
-    ================================================================
-
-    EVALUATION PHASE: Late (AFTER project file)
-
-    This file applies platform-specific compiler defines and build settings.
-
-    ================================================================
-  -->
-
   <!-- ================================================================ -->
-  <!-- Platform Defines - Desktop Frameworks -->
+  <!-- Platform Defines - Desktop Frameworks                            -->
   <!-- ================================================================ -->
-  <PropertyGroup Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">
+
+  <PropertyGroup Condition="'$(StrideTargetFramework)' == '$(StrideFramework)' Or
+                            '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'">
+
     <StridePlatformDefines>STRIDE_PLATFORM_DESKTOP</StridePlatformDefines>
+
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- .NET Runtime Defines -->
+  <!-- .NET Runtime Defines                                             -->
   <!-- ================================================================ -->
+
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net10'))">
     <StrideNETRuntimeDefines></StrideNETRuntimeDefines>
   </PropertyGroup>
@@ -30,6 +33,7 @@
   <!-- Apply Defines to DefineConstants -->
   <!-- IMPORTANT: Must come AFTER all StridePlatformDefines are set   -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <DefineConstants Condition="'$(StridePlatformDefines)' != ''">$(StridePlatformDefines);$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(StrideNETRuntimeDefines)' != ''">$(DefineConstants);$(StrideNETRuntimeDefines)</DefineConstants>

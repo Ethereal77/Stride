@@ -1,8 +1,16 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk.Editor: Stride.Editor.Frameworks.props
+
+  Editor-specific framework definitions
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    Editor-specific framework definitions.
-
     These properties are only available to projects using Stride.Sdk.Editor
     (or SDKs that compose it, like Stride.Sdk.Tests).
 

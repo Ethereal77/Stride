@@ -1,24 +1,27 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.Graphics.props
+
+  Graphics API Defaults
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    ================================================================
-    Stride.Sdk - Graphics API Defaults (Stride.Graphics.props)
-    ================================================================
-
-    EVALUATION PHASE: Early (BEFORE project file)
-
     Sets default graphics API values. User can override StrideGraphicsApi
     in their .csproj. Complex logic based on user values is in
     Stride.Graphics.targets.
-
-    ================================================================
   -->
 
   <!-- ================================================================ -->
   <!-- Default Graphics API per Platform -->
   <!-- ================================================================ -->
   <PropertyGroup>
-    <!-- Default graphics API: the first requested API, else the platform's native default. -->
+    <!-- Default graphics API:
+         First, the requested API, else the platform's native default. -->
     <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' And '$(StrideGraphicsApis)' != ''">$(StrideGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</StrideGraphicsApi>
     <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' And '$(StridePlatform)' == 'Windows'">Direct3D11</StrideGraphicsApi>
   </PropertyGroup>

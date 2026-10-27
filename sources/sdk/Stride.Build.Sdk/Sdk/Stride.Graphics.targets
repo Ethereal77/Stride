@@ -1,34 +1,43 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.Graphics.targets
+
+  Graphics API Build Logic
+  EVALUATION PHASE: Late (AFTER project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    ================================================================
-    Stride.Sdk - Graphics API Build Logic (Stride.Graphics.targets)
-    ================================================================
-
-    EVALUATION PHASE: Late (AFTER project file)
-
     Handles:
     - Graphics API compiler defines (STRIDE_GRAPHICS_API_*)
     - Graphics API list configuration
     - UI framework selection (StrideUI)
     - Design-time build API selection for IntelliSense
-
-    ================================================================
   -->
 
   <!-- ================================================================ -->
-  <!-- Graphics API Lists for Multi-API Builds -->
+  <!-- Graphics API Lists for Multi-API Builds                          -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Build all graphics APIs when StrideGraphicsApiDependent or building all -->
-    <StrideGraphicsApis Condition="('$(StrideGraphicsApis)' == '' Or '$(StrideGraphicsApiDependentBuildAll)' == 'true') And ('$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')">Direct3D11;Direct3D12;Vulkan</StrideGraphicsApis>
+    <StrideGraphicsApis Condition="('$(StrideGraphicsApis)' == '' Or '$(StrideGraphicsApiDependentBuildAll)' == 'true') And
+                                   ('$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)')">Direct3D11;Direct3D12;Vulkan</StrideGraphicsApis>
 
     <StrideDefaultGraphicsApi Condition="'$(StrideGraphicsApis)' != ''">$(StrideGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</StrideDefaultGraphicsApi>
   </PropertyGroup>
 
-  <!-- Some platforms only have a single graphics API.
-       If yes, set it right away and disable StrideGraphicsApiDependent (only for inner builds) -->
-  <PropertyGroup Condition="'$(StrideGraphicsApiDependent)' == 'true' And !('$(TargetFrameworks)' != '' and '$(TargetFramework)' == '')">
+  <!--
+    Some platforms only have a single graphics API.
+    If this is such a platform, set its graphics API right away and disable StrideGraphicsApiDependent
+    (only for inner builds).
+  -->
+  <PropertyGroup Condition="'$(StrideGraphicsApiDependent)' == 'true' And
+                            !('$(TargetFrameworks)' != '' and '$(TargetFramework)' == '')">
+
     <StrideGraphicsApi Condition="'$(StrideGraphicsApiDependent)' == 'false'">$(StrideDefaultGraphicsApi)</StrideGraphicsApi>
   </PropertyGroup>
 
@@ -39,8 +48,9 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Graphics API Compiler Defines -->
+  <!-- Graphics API Compiler Defines                                    -->
   <!-- ================================================================ -->
+
   <PropertyGroup Condition=" '$(StrideGraphicsApi)' == 'Direct3D11' ">
     <StrideGraphicsApiDefines>STRIDE_GRAPHICS_API_DIRECT3D;STRIDE_GRAPHICS_API_DIRECT3D11</StrideGraphicsApiDefines>
   </PropertyGroup>
@@ -63,25 +73,36 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Graphics API Output Path Adjustment -->
+  <!-- Graphics API Output Path Adjustment                              -->
   <!-- ================================================================ -->
-  <!-- Per-API output subdirectory. Test projects using the Stride test SDK override OutputPath
-       after this import. $(TargetFramework) is wrapped in a conditional variable so the segment
-       collapses cleanly at outer-build (TargetFramework=''). -->
+
+  <!--
+    Per-API output subdirectory.
+
+    Test projects using the Stride test SDK override OutputPath after this import.
+    $(TargetFramework) is wrapped in a conditional variable so the segment collapses cleanly
+    at outer-build (TargetFramework='').
+  -->
   <PropertyGroup Condition="'$(StrideGraphicsApiDependent)' == 'true'">
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
     <_StrideGraphicsApiTfmSegment Condition="'$(TargetFramework)' != ''">$(TargetFramework)\</_StrideGraphicsApiTfmSegment>
+
     <IntermediateOutputPath>obj\$(Configuration)\$(_StrideGraphicsApiTfmSegment)$(StrideGraphicsApi)\</IntermediateOutputPath>
     <OutputPath>bin\$(Configuration)\$(_StrideGraphicsApiTfmSegment)$(StrideGraphicsApi)\</OutputPath>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- UI Framework Configuration -->
+  <!-- UI Framework Configuration                                       -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <StrideUI>SDL</StrideUI>
-    <StrideUI Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' AND ('$(StrideGraphicsApi)' == 'Direct3D11' Or '$(StrideGraphicsApi)' == 'Direct3D12' Or '$(StrideGraphicsApi)' == 'Vulkan')">$(StrideUI);WINFORMS;WPF</StrideUI>
+    <StrideUI Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' And
+                         ('$(StrideGraphicsApi)' == 'Direct3D11' Or
+                          '$(StrideGraphicsApi)' == 'Direct3D12' Or
+                          '$(StrideGraphicsApi)' == 'Vulkan')">$(StrideUI);WINFORMS;WPF</StrideUI>
 
     <DefineConstants Condition="$(StrideUI.Contains('SDL'))">$(DefineConstants);STRIDE_UI_SDL</DefineConstants>
     <DefineConstants Condition="$(StrideUI.Contains('WINFORMS'))">$(DefineConstants);STRIDE_UI_WINFORMS</DefineConstants>
@@ -94,19 +115,25 @@
     <StrideUIList Condition="'$(StrideUI)' == ''" Include="None" />
   </ItemGroup>
 
-  <!-- Atomic directory rename: Directory.Move is atomic on POSIX (rename(2)) and on Windows
-       NTFS (MoveFileEx with MOVEFILE_REPLACE_EXISTING off). Used as the cross-process commit
-       point of the temp-extract pattern in _StrideDownloadVulkanValidationLayers — the loser
-       of a parallel race throws IOException and noops. -->
-  <UsingTask TaskName="StrideAtomicDirectoryMove" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+  <!--
+    Atomic directory rename:
+      Directory.Move is atomic on Windows NTFS (MoveFileEx with MOVEFILE_REPLACE_EXISTING off).
+
+      Used as the cross-process commit point of the temp-extract pattern in _StrideDownloadVulkanValidationLayers
+      (otherwise the loser of a parallel race throws IOException and no-ops).
+  -->
+  <UsingTask TaskName="StrideAtomicDirectoryMove" TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+
     <ParameterGroup>
       <Source ParameterType="System.String" Required="true" />
       <Destination ParameterType="System.String" Required="true" />
     </ParameterGroup>
+
     <Task>
       <Code Type="Fragment" Language="cs"><![CDATA[
         try { System.IO.Directory.Move(Source, Destination); }
-        catch (System.IO.IOException) { /* destination exists -- another process beat us */ }
+        catch (System.IO.IOException) { /* Destination exists, but another process beat us */ }
       ]]></Code>
     </Task>
   </UsingTask>

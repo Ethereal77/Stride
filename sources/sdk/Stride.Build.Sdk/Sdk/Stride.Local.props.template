@@ -1,28 +1,45 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Local Developer Settings
+
+  This file is auto-generated in the 'build' directory ignored by '.gitignore', i.e.,
+  your edits stay local.
+  Each setting only applies if not already set externally (CI, command line, environment).
+  Edit values below to taste; remove a property entirely to fall back to the SDK default.
+
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project>
-  <!--
-    Stride local developer settings.
-    This file is auto-generated at the repository root and gitignored — your edits stay local.
-    Each setting only applies if not already set externally (CI, command line, environment).
-    Edit values below to taste; remove a property entirely to fall back to the SDK default.
-  -->
 
   <PropertyGroup>
     <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Windows))' == 'true'">Windows</StridePlatforms>
+
     <StrideGraphicsApiDependentBuildAll Condition="'$(StrideGraphicsApiDependentBuildAll)' == ''">false</StrideGraphicsApiDependentBuildAll>
-    <!-- Dev build version. Defaults to "last release tag + 1" so a local build sits just above the
-         latest release. Set this to force a higher PublicVersion ceiling, e.g. while authoring
-         several asset upgraders in sequence (each upgrader needs a distinct target version). -->
+
+    <!-- Dev build version.
+           Defaults to "last release tag + 1" so a local build sits just above the latest release.
+           Set this to force a higher PublicVersion ceiling, e.g., while authoring several
+           asset upgraders in sequence (each upgrader needs a distinct target version). -->
     <!--<StridePublicVersion Condition="'$(StridePublicVersion)' == ''">4.4.9999</StridePublicVersion>-->
-    <!-- Dev-redirect stub mode: when true, NuGet auto-pack is skipped on every build and
-         consumers resolve Stride.* DLLs through redirect props that point at the dev-built
-         binaries (cuts ~30s/build). Run `dotnet run build/GenerateDevPackages.cs` to set this
-         to true and generate the stubs in one step; pass the disable arg to revert. -->
+
+    <!-- Dev-redirect stub mode:
+           When true, NuGet auto-pack is skipped on every build and consumers resolve Stride.* DLLs
+           through redirect props that point at the dev-built binaries (cuts ~30s/build).
+           Run `dotnet run build/GenerateDevPackages.cs` to set this to true and
+           generate the stubs in one step; pass the disable arg to revert. -->
     <!--<StrideDevPackages Condition="'$(StrideDevPackages)' == ''">true</StrideDevPackages>-->
-    <!-- Content template packs (Stride.Templates.Samples / .Games.Starters / .AssetPacks, ~730 MB of samples)
-         are never packed by a normal build: Game Studio and the stride CLI use the published version named by
-         sources/templates/StrideSamplesVersion.props. Set this to true while editing samples so builds pack this
-         checkout's -devN copy (which then wins locally); the next build after turning it off removes that copy.
-         See docs/build/versioning.md. -->
+
+    <!-- Content template packs:
+           (Stride.Templates.Samples / .Games.Starters / .AssetPacks, ~730 MB of samples)
+           are never packed by a normal build: Game Studio and the Stride CLI use the published version
+           named by `sources/templates/StrideSamplesVersion.props`.
+           Set this to `true` while editing samples so builds pack this checkout's `-devN` copy
+           (which then wins locally).
+           The next build after turning it off removes that copy.
+           See `docs/build/versioning.md`. -->
     <!--<StridePackContentTemplates Condition="'$(StridePackContentTemplates)' == ''">true</StridePackContentTemplates>-->
   </PropertyGroup>
 
@@ -31,4 +48,5 @@
          multi-API builds (e.g. Direct3D11;Vulkan); single value skips the multi-API loop. -->
     <StrideGraphicsApis Condition="'$(StrideGraphicsApis)' == ''">Direct3D11</StrideGraphicsApis>
   </PropertyGroup>
+
 </Project>

@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">  
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <!-- Package Identity -->
     <PackageId>Stride.Build.Sdk</PackageId>
@@ -20,4 +21,5 @@
     <None Include="$(MSBuildThisFileDirectory)../../../deps\AssemblyProcessor/**"
           Pack="true" PackagePath="tools/AssemblyProcessor/" />
   </ItemGroup>
+
 </Project>

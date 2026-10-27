@@ -1,14 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.NativeBuildMode.props
+
+  Manages which toolchain is used for native C++ compilation and linking.
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--
-    Native build mode: MSVC (clang + MSVC linker, Windows only) or Clang (clang + LLD, all platforms).
-    Override via -p:StrideNativeBuildMode=Clang|MSVC, env var, or property.
+    Build Modes:
+    - Msvc (default on Windows): Uses clang for compilation and MSVC linker for linking (Windows only).
+                                 Requires Visual Studio or MSVC toolset (VCINSTALLDIR), and
+                                 MSBuild.exe runtime ("dotnet build" / "dotnet msbuild" uses Core MSBuild
+                                 which can't load the Framework-only "CppTasks").
+                                 Default for Windows builds to preserve existing behavior.
+
+    - Clang:                     Uses clang for compilation and LLVM LLD for linking.
+                                 Works on Windows, etc.
+                                 RECOMMENDED: Cross-platform, no MSVC dependency.
+                                 Default for non-Windows platforms.
+
+    Usage:
+    1. Command line:
+       dotnet build /p:StrideNativeBuildMode=Clang|MSVC
+
+    2. Environment variable:
+       set StrideNativeBuildMode=Clang|MSVC
+
+    3. In .csproj/.props file:
+       <StrideNativeBuildMode>Clang|MSVC</StrideNativeBuildMode>
+
+    4. User configuration file:
+       %APPDATA%\Stride\Stride.Build.props or similar
   -->
 
   <PropertyGroup>
-    <!-- MSVC requires: targeting Windows, VS C++ tools loaded (VCINSTALLDIR), and MSBuild.exe runtime
-         (dotnet build / dotnet msbuild use Core MSBuild which can't load the Framework-only CppTasks). -->
-    <StrideNativeBuildMode Condition="'$(StrideNativeBuildMode)' == '' And ('$(StridePlatform)' == '' Or '$(StridePlatform)' == 'Windows') And '$(VCINSTALLDIR)' != '' And '$(MSBuildRuntimeType)' == 'Full'">MSVC</StrideNativeBuildMode>
+    <!-- Default to MSVC only for Windows builds on Windows platform, .NET FW MSBuild, and VC++ -->
+    <StrideNativeBuildMode Condition="'$(StrideNativeBuildMode)' == '' And
+                                      ('$(StridePlatform)' == '' Or '$(StridePlatform)' == 'Windows') And
+                                      '$(VCINSTALLDIR)' != '' And
+                                      '$(MSBuildRuntimeType)' == 'Full'">MSVC</StrideNativeBuildMode>
+
+    <!-- Otherwise use Clang -->
     <StrideNativeBuildMode Condition="'$(StrideNativeBuildMode)' == ''">Clang</StrideNativeBuildMode>
   </PropertyGroup>
 

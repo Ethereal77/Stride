@@ -1,3 +1,13 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk.Editor: Sdk.props
+
+  Early Property Definitions
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Import Base Stride SDK -->

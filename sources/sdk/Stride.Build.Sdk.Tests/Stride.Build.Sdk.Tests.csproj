@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">  
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <!-- Package Identity -->
     <PackageId>Stride.Build.Sdk.Tests</PackageId>
@@ -13,6 +14,6 @@
     <None Include="$(MSBuildThisFileDirectory)Sdk/**/*.props" Pack="true" PackagePath="Sdk/" />
     <None Include="$(MSBuildThisFileDirectory)Sdk/**/*.targets" Pack="true" PackagePath="Sdk/" />
     <None Include="$(MSBuildThisFileDirectory)Sdk/**/*.cs" Pack="true" PackagePath="Sdk/" />
-
   </ItemGroup>
+
 </Project>

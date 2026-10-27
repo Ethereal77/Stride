@@ -1,13 +1,25 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk.Tests: Sdk.props
+
+  Early Property Definitions
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- ================================================================ -->
-  <!-- Import Base Stride SDK -->
+  <!-- Import Base Stride SDK                                           -->
   <!-- ================================================================ -->
+
   <Import Project="$(MSBuildThisFileDirectory)..\..\Stride.Build.Sdk.Editor\Sdk\Sdk.props" />
 
   <!-- ================================================================ -->
-  <!-- Test Project Properties -->
+  <!-- Test Project Properties                                          -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Mark as test project for dotnet test -->
     <IsTestProject>true</IsTestProject>
@@ -35,62 +47,86 @@
     <!-- Allow unsafe code (common in tests) -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <!-- Enable assembly processor for test projects -->
+    <!-- Enable AssemblyProcessor for test projects -->
     <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
 
-    <!-- Microsoft.NET.Test.Sdk ships Microsoft.CodeCoverage.targets which injects
-         MsCoverageReferencedPathMaps BeforeTargets=CoreCompile. The target serially walks
-         every transitive ProjectReference (vstest#15295) and blocks CoreCompile until done,
-         throttling parallelism for the whole build. We don't collect coverage in CI. -->
+    <!--
+      Microsoft.NET.Test.Sdk ships Microsoft.CodeCoverage.targets which injects
+      MsCoverageReferencedPathMaps BeforeTargets=CoreCompile.
+
+      The target serially walks every transitive ProjectReference (vstest#15295)
+      and blocks CoreCompile until done, throttling parallelism for the whole build.
+
+      We don't collect coverage in CI.
+    -->
     <DisableMsCoverageReferencedPathMaps>true</DisableMsCoverageReferencedPathMaps>
   </PropertyGroup>
 
-  <!-- Multi-platform tests set <StrideMultiPlatformTest>true</StrideMultiPlatformTest> BEFORE
-       this import to opt into multi-TFM. The flag (a) defaults StrideTestPlatforms from the
-       build's StridePlatforms (Stride.Local.props), and (b) suppresses the single-TFM
-       fallback below so the StrideTestTargetFrameworks sets computed next drive the csproj's
-       <TargetFrameworks>. CLI -p:StrideTestPlatforms=… still overrides (global property). -->
+  <!--
+    Multi-platform tests set StrideMultiPlatformTest = true BEFORE this import to
+    opt into multi-TFM.
+
+    The flag (a) defaults StrideTestPlatforms from the build's StridePlatforms (Stride.Local.props),
+    and (b) suppresses the single-TFM fallback below so the StrideTestTargetFrameworks sets
+    computed next drive the csproj's TargetFrameworks.
+
+    CLI -p:StrideTestPlatforms=… still overrides (global property).
+  -->
   <PropertyGroup Condition="'$(StrideMultiPlatformTest)' == 'true' And '$(StrideTestPlatforms)' == ''">
     <StrideTestPlatforms>$(StridePlatforms)</StrideTestPlatforms>
   </PropertyGroup>
 
-  <!-- Precomputed test framework sets a multi-platform test opts into directly in its csproj:
-       <TargetFrameworks>$(StrideTestTargetFrameworks)</TargetFrameworks>. Computed here (props)
-       from StrideTestPlatforms so the value is known when the csproj body evaluates and the
-       literal <TargetFrameworks> element lives in the csproj (keeps SDK-style detection working).
-       Order/conditions mirror the per-platform expansion (Game host-shadow). -->
+  <!--
+    Precomputed test framework sets a multi-platform test opts into directly in its csproj:
+    TargetFrameworks = $(StrideTestTargetFrameworks)
+
+    Computed here (props) from StrideTestPlatforms so the value is known when the csproj body
+    evaluates and the literal <TargetFrameworks> element lives in the csproj
+    (keeps SDK-style detection working).
+
+    Order/conditions mirror the per-platform expansion (Game host-shadow).
+  -->
   <PropertyGroup Condition="'$(StrideTestPlatforms)' != ''">
     <StrideContainsAssetTypes Condition="'$(StrideContainsAssetTypes)' == ''">true</StrideContainsAssetTypes>
+
     <_StrideTestPlatforms>;$(StrideTestPlatforms);</_StrideTestPlatforms>
 
-    <!-- desktop base ($(StrideFramework)) -->
-    <_StrideTestDesktop Condition="$(_StrideTestPlatforms.Contains(';Windows;')) Or $(_StrideTestPlatforms.Contains(';Game;'))">$(StrideFramework);</_StrideTestDesktop>
+    <!-- Desktop base ($(StrideFramework)) -->
+    <_StrideTestDesktop
+        Condition="$(_StrideTestPlatforms.Contains(';Windows;')) Or
+                   $(_StrideTestPlatforms.Contains(';Game;'))">$(StrideFramework);</_StrideTestDesktop>
 
-    <!-- base set: the shared desktop TFM (folded in if no other desktop) -->
+    <!-- Base set: Runs on the shared desktop TFM (folded in if no other desktop) -->
     <_StrideTestTargetFrameworksBase>$(_StrideTestDesktop)</_StrideTestTargetFrameworksBase>
     <StrideTestTargetFrameworks>$([MSBuild]::Unescape($(_StrideTestTargetFrameworksBase.TrimEnd(';'))))</StrideTestTargetFrameworks>
   </PropertyGroup>
 
-  <!-- Single-TFM fallback for tests that set neither TargetFramework nor TargetFrameworks
-       (e.g. Stride.Core.Assets.Quantum.Tests). Needed at props time because NuGet restore
-       fails NETSDK1013 otherwise. -->
+  <!--
+    Single-TFM fallback for tests that set neither TargetFramework nor TargetFrameworks
+    (e.g. Stride.Core.Assets.Quantum.Tests).
+
+    Needed at props time because NuGet restore fails NETSDK1013 otherwise.
+  -->
   <PropertyGroup Condition="'$(StrideMultiPlatformTest)' != 'true'">
     <TargetFramework Condition="'$(TargetFramework)' == '' And '$(TargetFrameworks)' == ''">$(StrideXplatEditorTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Graphics API Configuration for Tests -->
+  <!-- Graphics API Configuration for Tests                             -->
   <!-- ================================================================ -->
-  <!-- StrideGraphicsApisTest (set in Stride.Local.props) overrides both list + singular so
-       tests pick the requested API even when Stride.Graphics.props has already set
-       StrideGraphicsApi from StridePlatform via the engine SDK import chain. -->
+
+  <!--
+    StrideGraphicsApisTest (set in Stride.Local.props) overrides both list + singular
+    so tests pick the requested API even when Stride.Graphics.props has already
+    set StrideGraphicsApi from StridePlatform via the engine SDK import chain.
+  -->
   <PropertyGroup Condition="'$(StrideGraphicsApisTest)' != ''">
     <StrideGraphicsApis>$(StrideGraphicsApisTest)</StrideGraphicsApis>
     <StrideGraphicsApi>$(StrideGraphicsApisTest.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</StrideGraphicsApi>
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Build list of Graphics API for platforms that support multiple -->
+    <!-- Build list of Graphics APIs for platforms that support multiple -->
     <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Windows' And '$(StrideGraphicsApiDependentBuildAll)' == 'true'">Direct3D11;Direct3D12;Vulkan</StrideGraphicsApis>
     <StrideGraphicsApis Condition="'$(StridePlatform)' == 'Windows' And '$(StrideGraphicsApis)' == ''">Direct3D11</StrideGraphicsApis>
 
@@ -99,19 +135,21 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Test-Specific Output Paths -->
+  <!-- Test-Specific Output Paths                                       -->
   <!-- ================================================================ -->
-  <!-- Output path set in props so dotnet test can resolve the DLL. -->
+
+  <!-- Output path set in props so dotnet test can resolve the DLL -->
   <PropertyGroup>
-    <!-- OutputPath is set in Sdk.targets (before .NET SDK import) where $(AssemblyName) is available. -->
+    <!-- OutputPath is set in Sdk.targets (before .NET SDK import) where $(AssemblyName) is available -->
 
     <IntermediateOutputPath Condition="'$(StrideGraphicsApi)' == ''">$(BaseIntermediateOutputPath)$(StridePlatform)\$(Configuration)\</IntermediateOutputPath>
     <IntermediateOutputPath Condition="'$(StrideGraphicsApi)' != ''">$(BaseIntermediateOutputPath)$(StridePlatform)-$(StrideGraphicsApi)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Asset Compilation Settings -->
+  <!-- Asset Compilation Settings                                       -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Do not compile unit tests when packaging -->
     <StrideCompilerTargetsEnable Condition="'$(StrideSkipUnitTests)' == 'true'">false</StrideCompilerTargetsEnable>

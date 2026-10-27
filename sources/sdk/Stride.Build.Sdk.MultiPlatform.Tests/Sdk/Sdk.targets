@@ -1,3 +1,13 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk.Tests: Sdk.targets
+
+  Late Property Definitions
+  EVALUATION PHASE: Late (AFTER project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- All multi-platform behavior is gated on StrideMultiPlatformTest, set in Sdk.props.

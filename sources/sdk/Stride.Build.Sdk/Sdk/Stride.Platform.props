@@ -1,51 +1,54 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.Platform.props
+
+  This file sets platform-specific defaults that can be overridden by projects.
+  EVALUATION PHASE: Early (BEFORE project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <!--
-    ================================================================
-    Stride.Sdk - Platform Detection and Configuration (Sdk.Platform.props)
-    ================================================================
-
-    EVALUATION PHASE: Early (BEFORE project file)
-
-    This file sets platform-specific defaults that can be overridden by projects.
-
-    ================================================================
-  -->
 
   <!-- Framework constants are defined in Stride.Frameworks.props -->
 
   <!-- ================================================================ -->
-  <!-- Platform Auto-Detection -->
+  <!-- Platform Auto-Detection                                          -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Preserve original platform if already set -->
     <StridePlatformOriginal>$(StridePlatform)</StridePlatformOriginal>
 
     <!-- Detect platform from RuntimeIdentifier first, then TargetFramework, then OS -->
     <StridePlatform></StridePlatform>
-    <StridePlatform Condition=" '$(RuntimeIdentifier.StartsWith(win))' ">Windows</StridePlatform>
-    <StridePlatform Condition=" '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">Windows</StridePlatform>
-    <StridePlatform Condition=" '$(StridePlatform)' == '' ">Windows</StridePlatform>
+    <StridePlatform Condition="'$(RuntimeIdentifier.StartsWith(win))'">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == ''">Windows</StridePlatform>
 
     <!-- Platform full name (may be extended with build dir suffix) -->
     <StridePlatformFullName Condition="'$(StridePlatformFullName)' == ''">$(StridePlatform)</StridePlatformFullName>
     <StridePlatformFullName Condition="'$(StrideBuildDirExtension)' != ''">$(StridePlatformFullName)-$(StrideBuildDirExtension)</StridePlatformFullName>
 
     <!-- Platform dependencies -->
-    <StridePlatformDeps Condition=" '$(StrideTargetFramework)' == '$(StrideFramework)' Or '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)' ">dotnet</StridePlatformDeps>
+    <StridePlatformDeps Condition="'$(StrideTargetFramework)' == '$(StrideFramework)' Or
+                                   '$(StrideTargetFramework)' == '$(StrideFrameworkWindows)'">dotnet</StridePlatformDeps>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Local Developer Settings (in-source only) -->
+  <!-- Local Developer Settings (in-source only)                        -->
   <!-- ================================================================ -->
-  <!-- Anchored on crowdin.yml at the repo root; absent for end-users consuming the SDK
-       from NuGet, so the import no-ops there. The file is gitignored at build/Stride.Local.props
-       and gets auto-created from Stride.Local.props.template by the _StrideBootstrapLocalProps
-       target in Sdk.targets — so the first build runs with SDK defaults and the local file
-       is picked up from the second build onward. Imports here so its values can override
-       the $(StridePlatform)-keyed StrideGraphicsApis defaults below. -->
+
+  <!-- Anchored on 'global.json' at the repo root (absent for end-users consuming the SDK
+       from NuGet, so the import no-ops there).
+       * The file at 'build/Stride.Local.props' is ignored by '.gitignore'.
+       * It gets auto-created from 'Stride.Local.props.template' by target _StrideBootstrapLocalProps in 'Sdk.targets'.
+       * The first build runs with SDK defaults and the local file is picked up from the second build onward.
+
+       Imports here so its values can override the $(StridePlatform)-keyed StrideGraphicsApis defaults below. -->
+
   <PropertyGroup>
-    <_StrideRepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', 'crowdin.yml'))</_StrideRepoRoot>
+    <_StrideRepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', 'global.json'))</_StrideRepoRoot>
     <_StrideLocalProps Condition="'$(_StrideRepoRoot)' != ''">$(_StrideRepoRoot)\build\Stride.Local.props</_StrideLocalProps>
     <_StrideLocalPropsTemplate>$(MSBuildThisFileDirectory)Stride.Local.props.template</_StrideLocalPropsTemplate>
   </PropertyGroup>
@@ -53,13 +56,15 @@
   <Import Project="$(_StrideLocalProps)" Condition="'$(_StrideLocalProps)' != '' And Exists('$(_StrideLocalProps)')" />
 
   <!-- ================================================================ -->
-  <!-- StridePlatforms Default Detection -->
+  <!-- StridePlatforms Default Detection                                -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <StrideCommonPreSettingsName Condition="'$(StrideCommonPreSettingsName)' == ''">Stride</StrideCommonPreSettingsName>
 
     <!-- Set default StridePlatforms based on OS (if not already set by user/build system) -->
-    <!-- Note: drives the StrideRuntimeTargetFrameworks sets below (runtime multi-targeting) -->
+
+    <!-- NOTE: Drives the StrideRuntimeTargetFrameworks sets below (runtime multi-targeting) -->
     <StridePlatforms Condition="'$(StridePlatforms)' == '' And '$([MSBuild]::IsOSPlatform(Windows))'">Windows</StridePlatforms>
 
     <!-- Unescape in case it was passed from Stride.build with escaped characters -->
@@ -70,49 +75,60 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Runtime Target-Framework Sets -->
+  <!-- Runtime Target-Framework Sets                                    -->
   <!-- ================================================================ -->
-  <!-- Precomputed framework lists a runtime assembly opts into directly in its csproj, e.g.
-       <TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>. Computed here (props)
-       so the value is known when the csproj body evaluates and the literal <TargetFrameworks>
-       element lives in the csproj (keeps SDK-style project-system detection working).
-       Ordered base; desktop-native -->
+
+  <!--
+    Precomputed framework lists a runtime assembly opts into directly in its csproj,
+    e.g., <TargetFrameworks>$(StrideRuntimeTargetFrameworks)</TargetFrameworks>.
+
+    Computed here (Stride.Platform.props) so the value is known when the .csproj body
+    evaluates and the literal <TargetFrameworks> element lives in the .csproj
+    (keeps SDK-style project-system detection working).
+
+    Ordered base; desktop-native
+  -->
   <PropertyGroup>
-    <!-- desktop-native variants, included only when that platform is active -->
+    <!-- Desktop-native variants, included only when that platform is active -->
     <_StrideRuntimeWindowsFramework Condition="$(_StridePlatforms.Contains(';Windows;'))">;$(StrideFrameworkWindows)</_StrideRuntimeWindowsFramework>
 
-    <!-- base only: most runtime assemblies -->
+    <!-- Base only: Most runtime assemblies -->
     <StrideRuntimeTargetFrameworks>$(StrideFramework)</StrideRuntimeTargetFrameworks>
-    <!-- + Windows desktop (e.g. raw input) -->
+    <!-- + Windows desktop (e.g., RawInput) -->
     <StrideRuntimeTargetFrameworksWindows>$(StrideFramework)$(_StrideRuntimeWindowsFramework)</StrideRuntimeTargetFrameworksWindows>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Graphics API Defaults per Platform -->
+  <!-- Graphics API Defaults per Platform                               -->
   <!-- ================================================================ -->
+
   <PropertyGroup Condition="'$(StridePlatform)' == 'Windows'">
     <StrideGraphicsApis Condition="'$(StrideGraphicsApis)' == ''">Direct3D11</StrideGraphicsApis>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Configuration Defaults (must be before Output Path) -->
+  <!-- Configuration Defaults (must be before Output Path)              -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
     <StrideProjectType Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">Cpp</StrideProjectType>
     <StrideProjectType Condition="'$(StrideProjectType)' == ''">CSharp</StrideProjectType>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Output Path Configuration -->
+  <!-- Output Path Configuration                                        -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Multi-OS Compatibility -->
+  <!-- Multi-OS Compatibility                                           -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Temp directory path for cross-platform builds -->
     <TEMP Condition="'$(TEMP)' == ''">$([System.IO.Path]::GetTempPath())</TEMP>

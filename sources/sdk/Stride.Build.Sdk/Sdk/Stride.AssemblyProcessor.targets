@@ -1,25 +1,30 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.AssemblyProcessor.targets
+
+  Assembly Processor Integration
+  EVALUATION PHASE: Late (AFTER project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    ================================================================
-    Stride.Sdk - Assembly Processor Integration (Stride.AssemblyProcessor.targets)
-    ================================================================
-
-    EVALUATION PHASE: Late (AFTER project file)
-
     This file integrates the Stride Assembly Processor into the build pipeline.
+
     The Assembly Processor is critical for Stride's functionality:
     - Adds module initializers (auto-registration code)
     - Processes serialization attributes
     - Modifies IL for Stride-specific features
 
     Implementation follows: sources/core/Stride.Core/build/Stride.Core.targets
-    ================================================================
   -->
 
   <!-- ================================================================ -->
-  <!-- Assembly Processor Property Defaults -->
+  <!-- Assembly Processor Property Defaults                             -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Disabled by default - projects must opt-in -->
     <StrideAssemblyProcessor Condition="'$(StrideAssemblyProcessor)' == ''">false</StrideAssemblyProcessor>
@@ -29,8 +34,9 @@
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- Assembly Processor Path Detection -->
+  <!-- Assembly Processor Path Detection                                -->
   <!-- ================================================================ -->
+
   <PropertyGroup>
     <!-- Framework selection -->
     <StrideAssemblyProcessorFramework Condition="'$(StrideAssemblyProcessorFramework)' == ''">netstandard2.0</StrideAssemblyProcessorFramework>
@@ -43,7 +49,7 @@
     <!-- Source build: use StrideRoot (set by sources/Directory.Build.props) to find deps/ -->
     <StrideAssemblyProcessorBasePath Condition="'$(StrideAssemblyProcessorBasePath)' == '' And '$(StrideRoot)' != '' And Exists('$(StrideRoot)deps\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\Stride.Core.AssemblyProcessor$(StrideAssemblyProcessorExt)')">$(StrideRoot)deps\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\</StrideAssemblyProcessorBasePath>
 
-    <!-- Derived paths -->
+    <!-- Derived path -->
     <StrideAssemblyProcessorPath Condition="'$(StrideAssemblyProcessorBasePath)' != ''">$(StrideAssemblyProcessorBasePath)Stride.Core.AssemblyProcessor$(StrideAssemblyProcessorExt)</StrideAssemblyProcessorPath>
 
     <!-- Serialization hash file -->
@@ -53,13 +59,14 @@
     <StrideAssemblyProcessorHash Condition="'$(StrideAssemblyProcessorPath)' != '' And Exists('$(StrideAssemblyProcessorPath).hash')">$([System.IO.File]::ReadAllText('$(StrideAssemblyProcessorPath).hash'))</StrideAssemblyProcessorHash>
 
     <!-- Temp directory -->
-    <StrideAssemblyProcessorTempBasePath Condition="'$(StrideAssemblyProcessorHash)' != ''">$(TEMP)\stride\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\$(StrideAssemblyProcessorHash)\</StrideAssemblyProcessorTempBasePath>
+    <StrideAssemblyProcessorTempBasePath Condition="'$(StrideAssemblyProcessorHash)' != ''">$(TEMP)\Stride\AssemblyProcessor\$(StrideAssemblyProcessorFramework)\$(StrideAssemblyProcessorHash)\</StrideAssemblyProcessorTempBasePath>
     <StrideAssemblyProcessorTempPath Condition="'$(StrideAssemblyProcessorTempBasePath)' != ''">$(StrideAssemblyProcessorTempBasePath)Stride.Core.AssemblyProcessor$(StrideAssemblyProcessorExt)</StrideAssemblyProcessorTempPath>
   </PropertyGroup>
 
   <!-- ================================================================ -->
-  <!-- UsingTask Declaration -->
+  <!-- AssemblyProcessorTask Declaration                                -->
   <!-- ================================================================ -->
+
   <UsingTask TaskName="AssemblyProcessorTask"
              AssemblyFile="$(StrideAssemblyProcessorTempPath)"
              Condition="'$(StrideAssemblyProcessorTempPath)' != '' And '$(StrideAssemblyProcessorDev)' != 'true'" />
@@ -71,17 +78,23 @@
   <UsingTask TaskName="StrideEnsureFilesCopied"
              TaskFactory="RoslynCodeTaskFactory"
              AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+
     <ParameterGroup>
       <SourceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <DestinationFolder Required="true" />
       <MarkerFile Required="true" />
     </ParameterGroup>
+
     <Task>
       <Code Type="Fragment" Language="cs"><![CDATA[
-        if (System.IO.File.Exists(MarkerFile)) return true;
+        if (System.IO.File.Exists(MarkerFile))
+            return true;
+
         System.IO.Directory.CreateDirectory(DestinationFolder);
+
         var lockFile = MarkerFile + ".lock";
         var deadline = System.DateTime.UtcNow.AddMinutes(2);
+
         while (!System.IO.File.Exists(MarkerFile))
         {
             try
@@ -106,16 +119,20 @@
             {
                 if (System.DateTime.UtcNow > deadline)
                     throw;
+
                 System.Threading.Thread.Sleep(50);
             }
         }
+
+        return true;
       ]]></Code>
     </Task>
   </UsingTask>
 
   <!-- ================================================================ -->
-  <!-- Main Assembly Processor Target -->
+  <!-- Main Assembly Processor Target                                   -->
   <!-- ================================================================ -->
+
   <!-- Uses BeforeTargets="CopyFilesToOutputDirectory" to run after compilation
        but before output copy. This matches the old build system and avoids
        import-order issues with PrepareForRunDependsOn (which gets overwritten
@@ -125,7 +142,9 @@
           DependsOnTargets="ResolveAssemblyReferences"
           Inputs="$(IntermediateOutputPath)$(TargetName)$(TargetExt);@(ReferencePath);$(StrideAssemblyProcessorPath)"
           Outputs="$(IntermediateOutputPath)$(TargetName).asmproc.marker"
-          Condition="'$(StrideAssemblyProcessor)' == 'true' And '$(StrideAssemblyProcessorPath)' != '' And '$(_ComputeFilesToPublishForRuntimeIdentifiers)' != 'true'">
+          Condition="'$(StrideAssemblyProcessor)' == 'true' And
+                     '$(StrideAssemblyProcessorPath)' != '' And
+                     '$(_ComputeFilesToPublishForRuntimeIdentifiers)' != 'true'">
 
     <!-- Step 1: Write references to cache file -->
     <WriteLinesToFile File="$(IntermediateOutputPath)StrideReferences.cache"
@@ -160,10 +179,12 @@
       <!-- References file (all references) -->
       <StrideAssemblyProcessorOptions>$(StrideAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)StrideReferences.cache"</StrideAssemblyProcessorOptions>
 
-      <!-- Platform — Game is a test-SDK build-time TFM identity (host-loadable library shadow
-           for the asset compiler), not a runtime platform; AssemblyProcessor's PlatformType enum
-           doesn't know it. Map to Shared, which is the right answer for an asset-compiler-only
-           library that runs no platform-specific code paths. -->
+      <!-- Platform:
+             Game is a test-SDK build-time TFM identity (host-loadable library shadow for the Asset Compiler),
+             not a runtime platform;
+             AssemblyProcessor's PlatformType enum doesn't know it.
+             Map to Shared, which is the right answer for an Asset-Compiler-only library that
+             runs no platform-specific code paths. -->
       <_StrideAssemblyProcessorPlatform>$(StridePlatform)</_StrideAssemblyProcessorPlatform>
       <_StrideAssemblyProcessorPlatform Condition="'$(StridePlatform)' == 'Game'">Shared</_StrideAssemblyProcessorPlatform>
       <StrideAssemblyProcessorOptions>$(StrideAssemblyProcessorOptions) --platform=$(_StrideAssemblyProcessorPlatform)</StrideAssemblyProcessorOptions>
@@ -202,20 +223,24 @@
       <StrideAddReference Remove="@(StrideAddReference)" />
     </ItemGroup>
 
-    <!-- Touch marker so MSBuild's incremental check skips on next build when nothing changed. -->
+    <!-- Touch marker so MSBuild's incremental check skips on next build when nothing changed -->
     <Touch Files="$(IntermediateOutputPath)$(TargetName).asmproc.marker" AlwaysCreate="true" />
   </Target>
 
   <!-- ================================================================ -->
-  <!-- Build Pipeline Integration -->
+  <!-- Build Pipeline Integration                                       -->
   <!-- ================================================================ -->
-  <!-- Integration is via BeforeTargets="CopyFilesToOutputDirectory" on the target itself.
-       PrepareForRunDependsOn cannot be used here because this file is imported BEFORE
-       Microsoft.NET.Sdk Sdk.targets, which would overwrite the property value. -->
+
+  <!--
+    Integration is via BeforeTargets="CopyFilesToOutputDirectory" on the target itself.
+    PrepareForRunDependsOn cannot be used here because this file is imported BEFORE
+    Microsoft.NET.Sdk Sdk.targets, which would overwrite the property value.
+  -->
 
   <!-- ================================================================ -->
-  <!-- User Documentation (.usrdoc) File Handling -->
+  <!-- User Documentation (.usrdoc) File Handling                       -->
   <!-- ================================================================ -->
+
   <Target Name="_StrideCopyUserDoc"
           AfterTargets="StrideRunAssemblyProcessor"
           Condition="'$(StridePublicApi)' == 'true' And '$(StrideAssemblyProcessor)' == 'true'">
@@ -230,13 +255,15 @@
           RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
           UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
           UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)">
+
       <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
     </Copy>
   </Target>
 
   <!-- ================================================================ -->
-  <!-- Validation -->
+  <!-- Validation                                                       -->
   <!-- ================================================================ -->
+
   <Target Name="_StrideValidateAssemblyProcessor"
           BeforeTargets="StrideRunAssemblyProcessor"
           Condition="'$(StrideAssemblyProcessor)' == 'true' And '$(StrideAssemblyProcessorPath)' == ''">

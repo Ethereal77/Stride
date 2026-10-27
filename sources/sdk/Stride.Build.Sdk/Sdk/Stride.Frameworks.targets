@@ -1,24 +1,38 @@
+<!--
+***********************************************************************************************
+  Stride.Build.Sdk: Stride.Frameworks.targets
+
+  Define TFM for runtime from StridePlatform
+  EVALUATION PHASE: Late (AFTER project file)
+
+  Copyright (C) Stride and its contributors
+***********************************************************************************************
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    Runs in .targets (not .props) because the re-derivations below depend on the inner-build
-    TargetFramework, which is only known after the base SDK targets resolve it.
+    Runs in .targets (not .props) because the re-derivations below depend on the
+    inner-build TargetFramework, which is only known after the base SDK targets resolve it.
   -->
 
-  <!-- Re-evaluate StrideTargetFramework now that TargetFramework is known. The same logic
-       runs in Stride.Frameworks.props for completeness, but TargetFramework is empty at
-       props time under standard SDK-style imports, so this targets-phase pass is what
-       actually populates the value for SDK conditions to consume. -->
+  <!--
+    Re-evaluate StrideTargetFramework now that TargetFramework is known.
+      The same logic runs in Stride.Frameworks.props for completeness,
+      but TargetFramework is empty at .props time under standard SDK-style imports,
+      so this .targets-phase pass is what actually populates the value for SDK conditions to consume.
+  -->
   <PropertyGroup>
     <StrideTargetFramework>$(TargetFramework)</StrideTargetFramework>
     <StrideTargetFramework Condition="$(TargetFramework.StartsWith('$(StrideFrameworkWindows)'))">$(StrideFrameworkWindows)</StrideTargetFramework>
   </PropertyGroup>
 
-  <!-- Re-derive StridePlatform from the now-known StrideTargetFramework. Stride.Platform.props
-       resolves StridePlatform at props time, but TargetFramework is empty there for projects
-       that set it in the csproj body (e.g. Tests SDK consumers), so StridePlatform falls back
-       to the host OS. Fix it here so SDK conditions gating on StridePlatform pick the right
-       platform from a non-Stride-runtime project. -->
+  <!--
+    Re-derive StridePlatform from the now-known StrideTargetFramework.
+      Stride.Platform.props resolves StridePlatform at .props time,
+      but TargetFramework is empty there for projects that set it in the .csproj body
+      (e.g., Tests SDK consumers), so StridePlatform falls back to the host OS.
+      Fix it here so SDK conditions gating on StridePlatform pick the right platform
+      from a non-Stride-runtime project. -->
   <PropertyGroup>
   </PropertyGroup>
 
