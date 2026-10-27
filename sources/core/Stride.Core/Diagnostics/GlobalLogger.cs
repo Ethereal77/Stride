@@ -65,11 +65,7 @@ public sealed class GlobalLogger : Logger
     /// <exception cref="ArgumentNullException">If activator is null</exception>
     public static void ActivateLog(Action<Logger> activator)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(activator);
-#else
-        if (activator is null) throw new ArgumentNullException(nameof(activator));
-#endif // NET7_0_OR_GREATER
 
         foreach (var logger in MapModuleNameToLogger.Values)
             activator(logger);
@@ -85,11 +81,7 @@ public sealed class GlobalLogger : Logger
     /// <exception cref="ArgumentNullException">If regexPatternModule is null</exception>
     public static void ActivateLog(string regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(regexPatternModule);
-#else
-        if (regexPatternModule is null) throw new ArgumentNullException(nameof(regexPatternModule));
-#endif // NET7_0_OR_GREATER
 
         var regex = new Regex(regexPatternModule);
         ActivateLog(regex, minimumLevel, maximumLevel, enabledFlag);
@@ -105,11 +97,7 @@ public sealed class GlobalLogger : Logger
     /// <exception cref="ArgumentNullException">If regexPatternModule is null</exception>
     public static void ActivateLog(Regex regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(regexPatternModule);
-#else
-        if (regexPatternModule is null) throw new ArgumentNullException(nameof(regexPatternModule));
-#endif // NET7_0_OR_GREATER
 
         ActivateLog(
             logger =>
@@ -160,11 +148,7 @@ public sealed class GlobalLogger : Logger
     /// <returns>An instance of a <see cref="Logger"/></returns>
     public static Logger GetLogger(string module, LogMessageType minimumLevel)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(module);
-#else
-        if (module is null) throw new ArgumentNullException(nameof(module));
-#endif // NET7_0_OR_GREATER
 
         Logger? logger;
         lock (MapModuleNameToLogger)

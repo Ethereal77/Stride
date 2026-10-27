@@ -26,11 +26,8 @@ public sealed class ObjectFactoryAttribute : Attribute
     /// <param name="factoryType">The factory type that implements <see cref="IObjectFactory"/>.</param>
     public ObjectFactoryAttribute([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type factoryType)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(factoryType);
-#else
-        if (factoryType is null) throw new ArgumentNullException(nameof(factoryType));
-#endif // NET7_0_OR_GREATER
+
         if (!typeof(IObjectFactory).GetTypeInfo().IsAssignableFrom(factoryType.GetTypeInfo())) throw new ArgumentException($"The given type does not implement {nameof(IObjectFactory)}/", nameof(factoryType));
         if (factoryType.GetTypeInfo().GetConstructor(Type.EmptyTypes) == null) throw new ArgumentException("The given type does have a public parameterless constructor.", nameof(factoryType));
         FactoryType = factoryType;

@@ -84,11 +84,7 @@ public class ThreadThrottler : IThreadThrottler
     /// </remarks>
     public void SetMaxFrequency(int frequencyMax)
     {
-#if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(frequencyMax, 0);
-#else
-        if (frequencyMax <= 0) throw new ArgumentOutOfRangeException(nameof(frequencyMax));
-#endif // NET8_0_OR_GREATER
 
         periodDuration = (long)(Stopwatch.Frequency / (double)frequencyMax);
     }
@@ -140,12 +136,12 @@ public class ThreadThrottler : IThreadThrottler
     /// <summary>
     /// Forces the thread to sleep when the time elapsed since last call is lower than <see cref="MinimumElapsedTime"/>,
     /// it will sleep for the time remaining to reach <see cref="MinimumElapsedTime"/>.
-    /// <para/> 
+    /// <para/>
     /// Use this function inside a loop when you want to lock it to a specific rate.
     /// </summary>
     /// <param name="elapsedTimeSpan">
     /// The time since the last call,
-    /// returns a value close to <see cref="MinimumElapsedTime"/>, 
+    /// returns a value close to <see cref="MinimumElapsedTime"/>,
     /// use this value as your delta time.
     /// </param>
     /// <returns><c>True</c> if this class had to throttle, <c>false</c> otherwise</returns>
@@ -159,12 +155,12 @@ public class ThreadThrottler : IThreadThrottler
     /// <summary>
     /// Forces the thread to sleep when the time elapsed since last call is lower than <see cref="MinimumElapsedTime"/>,
     /// it will sleep for the time remaining to reach <see cref="MinimumElapsedTime"/>.
-    /// <para/> 
+    /// <para/>
     /// Use this function inside a loop when you want to lock it to a specific rate.
     /// </summary>
     /// <param name="elapsedInSeconds">
     /// The time since the last call in seconds,
-    /// returns a value close to <see cref="MinimumElapsedTime"/>, 
+    /// returns a value close to <see cref="MinimumElapsedTime"/>,
     /// use this value as your delta time.
     /// </param>
     /// <returns><c>True</c> if this class had to throttle, <c>false</c> otherwise</returns>
@@ -178,12 +174,12 @@ public class ThreadThrottler : IThreadThrottler
     /// <summary>
     /// Forces the thread to sleep when the time elapsed since last call is lower than
     /// <see cref="MinimumElapsedTime"/>, it will sleep for the time remaining to reach that value.
-    /// <para/> 
+    /// <para/>
     /// Use this function inside a loop when you want to lock it to a specific rate.
     /// </summary>
     /// <param name="elapsedInSwFreq">
     /// The time since the last call in <see cref="Stopwatch"/>.<see cref="Stopwatch.Frequency"/>
-    /// returns a value close to <see cref="MinimumElapsedTime"/>, 
+    /// returns a value close to <see cref="MinimumElapsedTime"/>,
     /// use this value as your delta time.
     /// </param>
     /// <returns><c>True</c> if this class had to throttle, <c>false</c> otherwise</returns>

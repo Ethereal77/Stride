@@ -29,11 +29,7 @@ public abstract class PropertyKey : IComparable
     /// <param name="metadatas">The metadatas.</param>
     protected PropertyKey(string name, Type propertyType, Type ownerType, params PropertyKeyMetadata[] metadatas)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(name);
-#else
-        if (name is null) throw new ArgumentNullException(nameof(name));
-#endif // NET7_0_OR_GREATER
 
         Name = name;
         PropertyType = propertyType;

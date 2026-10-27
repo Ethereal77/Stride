@@ -222,82 +222,37 @@ public partial class ConsoleLogListener : LogListener
     [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     private static partial SafeFileHandle CreateFile(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes, uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool AttachConsole(int dwProcessId);
-#else
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern bool AttachConsole(int dwProcessId);
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool FreeConsole();
-#else
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool FreeConsole();
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool AllocConsole();
-#else
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool AllocConsole();
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll")]
     private static partial IntPtr GetConsoleWindow();
-#else
-    [DllImport("kernel32.dll")]
-    private static extern IntPtr GetConsoleWindow();
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
-#else
-    [DllImport("user32.dll")]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll")]
     private static partial IntPtr GetStdHandle(uint nStdHandle);
-#else
-    [DllImport("kernel32.dll")]
-    private static extern IntPtr GetStdHandle(uint nStdHandle);
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll")]
     private static partial void SetStdHandle(uint nStdHandle, IntPtr handle);
-#else
-    [DllImport("kernel32.dll")]
-    private static extern void SetStdHandle(uint nStdHandle, IntPtr handle);
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll")]
     private static partial int GetFileType(SafeFileHandle handle);
-#else
-    [DllImport("kernel32.dll")]
-    private static extern int GetFileType(SafeFileHandle handle);
-#endif // NET7_0_OR_GREATER
 
-#if NET7_0_OR_GREATER
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetConsoleMode(IntPtr hConsoleHandle, out int mode);
-#else
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out int mode);
-#endif // NET7_0_OR_GREATER
 
     private static bool IsHandleRedirected(IntPtr ioHandle)
     {

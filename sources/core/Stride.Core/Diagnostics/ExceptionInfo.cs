@@ -27,11 +27,8 @@ public sealed class ExceptionInfo
     /// <param name="exception">The exception used to initialize the properties of this instance.</param>
     public ExceptionInfo(Exception exception)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(exception);
-#else
-        if (exception is null) throw new ArgumentNullException(nameof(exception));
-#endif // NET7_0_OR_GREATER
+
         Message = exception.Message;
         StackTrace = exception.StackTrace;
         TypeFullName = exception.GetType().FullName;

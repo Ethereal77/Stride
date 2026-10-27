@@ -10,10 +10,10 @@
 // documentation files (the "Software"), to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
 // to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions
 // of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
 // TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
@@ -61,11 +61,7 @@ public class Project
         IEnumerable<PropertyItem> versionControlLines,
         IEnumerable<PropertyItem> projectConfigurationPlatformsLines)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(name);
-#else
-        if (name is null) throw new ArgumentNullException(nameof(name));
-#endif
 
         this.Guid = guid;
         TypeGuid = typeGuid;
@@ -206,17 +202,9 @@ public class Project
             // Example: "{GUID}|Infra.dll;{GUID2}|Services.dll;"
             var propertyItem = Sections["WebsiteProperties"].Properties["ProjectReferences"];
             var value = propertyItem.Value;
-#if NETCOREAPP2_0_OR_GREATER
             if (value.StartsWith('\\'))
-#else
-            if (value.StartsWith("\\"))
-#endif
                 value = value[1..];
-#if NETCOREAPP2_0_OR_GREATER
             if (value.EndsWith('\\'))
-#else
-            if (value.EndsWith("\\"))
-#endif
                 value = value[..^1];
 
             foreach (var dependency in value.Split(';'))

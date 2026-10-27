@@ -31,11 +31,7 @@ public class UnmanagedArray<T> : IDisposable where T : struct
     {
         get
         {
-#if NET8_0_OR_GREATER
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Length);
-#else
-            if (index >= Length) throw new ArgumentOutOfRangeException(nameof(index));
-#endif // NET8_0_OR_GREATER
 
             T res;
             unsafe
@@ -51,11 +47,7 @@ public class UnmanagedArray<T> : IDisposable where T : struct
         }
         set
         {
-#if NET8_0_OR_GREATER
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Length);
-#else
-            if (index >= Length) throw new ArgumentOutOfRangeException(nameof(index));
-#endif // NET8_0_OR_GREATER
 
             unsafe
             {

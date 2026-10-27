@@ -19,11 +19,8 @@ internal class TransactionStack : ITransactionStack
     /// <param name="capacity">The capacity of the stack.</param>
     public TransactionStack(int capacity)
     {
-#if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
-#else
-        if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity))
-#endif
+
         Capacity = capacity;
     }
 

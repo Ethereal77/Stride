@@ -353,7 +353,6 @@ Stride.Build.Sdk/Sdk/Sdk.targets (top)
 | Platform | Defines |
 |----------|---------|
 | Windows | `STRIDE_PLATFORM_DESKTOP` |
-| All .NET | `STRIDE_RUNTIME_CORECLR` |
 
 ### Graphics API
 

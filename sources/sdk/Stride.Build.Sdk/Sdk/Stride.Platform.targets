@@ -23,7 +23,7 @@
   <!-- .NET Runtime Defines -->
   <!-- ================================================================ -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net10'))">
-    <StrideNETRuntimeDefines>STRIDE_RUNTIME_CORECLR</StrideNETRuntimeDefines>
+    <StrideNETRuntimeDefines></StrideNETRuntimeDefines>
   </PropertyGroup>
 
   <!-- ================================================================ -->

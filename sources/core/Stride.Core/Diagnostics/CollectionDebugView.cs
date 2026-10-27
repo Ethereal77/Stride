@@ -15,14 +15,9 @@ public class CollectionDebugView
 {
     private readonly IEnumerable collection;
 
-    public CollectionDebugView(
-        IEnumerable collection)
+    public CollectionDebugView(IEnumerable collection)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(collection);
-#else
-        if (collection is null) throw new ArgumentNullException(nameof(collection));
-#endif // NET7_0_OR_GREATER
         this.collection = collection;
     }
 
@@ -39,11 +34,7 @@ public class CollectionDebugView<T>
 
     public CollectionDebugView(ICollection<T> collection)
     {
-#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(collection);
-#else
-        if (collection is null) throw new ArgumentNullException(nameof(collection));
-#endif // NET7_0_OR_GREATER
         this.collection = collection;
     }
 

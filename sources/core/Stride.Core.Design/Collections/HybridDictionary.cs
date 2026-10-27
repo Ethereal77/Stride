@@ -44,11 +44,8 @@ public class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 
     public HybridDictionary(int capacity, IEqualityComparer<TKey>? comparer)
     {
-#if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
-#else
-        if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-#endif
+
         keyComparer = comparer ?? EqualityComparer<TKey>.Default;
         if (capacity >= ConstructorCutoverPoint)
         {
@@ -193,11 +190,8 @@ public class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     public bool Contains(KeyValuePair<TKey, TValue> item)
     {
         CheckInvariant();
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(item.Key);
-#else
-        if (item.Key is null) throw new ArgumentNullException(nameof(item.Key));
-#endif
+
         if (list != null)
         {
             foreach (var kvp in list)
@@ -226,11 +220,8 @@ public class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     public bool ContainsKey(TKey key)
     {
         CheckInvariant();
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(key);
-#else
-        if (key is null) throw new ArgumentNullException(nameof(key));
-#endif
+
         if (list != null)
         {
             foreach (var kvp in list)
@@ -246,11 +237,8 @@ public class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         CheckInvariant();
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(key);
-#else
-        if (key is null) throw new ArgumentNullException(nameof(key));
-#endif
+
         if (list != null)
         {
             foreach (var kvp in list)

@@ -168,11 +168,7 @@ public sealed class PackageVersionRange : IEquatable<PackageVersionRange>
     /// <exception cref="ArgumentNullException">value</exception>
     public static bool TryParse(string value, [MaybeNullWhen(false)] out PackageVersionRange result)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(value);
-#else
-        if (value is null) throw new ArgumentNullException(nameof(value));
-#endif
 
         var versionSpec = new PackageVersionRange();
         value = value.Trim();
@@ -346,11 +342,7 @@ public sealed class PackageVersionRange : IEquatable<PackageVersionRange>
 
     public Func<T, bool> ToFilter<T>(Func<T, PackageVersion> extractor)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(extractor);
-#else
-        if (extractor is null) throw new ArgumentNullException(nameof(extractor));
-#endif
 
         return p =>
         {

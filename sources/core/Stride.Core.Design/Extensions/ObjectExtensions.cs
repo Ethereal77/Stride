@@ -75,11 +75,8 @@ public static class ObjectExtensions
     /// <remarks>This method can be used to test for null argument when forwarding members of the object to the <c>base</c> or <c>this</c> constructor.</remarks>
     public static T SafeArgument<T>(this T obj, [CallerArgumentExpression(nameof(obj))] string argumentName = "") where T : class
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(argumentName);
-#else
-        if (argumentName is null) throw new ArgumentNullException(nameof(argumentName));
-#endif
+
         if (obj == null) throw new ArgumentNullException(argumentName);
         return obj;
     }

@@ -72,11 +72,7 @@ public class AssemblyContainer
 
     public Assembly? LoadAssemblyFromPath(string assemblyFullPath, ILogger? outputLog = null)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(assemblyFullPath);
-#else
-        if (assemblyFullPath is null) throw new ArgumentNullException(nameof(assemblyFullPath));
-#endif
 
         log = new LoggerResult();
 
@@ -146,11 +142,7 @@ public class AssemblyContainer
 
     public void RegisterDependency(string assemblyFullPath)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(assemblyFullPath);
-#else
-        if (assemblyFullPath is null) throw new ArgumentNullException(nameof(assemblyFullPath));
-#endif
 
         lock (dependencies)
         {
@@ -160,11 +152,7 @@ public class AssemblyContainer
 
     private Assembly? LoadAssemblyByName(AssemblyName assemblyName, string searchDirectory)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(assemblyName);
-#else
-        if (assemblyName is null) throw new ArgumentNullException(nameof(assemblyName));
-#endif
 
         // Note: Do not compare by full name as it is too restricive in regards to versioning.
         // For example consider App -> Foo -> Bar (1.0) with the App referencing a newer version of Bar (2.0)
@@ -239,11 +227,7 @@ public class AssemblyContainer
 
     private Assembly? LoadAssemblyFromPathInternal(string assemblyFullPath)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(assemblyFullPath);
-#else
-        if (assemblyFullPath is null) throw new ArgumentNullException(nameof(assemblyFullPath));
-#endif
 
         assemblyFullPath = Path.GetFullPath(assemblyFullPath);
 
