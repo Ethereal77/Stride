@@ -28,7 +28,18 @@ namespace Stride.Graphics;
 ///   supported features specific to a particular pixel format or data format.
 /// </summary>
 /// <remarks>
-///   To obtain information about the supported features for a particular format, use the <see cref="this[PixelFormat]">indexer</see>.
+///   <para>
+///     To obtain information about the supported features for a particular format, use the <see cref="this[PixelFormat]">indexer</see>.
+///   </para>
+///   <para>
+///     Each field says what Stride can use on this device with this graphics backend. When the backend does not
+///     implement something, it reports <see langword="false"/>, <see cref="MultisampleCount.None"/>,
+///     <see cref="BindlessTier.None"/> or 0, even if the GPU supports it.
+///   </para>
+///   <para>
+///     On Direct3D, the fields that need a shader model are also limited to what effects compiled for
+///     the effect profile can use. The device can run at a higher level than that profile.
+///   </para>
 /// </remarks>
 public partial struct GraphicsDeviceFeatures
 {
@@ -46,6 +57,10 @@ public partial struct GraphicsDeviceFeatures
     /// <remarks>
     ///   This may differ from <see cref="RequestedProfile"/> if the <see cref="GraphicsDevice"/> could not be created
     ///   with that requested profile. This one represents the closest supported profile.
+    ///   <para>
+    ///     Vulkan has no feature levels. On Vulkan this is the requested profile, and the other fields come from the
+    ///     features of the Vulkan device.
+    ///   </para>
     /// </remarks>
     /// <seealso cref="GraphicsProfile"/>
     public readonly GraphicsProfile CurrentProfile;
@@ -154,6 +169,62 @@ public partial struct GraphicsDeviceFeatures
     /// </summary>
     public readonly bool HasResourceRenaming;
 
+    /// <summary>
+    ///   A value indicating if the <see cref="GraphicsDevice"/> supports index buffers of 32-bit indices.
+    /// </summary>
+    /// <seealso cref="Buffer.Index"/>
+    public readonly bool HasIndex32Bits;
+
+    /// <summary>
+    ///   A value indicating if the <see cref="GraphicsDevice"/> can run geometry shaders.
+    /// </summary>
+    public readonly bool HasGeometryShaders;
+
+    /// <summary>
+    ///   A value indicating if pixel shaders can write to unordered access views and use atomic operations on them.
+    /// </summary>
+    public readonly bool HasPixelShaderUnorderedAccess;
+
+    /// <summary>
+    ///   The level of bindless access (shaders index a large array of textures) that Stride can use on this device.
+    /// </summary>
+    /// <remarks>
+    ///   <see cref="BindlessTier.None"/> when the graphics backend does not implement bindless access, even if the GPU
+    ///   supports it. The device log shows the GPU level next to this one.
+    /// </remarks>
+    public readonly BindlessTier BindlessTier;
+
+    /// <summary>
+    ///   The maximum number of sampled textures in one bindless array, for the shader stage with the lowest limit.
+    /// </summary>
+    /// <remarks>
+    ///   0 when <see cref="BindlessTier"/> is <see cref="BindlessTier.None"/>.
+    /// </remarks>
+    public readonly int MaxBindlessSampledTextureCount;
+
+    /// <summary>
+    ///   What the GPU supports for bindless access, whether or not the backend uses it.
+    /// </summary>
+    internal readonly BindlessSupport GpuBindless;
+
+    /// <summary>
+    ///   Limits the features that need a shader model to what effects compiled for <paramref name="effectProfile"/> can use.
+    /// </summary>
+    internal readonly GraphicsDeviceFeatures LimitedTo(GraphicsProfile effectProfile) => new(this, effectProfile);
+
+    private GraphicsDeviceFeatures(in GraphicsDeviceFeatures deviceFeatures, GraphicsProfile effectProfile)
+    {
+        this = deviceFeatures;
+
+#if STRIDE_GRAPHICS_API_DIRECT3D
+        // Direct3D compiles effects for the shader model of the effect profile
+        HasComputeShaders &= effectProfile >= GraphicsProfile.Level_10_0;
+        HasGeometryShaders &= effectProfile >= GraphicsProfile.Level_10_0;
+        HasDoublePrecision &= effectProfile >= GraphicsProfile.Level_11_0;
+        HasPixelShaderUnorderedAccess &= effectProfile >= GraphicsProfile.Level_11_0;
+        HasMultiSampleDepthAsSRV &= effectProfile >= GraphicsProfile.Level_11_0;
+#endif
+    }
 
     /// <summary>
     ///   Queries the features the <see cref="GraphicsDevice"/> supports for the specified <see cref="PixelFormat"/>.
@@ -185,6 +256,10 @@ public partial struct GraphicsDeviceFeatures
         /// <summary>
         ///   The maximum sample count when multisampling for a particular <see cref="Format"/>.
         /// </summary>
+        /// <remarks>
+        ///   <see cref="MultisampleCount.None"/> when the graphics backend does not implement multisampling, even if
+        ///   the GPU supports it for this format.
+        /// </remarks>
         public readonly MultisampleCount MultisampleCountMax;
 
         /// <summary>
@@ -205,8 +280,22 @@ public partial struct GraphicsDeviceFeatures
         }
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    ///   Every flag that makes a renderer quietly do something else is named here. Leaving one out means
+    ///   the degrade it causes cannot be diagnosed from the log.
+    /// </remarks>
     public override readonly string ToString()
     {
-        return $"Level: {RequestedProfile}, HasComputeShaders: {HasComputeShaders}, HasDoublePrecision: {HasDoublePrecision}, HasMultiThreadingConcurrentResources: {HasMultiThreadingConcurrentResources}, HasDriverCommandLists: {HasDriverCommandLists}";
+        return $"Requested: {RequestedProfile}, Current: {CurrentProfile}, " +
+               $"HasComputeShaders: {HasComputeShaders}, HasDoublePrecision: {HasDoublePrecision}, " +
+               $"HasMultiThreadingConcurrentResources: {HasMultiThreadingConcurrentResources}, " +
+               $"HasDriverCommandLists: {HasDriverCommandLists}, HasSRgb: {HasSRgb}, " +
+               $"HasDepthAsSRV: {HasDepthAsSRV}, HasDepthAsReadOnlyRT: {HasDepthAsReadOnlyRT}, " +
+               $"HasMultiSampleDepthAsSRV: {HasMultiSampleDepthAsSRV}, HasResourceRenaming: {HasResourceRenaming}, " +
+               $"HasIndex32Bits: {HasIndex32Bits}, HasGeometryShaders: {HasGeometryShaders}, " +
+               $"HasPixelShaderUnorderedAccess: {HasPixelShaderUnorderedAccess}, " +
+               $"BindlessTier: {BindlessTier} (GPU: {GpuBindless.Tier}{(GpuBindless.Detail is null ? "" : $", {GpuBindless.Detail}")}), " +
+               $"MaxBindlessSampledTextureCount: {MaxBindlessSampledTextureCount} (GPU: {GpuBindless.MaxSampledTextureCount})";
     }
 }

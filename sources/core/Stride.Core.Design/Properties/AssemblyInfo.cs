@@ -4,8 +4,10 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Stride.Core.Design.Serializers")]
+// Package loading shares the host's assemblies through AssemblyContainer internals
+[assembly: InternalsVisibleTo("Stride.Core.Assets")]
 [assembly: InternalsVisibleTo("Stride.Engine")]
 [assembly: InternalsVisibleTo("Stride.Engine.Step1")]
 [assembly: InternalsVisibleTo("Stride.Core.Tests")]
 [assembly: InternalsVisibleTo("Stride.Core.Design.Tests")]
-[assembly: InternalsVisibleTo("Stride.Core.Presentation.Tests")]
+[assembly: InternalsVisibleTo("Stride.Core.Presentation.Wpf.Tests")]

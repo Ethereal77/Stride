@@ -48,10 +48,12 @@ namespace Stride.Graphics
         /// Initializes a new instance of the <see cref="GraphicsAdapter" /> class.
         /// </summary>
         /// <param name="physicalDevice">The default factory.</param>
+        /// <param name="adapterUid">The unique identifier of the adapter.</param>
         /// <param name="adapterOrdinal">The adapter ordinal.</param>
         /// <param name="enumerationIndex">The index of the physical device in the instance's enumeration order.</param>
-        internal unsafe GraphicsAdapter(VkPhysicalDevice defaultPhysicalDevice, VkPhysicalDeviceProperties properties, VkPhysicalDeviceDriverProperties driverProperties, int adapterOrdinal, int enumerationIndex)
+        internal unsafe GraphicsAdapter(VkPhysicalDevice defaultPhysicalDevice, VkPhysicalDeviceProperties properties, VkPhysicalDeviceDriverProperties driverProperties, long adapterUid, int adapterOrdinal, int enumerationIndex)
         {
+            AdapterUid = adapterUid;
             this.adapterOrdinal = adapterOrdinal;
             this.enumerationIndex = enumerationIndex;
             this.defaultPhysicalDevice = defaultPhysicalDevice;
@@ -135,8 +137,8 @@ namespace Stride.Graphics
         }
 
         /// <summary>
-        ///   Gets a value indicating whether this adapter is a software rasterizer (llvmpipe)
-        ///   rather than a physical GPU.
+        ///   Gets a value indicating whether this adapter is a software rasterizer (llvmpipe,
+        ///   SwiftShader) rather than a physical GPU.
         /// </summary>
         public bool IsSoftwareAdapter => properties.deviceType == VkPhysicalDeviceType.Cpu;
 

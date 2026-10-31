@@ -1,7 +1,5 @@
 name: "Dep: Build & Deploy Lavapipe"
 
-# Skeleton — not yet exercised. Notes on per-OS friction at the bottom.
-#
 # Lavapipe is built from Mesa with:
 #   meson setup _build -Dvulkan-drivers=swrast -Dgallium-drivers=llvmpipe \
 #                      -Dgallium-extra-hud=false -Dvideo-codecs= \
@@ -21,28 +19,35 @@ on:
         required: false
       ref:
         description: Mesa ref (branch, tag, SHA, or refs/merge-requests/<id>/head)
-        default: main
+        default: mesa-26.2.4
         required: false
       version:
         description: NuGet package version (leave empty for date-based)
         required: false
 
+env:
+  MESA_REF: ${{ github.event.inputs.ref || 'mesa-26.2.4' }}
+
 jobs:
   build-windows:
     name: Build Lavapipe (Windows x64)
     runs-on: windows-2025-vs2026
+    outputs:
+      mesa-commit: ${{ steps.info.outputs.mesa-commit }}
+      mesa-version: ${{ steps.info.outputs.mesa-version }}
+      llvm-version: ${{ steps.info.outputs.llvm-version }}
     steps:
       - name: Checkout Stride
         uses: actions/checkout@v7
         with:
           path: stride-src
-          sparse-checkout: build/deps/lavapipe
+          sparse-checkout: deps/lavapipe
 
       - name: Clone Mesa
         shell: pwsh
         run: |
           $url = "${{ github.event.inputs.repository || 'https://gitlab.freedesktop.org/mesa/mesa.git' }}"
-          $ref = "${{ github.event.inputs.ref || 'main' }}"
+          $ref = "${{ env.MESA_REF }}"
           git init mesa-src
           git -C mesa-src remote add origin $url
           git -C mesa-src fetch --depth 1 origin $ref
@@ -106,6 +111,14 @@ jobs:
           path: llvm-install
           key: llvm-21.1.0-msvc2026-static-x64-v1
 
+      - name: Record build info
+        id: info
+        shell: pwsh
+        run: |
+          "mesa-commit=$(git -C mesa-src rev-parse HEAD)" >> $env:GITHUB_OUTPUT
+          "mesa-version=$((Get-Content mesa-src/VERSION -Raw).Trim())" >> $env:GITHUB_OUTPUT
+          "llvm-version=$(& '${{ github.workspace }}\llvm-install\bin\llvm-config.exe' --version)" >> $env:GITHUB_OUTPUT
+
       - name: Configure Mesa (Lavapipe only, static LLVM)
         shell: cmd
         working-directory: mesa-src
@@ -120,7 +133,11 @@ jobs:
         run: |
           set PYTHONUTF8=1
           set PATH=${{ github.workspace }}\llvm-install\bin;%PATH%
+          rem Meson asks CMake for the newest LLVM first, so a newer one on the runner image
+          rem (C:\Program Files\LLVM, static CRT) would win over ours: remove its CMake package.
+          if exist "C:\Program Files\LLVM\lib\cmake\llvm" rmdir /s /q "C:\Program Files\LLVM\lib\cmake\llvm"
           meson setup _build ^
+            -Dcmake_prefix_path=${{ github.workspace }}\llvm-install ^
             -Dvulkan-drivers=swrast ^
             -Dgallium-drivers=llvmpipe ^
             -Dplatforms=windows ^
@@ -164,18 +181,22 @@ jobs:
     # GitHub-hosted native Windows-on-ARM runner. Switch to a custom runner image
     # if you have one (mirror the x64 job's "windows-2025-vs2026" naming).
     runs-on: windows-11-arm
+    outputs:
+      mesa-commit: ${{ steps.info.outputs.mesa-commit }}
+      mesa-version: ${{ steps.info.outputs.mesa-version }}
+      llvm-version: ${{ steps.info.outputs.llvm-version }}
     steps:
       - name: Checkout Stride
         uses: actions/checkout@v7
         with:
           path: stride-src
-          sparse-checkout: build/deps/lavapipe
+          sparse-checkout: deps/lavapipe
 
       - name: Clone Mesa
         shell: pwsh
         run: |
           $url = "${{ github.event.inputs.repository || 'https://gitlab.freedesktop.org/mesa/mesa.git' }}"
-          $ref = "${{ github.event.inputs.ref || 'main' }}"
+          $ref = "${{ env.MESA_REF }}"
           git init mesa-src
           git -C mesa-src remote add origin $url
           git -C mesa-src fetch --depth 1 origin $ref
@@ -233,6 +254,14 @@ jobs:
           path: llvm-install
           key: llvm-21.1.0-msvc2026-static-arm64-v1
 
+      - name: Record build info
+        id: info
+        shell: pwsh
+        run: |
+          "mesa-commit=$(git -C mesa-src rev-parse HEAD)" >> $env:GITHUB_OUTPUT
+          "mesa-version=$((Get-Content mesa-src/VERSION -Raw).Trim())" >> $env:GITHUB_OUTPUT
+          "llvm-version=$(& '${{ github.workspace }}\llvm-install\bin\llvm-config.exe' --version)" >> $env:GITHUB_OUTPUT
+
       - name: Configure Mesa (Lavapipe only, static LLVM)
         shell: cmd
         working-directory: mesa-src
@@ -245,7 +274,11 @@ jobs:
         run: |
           set PYTHONUTF8=1
           set PATH=${{ github.workspace }}\llvm-install\bin;%PATH%
+          rem Meson asks CMake for the newest LLVM first, so a newer one on the runner image
+          rem (C:\Program Files\LLVM, static CRT) would win over ours: remove its CMake package.
+          if exist "C:\Program Files\LLVM\lib\cmake\llvm" rmdir /s /q "C:\Program Files\LLVM\lib\cmake\llvm"
           meson setup _build ^
+            -Dcmake_prefix_path=${{ github.workspace }}\llvm-install ^
             -Dvulkan-drivers=swrast ^
             -Dgallium-drivers=llvmpipe ^
             -Dplatforms=windows ^
@@ -282,22 +315,12 @@ jobs:
           path: lavapipe-out/
 
   pack:
-    name: Pack & Publish NuGet
+    name: Pack NuGet
     needs: [build-windows, build-windows-arm64]
     runs-on: windows-2025-vs2026
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
-      - name: Clone Mesa (for commit hash)
-        shell: pwsh
-        run: |
-          $url = "${{ github.event.inputs.repository || 'https://gitlab.freedesktop.org/mesa/mesa.git' }}"
-          $ref = "${{ github.event.inputs.ref || 'main' }}"
-          git init mesa-src
-          git -C mesa-src remote add origin $url
-          git -C mesa-src fetch --depth 1 origin $ref
-          git -C mesa-src checkout FETCH_HEAD
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v8
@@ -310,7 +333,7 @@ jobs:
       - name: Stage native payload into csproj
         shell: pwsh
         run: |
-          $destRoot = "build/deps/lavapipe/runtimes"
+          $destRoot = "deps/lavapipe/runtimes"
           foreach ($rid in 'win-x64','win-arm64') {
             $native = "$destRoot/$rid/native"
             New-Item -Path $native -ItemType Directory -Force | Out-Null
@@ -319,16 +342,42 @@ jobs:
           # Note: lvp_icd.json is included but unused — Lavapipe.cs generates
           # its own JSON at runtime pointing to an absolute library_path.
 
+      - name: Write VERSION.txt and README.md
+        shell: pwsh
+        run: |
+          $lines = @(
+            "Mesa ${{ needs.build-windows.outputs.mesa-version }} (ref ${{ env.MESA_REF }})"
+            "Repository: ${{ github.event.inputs.repository || 'https://gitlab.freedesktop.org/mesa/mesa.git' }}"
+            ""
+            "win-x64:   Mesa ${{ needs.build-windows.outputs.mesa-commit }}, LLVM ${{ needs.build-windows.outputs.llvm-version }}"
+            "win-arm64: Mesa ${{ needs.build-windows-arm64.outputs.mesa-commit }}, LLVM ${{ needs.build-windows-arm64.outputs.llvm-version }}"
+            ""
+            "Stride: ${{ github.server_url }}/${{ github.repository }} @ ${{ github.sha }}"
+            "Built: $(Get-Date -AsUTC -Format yyyy-MM-dd)"
+            "Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          )
+          New-Item -ItemType Directory -Force deps/lavapipe/tools | Out-Null
+          $lines | Set-Content deps/lavapipe/tools/VERSION.txt
+          $block = @('```') + $lines + @('```')
+          $block | Add-Content $env:GITHUB_STEP_SUMMARY
+          @(
+            "# Stride.Dependencies.Lavapipe"
+            ""
+            "Lavapipe software Vulkan ICD (Mesa/llvmpipe) for Stride GPU testing. Auto-configures VK_DRIVER_FILES on load."
+            ""
+            "## Build"
+            ""
+          ) + $block | Set-Content deps/lavapipe/README.md
+
       - name: Pack NuGet (dotnet pack)
         shell: pwsh
         run: |
-          $commitHash = git -C mesa-src rev-parse --short HEAD
           $version = "${{ github.event.inputs.version }}"
           if (-not $version) { $version = (Get-Date -Format "yyyy.M.d") }
-          dotnet pack build/deps/lavapipe/Stride.Dependencies.Lavapipe.csproj `
+          dotnet pack deps/lavapipe/Stride.Dependencies.Lavapipe.csproj `
             -c Release `
             -p:PackageVersion=$version `
-            -p:RepositoryCommit=$commitHash `
+            -p:RepositoryCommit=${{ github.sha }} `
             -o nupkg
           echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
 
@@ -344,8 +393,18 @@ jobs:
     runs-on: windows-2025-vs2026
     environment: production
     steps:
+      # The sign tool version is pinned in build/package/dotnet-tools.json: check out only that file
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: /build/package/dotnet-tools.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
       - name: Install signing tool
-        run: dotnet tool install sign --tool-path ./sign-tool --version 0.9.0-beta.23127.3
+        shell: pwsh
+        run: |
+          $version = (Get-Content build/package/dotnet-tools.json | ConvertFrom-Json).tools.sign.version
+          dotnet tool install sign --tool-path ./sign-tool --version $version
 
       - name: Download artifact
         uses: actions/download-artifact@v8

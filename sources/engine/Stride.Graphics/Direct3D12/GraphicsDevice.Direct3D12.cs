@@ -23,8 +23,6 @@ namespace Stride.Graphics
 {
     public unsafe partial class GraphicsDevice
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger(nameof(GraphicsDevice));
-
         internal readonly int ConstantBufferDataPlacementAlignment = D3D12.ConstantBufferDataPlacementAlignment;
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
@@ -68,6 +66,10 @@ namespace Stride.Graphics
         ///   Concurrent pool for lists of Graphics Resources that are used for staging operations.
         /// </summary>
         internal readonly ConcurrentPool<List<GraphicsResource>> StagingResourceLists = new(() => []);
+        /// <summary>
+        ///   Concurrent pool for lists of the texture layout changes a Command List records.
+        /// </summary>
+        internal readonly ConcurrentPool<List<RecordedTransition>> RecordedTransitionLists = new(() => []);
         /// <summary>
         ///   Concurrent pool for lists of native Direct3D 12 Descriptor Heaps.
         /// </summary>
@@ -173,6 +175,10 @@ namespace Stride.Graphics
         internal ComPtr<ID3D12GraphicsCommandList7> NativeCopyCommandList => ToComPtr(nativeCopyCommandList);
 
         internal object NativeCopyCommandListLock = new();
+
+        // Moves subresources into the layouts the next Command List assumed (see SubmittedLayoutReplay); under QueueLock
+        private ID3D12GraphicsCommandList7* layoutCorrectionCommandList;
+        private readonly List<RecordedTransition> layoutCorrections = [];
 
         /// <summary>
         ///   Represents the size, in bytes, of the resource heap dedicated to Shader Resource Views.
@@ -386,13 +392,6 @@ namespace Stride.Graphics
             {
                 var commandListFenceValue = CommandListFence.NextFenceValue++;
 
-                for (int index = 0; index < count; index++)
-                {
-                    var commandList = commandLists[index];
-                    commandListToExecute[index] = commandList.NativeCommandList.AsComPtr<ID3D12GraphicsCommandList7, ID3D12CommandList>();
-                    RecycleCommandListResources(commandList, commandListFenceValue + 1);
-                }
-
                 if (commandListFenceValue > 0)
                     CommandListFence.Wait(NativeCommandQueue, commandListFenceValue);
 
@@ -403,7 +402,24 @@ namespace Stride.Graphics
                     lastGPUSyncCopyFenceToCommandFence = copyFenceValue;
                 }
 
-                nativeCommandQueue->ExecuteCommandLists((uint) count, commandListToExecute);
+                // A Command List whose assumed layouts need barriers runs after them, and after the ones before it
+                int pendingCount = 0;
+                for (int index = 0; index < count; index++)
+                {
+                    var commandList = commandLists[index];
+                    if (RecordLayoutCorrections(commandList.RecordedTransitions, commandListFenceValue + 1))
+                    {
+                        if (pendingCount > 0)
+                            nativeCommandQueue->ExecuteCommandLists((uint) pendingCount, commandListToExecute);
+                        pendingCount = 0;
+                        var correction = (ID3D12CommandList*) layoutCorrectionCommandList;
+                        nativeCommandQueue->ExecuteCommandLists(NumCommandLists: 1, in correction);
+                    }
+                    commandListToExecute[pendingCount++] = commandList.NativeCommandList.AsComPtr<ID3D12GraphicsCommandList7, ID3D12CommandList>();
+                    RecycleCommandListResources(commandList, commandListFenceValue + 1);
+                }
+
+                nativeCommandQueue->ExecuteCommandLists((uint) pendingCount, commandListToExecute);
 
                 CommandListFence.Signal(NativeCommandQueue, commandListFenceValue + 1);
             }
@@ -504,7 +520,7 @@ namespace Stride.Graphics
                     nativeDeviceUsers[(nint)nativeDevice] = nativeDeviceUsers.GetValueOrDefault((nint)nativeDevice) + 1;
 
                 RequestedProfile = graphicsProfile;
-                CurrentFeatureLevel = featureLevel;
+                CurrentFeatureLevel = GetMaximumFeatureLevel(featureLevel);
 
                 // Check Enhanced Barriers support (D3D12_FEATURE_D3D12_OPTIONS12 = 41)
                 RequireEnhancedBarriersSupport();
@@ -552,8 +568,8 @@ namespace Stride.Graphics
                     if (result.IsSuccess && infoQueue.IsNotNull())
                     {
                         // RenderDoc intercepts ID3D12InfoQueue with a stub that drops every call (see
-                        // DummyID3D12InfoQueue in renderdoc/driver/d3d12/d3d12_device.h). The filter
-                        // install and message drain below will appear to succeed but emit nothing,
+                        // DummyID3D12InfoQueue in renderdoc/driver/d3d12/d3d12_device.h).
+                        // The filter install and message drain below will appear to succeed but emit nothing,
                         // so warn the user upfront.
                         if (Win32.GetModuleHandle("renderdoc.dll") != 0)
                         {
@@ -703,6 +719,20 @@ namespace Stride.Graphics
                     dredSettings.SetPageFaultEnablement(DredEnablement.ForcedOn);
                     dredSettings.Release();
                 }
+            }
+
+            // The device is created with a minimum level and runs at the highest one it supports.
+            // GraphicsProfile has no level above 11_1.
+            D3DFeatureLevel GetMaximumFeatureLevel(D3DFeatureLevel minimumFeatureLevel)
+            {
+                var levels = stackalloc D3DFeatureLevel[] { D3DFeatureLevel.Level110, D3DFeatureLevel.Level111 };
+                var featureLevels = new FeatureDataFeatureLevels { NumFeatureLevels = 2, PFeatureLevelsRequested = levels };
+
+                HResult hr = nativeDevice->CheckFeatureSupport(Silk.NET.Direct3D12.Feature.FeatureLevels, ref featureLevels,
+                                                                (uint) sizeof(FeatureDataFeatureLevels));
+                return hr.IsSuccess && featureLevels.MaxSupportedFeatureLevel > minimumFeatureLevel
+                    ? featureLevels.MaxSupportedFeatureLevel
+                    : minimumFeatureLevel;
             }
 
             //
@@ -922,6 +952,11 @@ namespace Stride.Graphics
             SafeRelease(ref nativeCopyCommandQueue);
             SafeRelease(ref nativeCopyCommandAllocator);
             SafeRelease(ref nativeCopyCommandList);
+            SafeRelease(ref layoutCorrectionCommandList);
+
+            SafeRelease(ref drawCommandSignature);
+            SafeRelease(ref drawIndexedCommandSignature);
+            SafeRelease(ref dispatchCommandSignature);
 
             SafeRelease(ref drawCommandSignature);
             SafeRelease(ref drawIndexedCommandSignature);
@@ -1231,6 +1266,12 @@ namespace Stride.Graphics
                     lastGPUSyncCopyFenceToCommandFence = copyFenceValue;
                 }
 
+                if (RecordLayoutCorrections(commandList.RecordedTransitions, commandListFenceValue + 1))
+                {
+                    var correction = (ID3D12CommandList*) layoutCorrectionCommandList;
+                    nativeCommandQueue->ExecuteCommandLists(NumCommandLists: 1, in correction);
+                }
+
                 var nativeCommandList = commandList.NativeCommandList.AsComPtr<ID3D12GraphicsCommandList7, ID3D12CommandList>();
                 nativeCommandQueue->ExecuteCommandLists(NumCommandLists: 1, ref nativeCommandList);
 
@@ -1249,6 +1290,58 @@ namespace Stride.Graphics
             RecycleCommandListResources(commandList, commandListFenceValue + 1);
 
             return commandListFenceValue + 1;
+        }
+
+        /// <summary>
+        ///   Replays the layout changes a Command List recorded on the layouts the earlier submissions left (see
+        ///   <see cref="SubmittedLayoutReplay"/>), and records the barriers it needs before it in
+        ///   <see cref="layoutCorrectionCommandList"/>. Called under <see cref="QueueLock"/>.
+        /// </summary>
+        /// <returns><see langword="true"/> if <see cref="layoutCorrectionCommandList"/> must run just before the Command List.</returns>
+        private bool RecordLayoutCorrections(List<RecordedTransition> recordedTransitions, ulong fenceValue)
+        {
+            layoutCorrections.Clear();
+            SubmittedLayoutReplay.Replay(recordedTransitions, layoutCorrections);
+
+            // A resource disposed since its transition was recorded can no longer be used by the Command List
+            layoutCorrections.RemoveAll(correction => correction.Resource.NativeResource.Handle is null);
+            if (layoutCorrections.Count == 0)
+                return false;
+
+            var commandAllocator = CommandAllocators.GetObject(CommandListFence.Fence.GetCompletedValue());
+            HResult result;
+            if (layoutCorrectionCommandList is null)
+            {
+                result = nativeDevice->CreateCommandList(nodeMask: 0, CommandListType.Direct, commandAllocator, pInitialState: ref NullRef<ID3D12PipelineState>(),
+                                                         out ComPtr<ID3D12GraphicsCommandList7> commandList);
+                layoutCorrectionCommandList = commandList;
+            }
+            else
+            {
+                result = layoutCorrectionCommandList->Reset(commandAllocator, pInitialState: ref NullRef<ID3D12PipelineState>());
+            }
+            if (result.IsFailure)
+                result.Throw();
+
+            var count = layoutCorrections.Count;
+            Span<D3D12TextureBarrier> barriers = count <= 64 ? stackalloc D3D12TextureBarrier[count] : new D3D12TextureBarrier[count];
+            for (int i = 0; i < count; i++)
+            {
+                var correction = layoutCorrections[i];
+                barriers[i] = CommandList.TextureBarrier(correction.Resource, correction.Subresource, correction.LayoutBefore, correction.LayoutAfter);
+            }
+            fixed (D3D12TextureBarrier* pBarriers = barriers)
+            {
+                var group = new D3D12BarrierGroup { Type = D3D12BarrierType.Texture, NumBarriers = (uint) count, PBarriers = pBarriers };
+                layoutCorrectionCommandList->Barrier(1, (BarrierGroup*) &group);
+            }
+
+            result = layoutCorrectionCommandList->Close();
+            if (result.IsFailure)
+                result.Throw();
+
+            CommandAllocators.RecycleObject(fenceValue, commandAllocator);
+            return true;
         }
 
         /// <summary>
@@ -1282,6 +1375,10 @@ namespace Stride.Graphics
 
             StagingResourceLists.Release(commandList.StagingResources);
             commandList.StagingResources.Clear();
+
+            // CPU-side only, and already replayed at submission: unlike the GPU resources below, they need no fence
+            commandList.RecordedTransitions.Clear();
+            RecordedTransitionLists.Release(commandList.RecordedTransitions);
 
             // Recycle resources (SRVs, UAVs, Samplers, etc.)
             foreach (var heap in commandList.SrvHeaps)

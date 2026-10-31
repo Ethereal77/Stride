@@ -320,6 +320,11 @@ namespace Stride.Graphics
         internal Texture ParentTexture { get; private set; }
 
         /// <summary>
+        ///   Gets the Texture that holds the state of this Texture: its parent if this is a Texture View, otherwise itself.
+        /// </summary>
+        internal Texture RootTexture => ParentTexture ?? this;
+
+        /// <summary>
         ///   Gets the total amount of memory allocated by the Texture in bytes.
         /// </summary>
         internal int SizeInBytes { get; private set; }
@@ -1799,13 +1804,24 @@ namespace Stride.Graphics
         }
 
         /// <summary>
-        ///   Swaps the Texture's internal data with another Texture.
+        ///   Swaps the Texture's description and native resources with another Texture.
         /// </summary>
         /// <param name="other">The other Texture.</param>
-        internal void Swap([NotNull] Texture other)
+        /// <exception cref="ArgumentNullException"><paramref name="other"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">The Textures belong to different Graphics Devices.</exception>
+        /// <exception cref="NotSupportedException">One of the Textures is a view.</exception>
+        /// <remarks>
+        ///   Only the native resources are swapped. Views created on either Texture keep the resources they were created on.
+        ///   <para/>
+        ///   A streamed Texture must not be swapped while the streaming system manages it.
+        /// </remarks>
+        public void Swap([NotNull] Texture other)
         {
+            ArgumentNullException.ThrowIfNull(other);
+            if (other.GraphicsDevice != GraphicsDevice)
+                throw new ArgumentException("Cannot swap Textures of different Graphics Devices.", nameof(other));
             if (ParentTexture is not null || other.ParentTexture is not null)
-                throw new NotSupportedException("Cannot swap texture views; only root textures can be swapped.");
+                throw new NotSupportedException("Cannot swap Texture views; only root Textures can be swapped.");
 
             (textureDescription, other.textureDescription) = (other.textureDescription, textureDescription);
             (textureViewDescription, other.textureViewDescription) = (other.textureViewDescription, textureViewDescription);
@@ -1917,21 +1933,39 @@ namespace Stride.Graphics
         }
 
         /// <summary>
-        ///   Gets the mip-levels and array slices this Texture View accesses, as ranges of the sub-Resources of the
+        ///   Gets the mip-levels and array slices this Texture View accesses, as a range of the sub-Resources of the
         ///   Texture (see <see cref="GetSubResourceIndex"/>).
         /// </summary>
         /// <remarks>
         ///   The depth slices of a three-dimensional Texture are not sub-Resources, so its range has a single array slice.
         /// </remarks>
-        internal (int MipStart, int MipCount, int ArraySliceStart, int ArraySliceCount) GetViewSubResourceRange()
+        internal TextureSubresourceRange GetViewSubResourceRange()
         {
             int arraySlice = ArraySlice;
             int mipLevel = MipLevel;
             GetViewSliceBounds(ViewType, ref arraySlice, ref mipLevel, out var arraySliceCount, out var mipCount);
 
             return Dimension == TextureDimension.Texture3D
-                ? (mipLevel, mipCount, 0, 1)
-                : (mipLevel, mipCount, arraySlice, arraySliceCount);
+                ? new TextureSubresourceRange(mipLevel, mipCount, ArraySliceStart: 0, ArraySliceCount: 1)
+                : new TextureSubresourceRange(mipLevel, mipCount, arraySlice, arraySliceCount);
+        }
+
+        /// <summary>
+        ///   Gets the sub-Resources of the parent Texture a barrier on this Texture View moves.
+        /// </summary>
+        /// <returns>
+        ///   The range of the View, or <see langword="null"/> for the whole Texture (i.e., when this is not a View,
+        ///   the View covers the whole Texture, or the Texture is a Depth-Stencil).
+        ///   Note that if a Depth-Stencil Texture's stencil plane has its own sub-Resources,
+        ///   which the layout tracker does not know.
+        /// </returns>
+        internal TextureSubresourceRange? GetBarrierRange()
+        {
+            if (ParentTexture is not { } parent || parent.IsDepthStencil)
+                return null;
+
+            var range = GetViewSubResourceRange();
+            return range.CoversWhole(parent) ? null : range;
         }
 
         /// <summary>

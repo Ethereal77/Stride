@@ -15,6 +15,8 @@ namespace Stride.Cli.Core;
 /// </summary>
 public sealed class StrideVersionManager
 {
+    // The package every Stride version is published under, the one install and update fetch from the sources. The
+    // Avalonia Game Studio's package (GameStudioEditor.Avalonia) is only found once installed, e.g. by a local build.
     private const string MainPackageId = "Stride.GameStudio";
 
     private readonly NugetStore store = new(oldRootDirectory: null);
@@ -26,25 +28,59 @@ public sealed class StrideVersionManager
     public event Action? RestoreFinished;
     private readonly ManagedVersionStore managedVersions = new();
 
-    /// <summary>Lists the installed Stride versions, newest first.</summary>
+    /// <summary>
+    ///   Lists the installed Stride versions, newest first: a version is installed when one of its Game Studios is,
+    ///   and is listed once with all of them.
+    /// </summary>
     public IReadOnlyList<StrideVersion> GetInstalled()
     {
-        return store.GetPackagesInstalled(store.MainPackageIds)
-            .Where(package => package.Id == MainPackageId)
-            .OrderByDescending(package => package.Version)
-            .Select(ToStrideVersion)
+        return store.GetPackagesInstalled(GameStudioEditors.All.Select(editor => editor.PackageId()))
+            .GroupBy(package => package.Version)
+            .OrderByDescending(group => group.Key)
+            .Select(group => new StrideVersion(group.Key, GameStudioEditors.All
+                .Where(editor => group.Any(package => GameStudioEditors.FromPackageId(package.Id) == editor))
+                .ToList()))
             .ToList();
     }
 
+    /// <summary>The Game Studios installed for <paramref name="version"/>, in <see cref="GameStudioEditors.All"/> order.</summary>
+    public IReadOnlyList<GameStudioEditor> GetInstalledEditors(PackageVersion version)
+        => GameStudioEditors.All
+            .Where(editor => !string.IsNullOrEmpty(store.GetInstalledPath(editor.PackageId(), version)))
+            .ToList();
+
     /// <summary>
-    ///   Lists the Stride versions available from the configured package sources, newest first. Prereleases
-    ///   are excluded unless <paramref name="includePrerelease"/> is set.
+    ///   Adds the nightly feed (<see cref="NugetStore.NightlyFeedUrl"/>) unless a source has it already, and returns
+    ///   whether it was added. <paramref name="save"/> adds it to the user's NuGet.config, as the launcher's "Show
+    ///   nightly builds" does: an install needs it, and so do the later restores of Game Studio and of the projects on
+    ///   a nightly. Otherwise it is only listed, by this process.
     /// </summary>
-    public async Task<IReadOnlyList<PackageVersion>> GetAvailable(bool includePrerelease, CancellationToken cancellationToken)
+    public bool AddNightlyFeed(bool save)
+    {
+        if (store.HasPackageSource(NugetStore.NightlyFeedUrl))
+            return false;
+
+        if (save)
+            store.SetPackageSource(NugetStore.NightlyFeedName, NugetStore.NightlyFeedUrl, true);
+        else
+            store.AddSessionPackageSource(NugetStore.NightlyFeedName, NugetStore.NightlyFeedUrl);
+        return true;
+    }
+
+    // Whether the newest version or the newest of a line may be this one: a nightly only when opted in, even with
+    // prereleases, and a prerelease only when opted in.
+    private static bool IsEligible(PackageVersion version, bool includePrerelease, bool includeNightly)
+        => version.IsNightly ? includeNightly : includePrerelease || string.IsNullOrEmpty(version.SpecialVersion);
+
+    /// <summary>
+    ///   Lists the Stride versions available from the package sources, newest first. Prereleases and nightly builds
+    ///   are excluded unless <paramref name="includePrerelease"/> and <paramref name="includeNightly"/> are set.
+    /// </summary>
+    public async Task<IReadOnlyList<PackageVersion>> GetAvailable(bool includePrerelease, bool includeNightly, CancellationToken cancellationToken)
     {
         return (await store.FindSourcePackagesById(MainPackageId, cancellationToken))
             .Select(package => package.Version)
-            .Where(version => includePrerelease || string.IsNullOrEmpty(version.SpecialVersion))
+            .Where(version => IsEligible(version, includePrerelease, includeNightly))
             .OrderByDescending(version => version)
             .ToList();
     }
@@ -52,16 +88,17 @@ public sealed class StrideVersionManager
     /// <summary>
     ///   Installs a Stride version and returns it. <paramref name="versionSpec"/> may be a full version,
     ///   a major.minor line (newest patch in that line), or null for the newest version. The newest/line
-    ///   resolution prefers stable releases unless <paramref name="includePrerelease"/> is set; an explicit
-    ///   version is always honored. Existing versions are left untouched.
+    ///   resolution prefers stable releases unless <paramref name="includePrerelease"/> or
+    ///   <paramref name="includeNightly"/> is set; an explicit version is always honored. Existing versions are left
+    ///   untouched.
     /// </summary>
-    public async Task<StrideVersion> Install(string? versionSpec, bool includePrerelease, IProgress<InstallProgress>? progress, CancellationToken cancellationToken)
+    public async Task<StrideVersion> Install(string? versionSpec, bool includePrerelease, bool includeNightly, IProgress<InstallProgress>? progress, CancellationToken cancellationToken)
     {
         var available = (await store.FindSourcePackagesById(MainPackageId, cancellationToken))
             .OrderByDescending(package => package.Version)
             .ToList();
 
-        var target = Resolve(available, versionSpec, includePrerelease)
+        var target = Resolve(available, versionSpec, includePrerelease, includeNightly)
             ?? throw new InvalidOperationException(string.IsNullOrEmpty(versionSpec)
                 ? "No Stride version is available from the package source."
                 : $"No Stride version matching '{versionSpec}' is available.");
@@ -69,7 +106,7 @@ public sealed class StrideVersionManager
         var installed = await InstallWithProgress(target, progress)
             ?? throw new InvalidOperationException($"Failed to install Stride {target.Version}.");
 
-        return ToStrideVersion(installed);
+        return ToStrideVersion(installed.Version);
     }
 
     // Installs a resolved package, forwarding NuGet's restore events as InstallProgress updates.
@@ -110,32 +147,37 @@ public sealed class StrideVersionManager
     }
 
     /// <summary>
-    ///   Uninstalls the given Stride version along with any dependencies it pulled in that are no longer used
-    ///   by another installed version. Returns false if it was not installed.
+    ///   Uninstalls the given Stride version (each of its Game Studios) along with any dependencies they pulled in
+    ///   that are no longer used by another installed version. Returns false if it was not installed.
     /// </summary>
     public async Task<bool> Uninstall(string versionSpec, IProgress<InstallProgress>? progress = null)
     {
-        var local = store.FindLocalPackage(MainPackageId, new PackageVersion(versionSpec));
-        if (local is null)
+        var version = new PackageVersion(versionSpec);
+        var locals = GameStudioEditors.All
+            .Select(editor => store.FindLocalPackage(editor.PackageId(), version))
+            .OfType<NugetPackage>()
+            .ToList();
+        if (locals.Count == 0)
             return false;
 
         // Dependency closure of the version being removed.
         var removing = new Dictionary<string, NugetLocalPackage>();
-        CollectStrideDependencies(local, removing);
+        foreach (var local in locals)
+            CollectStrideDependencies(local, removing);
 
         // Dependencies still referenced by another installed version are kept.
         var stillReferenced = new Dictionary<string, NugetLocalPackage>();
         foreach (var main in store.GetPackagesInstalled(store.MainPackageIds))
         {
-            if (main.Id == local.Id && main.Version.Equals(local.Version))
+            if (locals.Any(local => main.Id == local.Id && main.Version.Equals(local.Version)))
                 continue;
             CollectStrideDependencies(main, stillReferenced);
         }
 
         // The version itself plus its now-unused dependencies.
-        var toRemove = new List<NugetPackage> { local };
+        var toRemove = new List<NugetPackage>(locals);
         foreach (var (key, dependency) in removing)
-            if (!stillReferenced.ContainsKey(key))
+            if (!stillReferenced.ContainsKey(key) && !locals.Any(local => local.Id == dependency.Id && local.Version.Equals(dependency.Version)))
                 toRemove.Add(dependency);
 
         for (var i = 0; i < toRemove.Count; i++)
@@ -177,7 +219,7 @@ public sealed class StrideVersionManager
     ///   managed version, and uninstalls the previously managed one (manual installs are kept). With no line,
     ///   every installed line is updated. Returns the versions that were updated.
     /// </summary>
-    public async Task<IReadOnlyList<StrideVersion>> Update(string? line, bool includePrerelease, IProgress<InstallProgress>? progress, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<StrideVersion>> Update(string? line, bool includePrerelease, bool includeNightly, IProgress<InstallProgress>? progress, CancellationToken cancellationToken)
     {
         var managed = managedVersions.Load();
         var lines = line is not null
@@ -192,8 +234,11 @@ public sealed class StrideVersionManager
         foreach (var targetLine in lines)
         {
             var newest = available.FirstOrDefault(package => LineOf(package.Version) == targetLine
-                && (includePrerelease || string.IsNullOrEmpty(package.Version.SpecialVersion)));
+                && IsEligible(package.Version, includePrerelease, includeNightly));
             if (newest is null)
+                continue;
+            // A line never goes back: one on a nightly or a prerelease stays there when only an older version qualifies
+            if (managed.TryGetValue(targetLine, out var current) && PackageVersion.TryParse(current, out var currentVersion) && currentVersion > newest.Version)
                 continue;
 
             var installedPackage = await InstallWithProgress(newest, progress);
@@ -209,7 +254,7 @@ public sealed class StrideVersionManager
             }
 
             managed[targetLine] = newest.Version.ToString();
-            updated.Add(ToStrideVersion(installedPackage));
+            updated.Add(ToStrideVersion(installedPackage.Version));
         }
 
         managedVersions.Save(managed);
@@ -229,12 +274,12 @@ public sealed class StrideVersionManager
 
     /// <summary>
     ///   The newest installed version that supports in-place upgrade (4.4.0+), preferring stable releases
-    ///   unless <paramref name="includePrerelease"/> is set; null if none qualifies.
+    ///   unless <paramref name="includePrerelease"/> or <paramref name="includeNightly"/> is set; null if none qualifies.
     /// </summary>
-    public StrideVersion? GetNewestUpgradeTarget(bool includePrerelease)
+    public StrideVersion? GetNewestUpgradeTarget(bool includePrerelease, bool includeNightly)
         => GetInstalled().FirstOrDefault(version =>
             SupportsUpgrade(version.Version)
-            && (includePrerelease || string.IsNullOrEmpty(version.Version.SpecialVersion)));
+            && IsEligible(version.Version, includePrerelease, includeNightly));
 
     /// <summary>
     ///   Resolves the Stride version to use: <paramref name="explicitVersion"/> if given, otherwise the
@@ -283,9 +328,13 @@ public sealed class StrideVersionManager
 
     /// <summary>The solution file (.sln/.slnx/.slnf) in <paramref name="workingDirectory"/>, or null if none.</summary>
     public string? FindSolution(string workingDirectory)
-        => Directory.Exists(workingDirectory)
+        => Directory.Exists(workingDirectory) && !IsStrideSourceCheckout(workingDirectory)
             ? Directory.EnumerateFiles(workingDirectory).FirstOrDefault(Solution.IsSolutionFile)
             : null;
+
+    // The root of a Stride source checkout (Stride.slnx next to sources/) is not a game project: its solution is the engine's.
+    private static bool IsStrideSourceCheckout(string directory)
+        => File.Exists(Path.Combine(directory, "Stride.slnx")) && Directory.Exists(Path.Combine(directory, "sources"));
 
     /// <summary>The first C# project (.csproj) in <paramref name="workingDirectory"/>, or null if none.</summary>
     public string? FindProject(string workingDirectory)
@@ -520,9 +569,16 @@ public sealed class StrideVersionManager
         return paths;
     }
 
-    /// <summary>Locates the Game Studio executable for the given version, or null if not found.</summary>
-    public string? LocateGameStudio(PackageVersion version)
-        => LocateExecutable("Stride.GameStudio", version, "Stride.GameStudio.Avalonia.Desktop.exe", "Stride.GameStudio.exe");
+    /// <summary>
+    ///   Locates <paramref name="editor"/>'s executable for the given version in its own package, or null if not
+    ///   found. Tools.Run starts the apphost next to it when there is one, else the .dll via `dotnet`, so the .dll
+    ///   stands for an editor packed without its apphost (and off Windows, where an apphost has no extension). An
+    ///   editor that doesn't run natively here runs under Wine, which needs its Windows .exe.
+    /// </summary>
+    public string? LocateGameStudio(PackageVersion version, GameStudioEditor editor)
+        => editor.RunsNatively()
+            ? LocateExecutable(editor.PackageId(), version, editor.PackageId() + ".exe", editor.PackageId() + ".dll")
+            : LocateExecutable(editor.PackageId(), version, includeWindowsOnly: true, editor.PackageId() + ".exe");
 
     /// <summary>
     ///   Locates the asset compiler executable for the given version, or null if not found. The package is
@@ -539,7 +595,7 @@ public sealed class StrideVersionManager
     // how `dotnet build` finds its target: the current directory only, not a recursive scan.
     private static List<string> GetProjectFiles(string workingDirectory)
     {
-        if (!Directory.Exists(workingDirectory))
+        if (!Directory.Exists(workingDirectory) || IsStrideSourceCheckout(workingDirectory))
             return [];
 
         var solutionFiles = Directory.EnumerateFiles(workingDirectory).Where(Solution.IsSolutionFile);
@@ -629,22 +685,32 @@ public sealed class StrideVersionManager
 
     // Searches the package's tools/ and lib/ folders for the first matching executable.
     private string? LocateExecutable(string packageId, PackageVersion version, params string[] executableNames)
+        => LocateExecutable(packageId, version, includeWindowsOnly: OperatingSystem.IsWindows(), executableNames);
+
+    // The same, also in the Windows-only TFM folders (net10.0-windows7.0) when includeWindowsOnly: off Windows, those
+    // builds only run under Wine.
+    private string? LocateExecutable(string packageId, PackageVersion version, bool includeWindowsOnly, params string[] executableNames)
     {
         var installPath = store.GetInstalledPath(packageId, version);
         if (string.IsNullOrEmpty(installPath))
             return null;
 
-        foreach (var topLevelFolder in new[] { "tools", "lib" })
+        List<string> directories = [Path.Combine(installPath, "tools"), Path.Combine(installPath, "lib")];
+        // A dev-redirect stub of a tool (build/GenerateDevPackages.cs) has no tools/ closure, only its own DLL in lib/,
+        // which can't start alone: run the checkout's build instead, as the stub's build redirect does.
+        if (!Directory.Exists(directories[0]) && NugetStore.TryGetDevRedirectOutputDirectory(installPath, packageId) is { } devOutputDirectory)
+            directories.Insert(0, devOutputDirectory);
+
+        foreach (var directory in directories)
         {
-            var directory = Path.Combine(installPath, topLevelFolder);
             if (!Directory.Exists(directory))
                 continue;
 
             foreach (var executableName in executableNames)
             {
                 var match = Directory.EnumerateFiles(directory, executableName, SearchOption.AllDirectories)
-                    // Skip Windows-only TFM folders (net10.0-windows7.0) off Windows; sort for a deterministic pick.
-                    .Where(path => OperatingSystem.IsWindows() || !IsWindowsTargetFrameworkFolder(path))
+                    // Skip Windows-only TFM folders (net10.0-windows7.0) unless asked; sort for a deterministic pick.
+                    .Where(path => includeWindowsOnly || !IsWindowsTargetFrameworkFolder(path))
                     .OrderBy(path => path, StringComparer.Ordinal)
                     .FirstOrDefault();
                 if (match is not null)
@@ -659,14 +725,14 @@ public sealed class StrideVersionManager
     private static bool IsWindowsTargetFrameworkFolder(string path)
         => path.Contains("-windows", StringComparison.OrdinalIgnoreCase);
 
-    private StrideVersion ToStrideVersion(NugetLocalPackage package)
-        => new(package.Id, package.Version, store.GetInstalledPath(package.Id, package.Version));
+    private StrideVersion ToStrideVersion(PackageVersion version)
+        => new(version, GetInstalledEditors(version));
 
     // available is newest-first. A "major.minor" spec resolves to the newest patch in that line.
-    private static NugetServerPackage? Resolve(IReadOnlyList<NugetServerPackage> available, string? versionSpec, bool includePrerelease)
+    private static NugetServerPackage? Resolve(IReadOnlyList<NugetServerPackage> available, string? versionSpec, bool includePrerelease, bool includeNightly)
     {
-        // Newest/line resolution skips prereleases unless opted in; an explicit version is always honored.
-        bool Eligible(NugetServerPackage package) => includePrerelease || string.IsNullOrEmpty(package.Version.SpecialVersion);
+        // Newest/line resolution skips prereleases and nightlies unless opted in; an explicit version is always honored.
+        bool Eligible(NugetServerPackage package) => IsEligible(package.Version, includePrerelease, includeNightly);
 
         if (string.IsNullOrEmpty(versionSpec))
             return available.FirstOrDefault(Eligible);

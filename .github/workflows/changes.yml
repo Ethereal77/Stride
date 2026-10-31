@@ -135,10 +135,23 @@ jobs:
               - 'sources/shared/**'
               - 'sources/sdk/**'
               - 'sources/assets/**'
+              - 'sources/plugins/**'
               - 'deps/**'
               - 'tests/**'
-              - 'build/Stride.Runtime.slnf'
+              - 'sources/Stride.Runtime.slnf'
+              # The workflows of the jobs it gates, their actions and the auditor the ApiNeutral job runs: an
+              # edit runs them
+              - '.github/workflows/test-windows-game-api-neutral.yml'
+              - '.github/workflows/test-windows-game.yml'
+              - '.github/workflows/test-windows-simple.yml'
+              - '.github/actions/setup-vulkan-windows/**'
+              - '.github/actions/stride-checkout/**'
+              - '.github/actions/stride-workload/**'
+              - 'build/tools/ParallelBuildAuditor/**'
             full:
               - 'sources/**'
               - 'deps/**'
-              - 'build/Stride.slnx'
+              # Projects of the full build that live outside sources/
+              - 'tests/infra/Stride.*/**'
+              - 'tests/enduser/Stride.Templates.Tests/**'
+              - 'Stride.slnx'

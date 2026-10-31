@@ -17,8 +17,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Stride.Graphics.Regression" + Stride.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("Stride.Assets" + Stride.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("Stride.VirtualReality" + Stride.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("Stride.Video" + Stride.PublicKeys.Default)]
 
 #if !STRIDE_SIGNED
-[assembly: InternalsVisibleTo("Stride.Assets.Presentation")]
+[assembly: InternalsVisibleTo("Stride.Assets.Presentation.Wpf")]
 #endif

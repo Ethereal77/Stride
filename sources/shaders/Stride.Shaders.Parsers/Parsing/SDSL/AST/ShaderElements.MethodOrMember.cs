@@ -496,13 +496,7 @@ public partial class ShaderMethod(
         }
 
         if (!IsOverride)
-        {
-            if (CheckMissingOverride(table, ftype))
-            {
-                IsOverride = true;
-                functionFlags |= Specification.FunctionFlagsMask.Override;
-            }
-        }
+            CheckMissingOverride(table, ftype);
         else
             CheckOverriddenMethod(table, ftype);
 

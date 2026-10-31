@@ -20,6 +20,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
 using NuGet.Versioning;
+using Stride.Core.Assets;
 using Stride.Core.Extensions;
 using Stride.Core.Windows;
 using ISettings = NuGet.Configuration.ISettings;
@@ -66,8 +67,17 @@ public partial class NugetStore : INugetDownloadProgress
         RemoveDeletedSources(settings, "Xenko Dev");
         // Note the space: we want to keep "Stride Dev" but not "Stride Dev {PATH}\bin\packages" anymore
         RemoveSources(settings, "Stride Dev ");
+        // Older launchers added the legacy feed (Xenko 3.0 and lower) to the user's NuGet.config
+        RemoveLegacyFeedSources(settings);
 
-        settings.SaveToDisk();
+        try
+        {
+            settings.SaveToDisk();
+        }
+        catch (NuGetConfigurationException)
+        {
+            // Best effort: a NuGet.config that can't be written keeps the sources this cleanup would remove
+        }
 
         InstallPath = SettingsUtility.GetGlobalPackagesFolder(settings);
 
@@ -95,6 +105,26 @@ public partial class NugetStore : INugetDownloadProgress
                 if (packageSource.Key.StartsWith(prefixName, StringComparison.Ordinal))
                 {
                     // Remove entry from packageSources
+                    settings.Remove("packageSources", packageSource);
+                }
+            }
+        }
+    }
+
+    private static void RemoveLegacyFeedSources(ISettings settings)
+    {
+        var packageSources = settings.GetSection("packageSources");
+        if (packageSources != null)
+        {
+            foreach (var packageSource in packageSources.Items.OfType<SourceItem>().ToList())
+            {
+                // Matched by URL, whatever the entry's name: packages.xenko.com, and /nuget of packages.stride3d.net (which
+                // also hosts the nightly feed under /nightly)
+                if (Uri.TryCreate(packageSource.Value, UriKind.Absolute, out var uri)
+                    && (uri.Host.Equals("packages.xenko.com", StringComparison.OrdinalIgnoreCase)
+                        || (uri.Host.Equals("packages.stride3d.net", StringComparison.OrdinalIgnoreCase)
+                            && uri.AbsolutePath.TrimEnd('/').Equals("/nuget", StringComparison.OrdinalIgnoreCase))))
+                {
                     settings.Remove("packageSources", packageSource);
                 }
             }
@@ -141,6 +171,49 @@ public partial class NugetStore : INugetDownloadProgress
     public static void UpdatePackageSource(ISettings settings, string name, string url)
     {
         settings.AddOrUpdate("packageSources", new SourceItem(name, url));
+    }
+
+    /// <summary>
+    /// The feed of the nightly builds of Stride (X.Y.Z-nightly.YYYYMMDD.N), and the name it gets in a NuGet.config.
+    /// </summary>
+    public const string NightlyFeedUrl = "https://packages.stride3d.net/nightly/index.json";
+
+    /// <inheritdoc cref="NightlyFeedUrl"/>
+    public const string NightlyFeedName = "Stride Nightly";
+
+    /// <summary>
+    /// Adds a package source for this store only, the NuGet.config left as is (unless a source has that URL already): its
+    /// packages are listed, but not installed, since the restore of an install reads the NuGet.config sources.
+    /// </summary>
+    public void AddSessionPackageSource(string name, string url)
+    {
+        if (!HasPackageSource(url))
+            PackageSources = [.. PackageSources, new PackageSource(url, name)];
+    }
+
+    /// <summary>
+    /// Gets whether an enabled package source has the given URL, whatever its name.
+    /// </summary>
+    public bool HasPackageSource(string url)
+        => PackageSources.Any(x => string.Equals(x.Source.TrimEnd('/'), url.TrimEnd('/'), StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Adds the package source with the given URL to the user's NuGet.config (as <paramref name="name"/>), or removes every
+    /// source with that URL, and refreshes the sources this store searches.
+    /// </summary>
+    public void SetPackageSource(string name, string url, bool enabled)
+    {
+        var packageSources = settings.GetSection("packageSources");
+        foreach (var packageSource in packageSources?.Items.OfType<SourceItem>().ToList() ?? [])
+        {
+            if (string.Equals(packageSource.Value.TrimEnd('/'), url.TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
+                settings.Remove("packageSources", packageSource);
+        }
+        if (enabled)
+            settings.AddOrUpdate("packageSources", new SourceItem(name, url));
+        settings.SaveToDisk();
+
+        PackageSources = new PackageSourceProvider(settings).LoadPackageSources().Where(source => source.IsEnabled).ToList();
     }
 
     private readonly NugetSourceRepositoryProvider sourceRepositoryProvider;
@@ -202,7 +275,7 @@ public partial class NugetStore : INugetDownloadProgress
 
     private ILogger NativeLogger => new NugetLogger(Logger);
 
-    private IEnumerable<PackageSource> PackageSources { get; }
+    private IEnumerable<PackageSource> PackageSources { get; set; }
 
     /// <summary>
     /// Helper to locate packages.
@@ -259,6 +332,15 @@ public partial class NugetStore : INugetDownloadProgress
     public string GetInstalledPath(string id, PackageVersion version)
     {
         return InstalledPathResolver.GetPackageDirectory(id, version.ToNuGetVersion());
+    }
+
+    /// <summary>
+    /// Whether the user package folder has a folder for <paramref name="id"/> <paramref name="version"/>, installed or
+    /// not: a local build's package that its checkout invalidated until the next restore has one, but is not installed.
+    /// </summary>
+    public bool HasPackageFolder(string id, PackageVersion version)
+    {
+        return Directory.Exists(new VersionFolderPathResolver(InstallPath).GetInstallPath(id, version.ToNuGetVersion()));
     }
 
     /// <summary>
@@ -532,141 +614,21 @@ public partial class NugetStore : INugetDownloadProgress
             Interlocked.Exchange(ref lastReportTicks, 0);
             try
             {
-                var identity = new PackageIdentity(packageId, version.ToNuGetVersion());
+                var installPath = SettingsUtility.GetGlobalPackagesFolder(settings);
 
-                var resolutionContext = new ResolutionContext(
-                    DependencyBehavior.Lowest,
-                    true,
-                    true,
-                    VersionConstraints.None);
-
-                var repositories = PackageSources.Select(sourceRepositoryProvider.CreateRepository).ToArray();
-
-                var projectContext = new EmptyNuGetProjectContext()
+                // Old version expects to be installed in GamePackages
+                if (packageId == "Xenko" && version < new PackageVersion(3, 0, 0, 0) && oldRootDirectory != null)
                 {
-                    ActionType = NuGetActionType.Install,
-                    PackageExtractionContext = new PackageExtractionContext(PackageSaveMode.Defaultv3, XmlDocFileSaveMode.Skip, null, NativeLogger),
-                };
+                    installPath = oldRootDirectory;
+                }
 
-                ActivityCorrelationId.StartNew();
+                // Exactly this version: a bare version is ">=" to NuGet, which would silently take a higher one.
+                var exactVersion = new VersionRange(version.ToNuGetVersion(), includeMinVersion: true, version.ToNuGetVersion(), includeMaxVersion: true);
+                await RestorePackageCore(packageId, exactVersion, targetFrameworks, settings, installPath, "StrideLauncher", Path.Combine(Path.GetTempPath(), $"StrideLauncher-{packageId}-{version}"), OnPackageInstalled);
 
+                if (packageId == "Xenko" && version < new PackageVersion(3, 0, 0, 0))
                 {
-                    var installPath = SettingsUtility.GetGlobalPackagesFolder(settings);
-
-                    // In case it's a package without any TFM (i.e. Visual Studio plugin), we still need to specify one
-                    if (!targetFrameworks.Any())
-                        targetFrameworks = ["net10.0"];
-
-                    // Old version expects to be installed in GamePackages
-                    if (packageId == "Xenko" && version < new PackageVersion(3, 0, 0, 0) && oldRootDirectory != null)
-                    {
-                        installPath = oldRootDirectory;
-                    }
-
-                    var projectPath = Path.Combine("StrideLauncher.json");
-                    var spec = new PackageSpec()
-                    {
-                        Name = Path.GetFileNameWithoutExtension(projectPath), // make sure this package never collides with a dependency
-                        FilePath = projectPath,
-                        RestoreMetadata = new ProjectRestoreMetadata
-                        {
-                            ProjectPath = projectPath,
-                            ProjectName = Path.GetFileNameWithoutExtension(projectPath),
-                            ProjectStyle = ProjectStyle.PackageReference,
-                            ProjectUniqueName = projectPath,
-                            OutputPath = Path.Combine(Path.GetTempPath(), $"StrideLauncher-{packageId}-{version}"),
-                            OriginalTargetFrameworks = targetFrameworks.ToList(),
-                            ConfigFilePaths = settings.GetConfigFilePaths(),
-                            PackagesPath = installPath,
-                            Sources = SettingsUtility.GetEnabledSources(settings).ToList(),
-                            FallbackFolders = [.. SettingsUtility.GetFallbackPackageFolders(settings)]
-                        },
-                    };
-                    foreach (var targetFramework in targetFrameworks)
-                    {
-                        spec.TargetFrameworks.Add(new TargetFrameworkInformation
-                        {
-                            FrameworkName = NuGetFramework.Parse(targetFramework),
-                            Dependencies =
-                                [
-                                    new()
-                                    {
-                                        // Exactly this version: a bare version is ">=" to NuGet, which would silently take a higher one.
-                                        LibraryRange = new LibraryRange(packageId, new VersionRange(version.ToNuGetVersion(), true, version.ToNuGetVersion(), true), LibraryDependencyTarget.Package),
-                                    }
-                                ],
-                        });
-                    }
-
-                    using (var context = new SourceCacheContext { MaxAge = DateTimeOffset.UtcNow })
-                    {
-                        context.IgnoreFailedSources = true;
-
-                        var dependencyGraphSpec = new DependencyGraphSpec();
-
-                        dependencyGraphSpec.AddProject(spec);
-
-                        dependencyGraphSpec.AddRestore(spec.RestoreMetadata.ProjectUniqueName);
-
-                        var requestProvider = new DependencyGraphSpecRequestProvider(new RestoreCommandProvidersCache(), dependencyGraphSpec);
-                        var restoreArgs = new RestoreArgs
-                        {
-                            AllowNoOp = true,
-                            CacheContext = context,
-                            CachingSourceProvider = new CachingSourceProvider(new PackageSourceProvider(settings)),
-                            Log = NativeLogger,
-                        };
-
-                        // Create requests from the arguments
-                        var requests = requestProvider.CreateRequests(restoreArgs).Result;
-
-                        // Route restore downloads through repositories whose HTTP stack reports byte progress
-                        // (DownloadProgressHandlerProvider, wired in NugetSourceRepositoryProvider).
-                        var progressSources = spec.RestoreMetadata.Sources
-                            .Select(sourceRepositoryProvider.CreateRepository)
-                            .ToList();
-                        var providersCache = new RestoreCommandProvidersCache();
-
-                        foreach (var request in requests)
-                        {
-                            // Limit concurrency to avoid timeout
-                            request.Request.MaxDegreeOfConcurrency = 4;
-                            request.Request.DependencyProviders = providersCache.GetOrCreate(
-                                installPath,
-                                spec.RestoreMetadata.FallbackFolders.ToList(),
-                                progressSources,
-                                context,
-                                NativeLogger);
-
-                            var command = new RestoreCommand(request.Request);
-
-                            // Act
-                            var result = await command.ExecuteAsync();
-
-                            if (!result.Success)
-                            {
-                                throw new InvalidOperationException($"Could not restore package {packageId}");
-                            }
-                            var toInstall = result.RestoreGraphs.Last().Install;
-                            NugetRestoreInstalling?.Invoke(toInstall.Count);
-                            var installed = 0;
-                            foreach (var install in toInstall)
-                            {
-                                var package = result.LockFile.Libraries.FirstOrDefault(x => x.Name == install.Library.Name && x.Version == install.Library.Version);
-                                if (package != null)
-                                {
-                                    var packagePath = Path.Combine(installPath, package.Path);
-                                    OnPackageInstalled(this, new PackageOperationEventArgs(new PackageName(install.Library.Name, install.Library.Version.ToPackageVersion()), packagePath));
-                                }
-                                currentProgressReport?.ReportInstalled(++installed, toInstall.Count);
-                            }
-                        }
-                    }
-
-                    if (packageId == "Xenko" && version < new PackageVersion(3, 0, 0, 0))
-                    {
-                        UpdateTargetsHelper();
-                    }
+                    UpdateTargetsHelper();
                 }
 
                 // Load the recently installed package
@@ -689,6 +651,138 @@ public partial class NugetStore : INugetDownloadProgress
             }
 
             NugetPackageInstalled?.Invoke(sender, args);
+        }
+    }
+
+    /// <summary>
+    /// Restores exactly <paramref name="version"/> of a package and its dependencies into the global packages folder.
+    /// </summary>
+    /// <param name="settingsRoot">The directory whose NuGet settings to use; null for the default settings.</param>
+    public async Task<LockFile> RestorePackage(string packageId, PackageVersion version, IEnumerable<string> targetFrameworks, string? settingsRoot, string outputPath)
+    {
+        var restoreSettings = settingsRoot != null ? NuGet.Configuration.Settings.LoadDefaultSettings(settingsRoot) : settings;
+        using (GetLocalRepositoryLock())
+        {
+            var exactVersion = new VersionRange(version.ToNuGetVersion(), includeMinVersion: true, version.ToNuGetVersion(), includeMaxVersion: true);
+            return await RestorePackageCore(packageId, exactVersion, targetFrameworks, restoreSettings, SettingsUtility.GetGlobalPackagesFolder(restoreSettings), "StrideCompanionPackages", outputPath, null);
+        }
+    }
+
+    private async Task<LockFile> RestorePackageCore(string packageId, VersionRange version, IEnumerable<string> targetFrameworks, ISettings restoreSettings, string installPath, string projectName, string outputPath, EventHandler<PackageOperationEventArgs>? packageInstalled)
+    {
+        ActivityCorrelationId.StartNew();
+
+        // In case it's a package without any TFM (i.e. Visual Studio plugin), we still need to specify one
+        if (!targetFrameworks.Any())
+            targetFrameworks = ["net10.0"];
+
+        // The synthetic project name must never collide with a dependency
+        var projectPath = projectName + ".json";
+        var spec = new PackageSpec()
+        {
+            Name = projectName,
+            FilePath = projectPath,
+            RestoreMetadata = new ProjectRestoreMetadata
+            {
+                ProjectPath = projectPath,
+                ProjectName = projectName,
+                ProjectStyle = ProjectStyle.PackageReference,
+                ProjectUniqueName = projectPath,
+                OutputPath = outputPath,
+                OriginalTargetFrameworks = targetFrameworks.ToList(),
+                ConfigFilePaths = restoreSettings.GetConfigFilePaths(),
+                PackagesPath = installPath,
+                Sources = SettingsUtility.GetEnabledSources(restoreSettings).ToList(),
+                FallbackFolders = [.. SettingsUtility.GetFallbackPackageFolders(restoreSettings)]
+            },
+        };
+        foreach (var targetFramework in targetFrameworks)
+        {
+            spec.TargetFrameworks.Add(new TargetFrameworkInformation
+            {
+                FrameworkName = NuGetFramework.Parse(targetFramework),
+                Dependencies =
+                    [
+                        new()
+                        {
+                            LibraryRange = new LibraryRange(packageId, version, LibraryDependencyTarget.Package),
+                        }
+                    ],
+            });
+        }
+
+        using (var context = new SourceCacheContext { MaxAge = DateTimeOffset.UtcNow })
+        {
+            context.IgnoreFailedSources = true;
+
+            var dependencyGraphSpec = new DependencyGraphSpec();
+
+            dependencyGraphSpec.AddProject(spec);
+
+            dependencyGraphSpec.AddRestore(spec.RestoreMetadata.ProjectUniqueName);
+
+            var requestProvider = new DependencyGraphSpecRequestProvider(new RestoreCommandProvidersCache(), dependencyGraphSpec);
+            var restoreArgs = new RestoreArgs
+            {
+                AllowNoOp = true,
+                CacheContext = context,
+                CachingSourceProvider = new CachingSourceProvider(new PackageSourceProvider(restoreSettings)),
+                Log = NativeLogger,
+            };
+
+            // Create requests from the arguments
+            var requests = requestProvider.CreateRequests(restoreArgs).Result;
+
+            // Route restore downloads through repositories whose HTTP stack reports byte progress
+            // (DownloadProgressHandlerProvider, wired in NugetSourceRepositoryProvider).
+            var progressSources = spec.RestoreMetadata.Sources
+                .Select(sourceRepositoryProvider.CreateRepository)
+                .ToList();
+            var providersCache = new RestoreCommandProvidersCache();
+
+            LockFile? lockFile = null;
+            foreach (var request in requests)
+            {
+                // Limit concurrency to avoid timeout
+                request.Request.MaxDegreeOfConcurrency = 4;
+                request.Request.DependencyProviders = providersCache.GetOrCreate(
+                    installPath,
+                    spec.RestoreMetadata.FallbackFolders.ToList(),
+                    progressSources,
+                    context,
+                    NativeLogger);
+
+                var command = new RestoreCommand(request.Request);
+
+                // Act
+                var result = await command.ExecuteAsync();
+
+                if (!result.Success)
+                {
+                    var unresolved = result.RestoreGraphs.SelectMany(g => g.Unresolved).Select(u => u.ToString()).Distinct();
+                    var messages = (result.LockFile?.LogMessages ?? []).Where(m => m.Level >= LogLevel.Warning).Select(m => m.Message);
+                    throw new InvalidOperationException($"Could not restore package {packageId} {version}: unresolved [{string.Join(", ", unresolved)}]{string.Concat(messages.Select(m => Environment.NewLine + m))}");
+                }
+                lockFile = result.LockFile;
+                var toInstall = result.RestoreGraphs.Last().Install;
+                NugetRestoreInstalling?.Invoke(toInstall.Count);
+                if (packageInstalled != null)
+                {
+                    var installed = 0;
+                    foreach (var install in toInstall)
+                    {
+                        var package = result.LockFile.Libraries.FirstOrDefault(x => x.Name == install.Library.Name && x.Version == install.Library.Version);
+                        if (package != null)
+                        {
+                            var packagePath = Path.Combine(installPath, package.Path);
+                            packageInstalled(this, new PackageOperationEventArgs(new PackageName(install.Library.Name, install.Library.Version.ToPackageVersion()), packagePath));
+                        }
+                        currentProgressReport?.ReportInstalled(++installed, toInstall.Count);
+                    }
+                }
+            }
+
+            return lockFile ?? throw new InvalidOperationException($"Could not restore package {packageId}");
         }
     }
 
@@ -735,10 +829,6 @@ public partial class NugetStore : INugetDownloadProgress
 
     private async Task UninstallPackageUnguarded(NugetPackage package, ProgressReport? progress)
     {
-#if DEBUG
-        var installedPackages = GetPackagesInstalled([package.Id]);
-        Debug.Assert(installedPackages.FirstOrDefault(p => p.Equals(package)) is not null);
-#endif
         using (GetLocalRepositoryLock())
         {
             currentProgressReport = progress;
@@ -746,9 +836,17 @@ public partial class NugetStore : INugetDownloadProgress
             {
                 var identity = new PackageIdentity(package.Id, package.Version.ToNuGetVersion());
 
+                // First, as its folder may be gone already: a dev package its checkout's build invalidated in the NuGet
+                // cache still has a restore.
+                DeleteResolverRestore(package.Id, package.Version);
+
+                // Not installed (anymore): nothing to remove. A folder without NuGet's integrity files counts as not
+                // installed too, such as a local build's package its checkout invalidated until the next restore.
+                var installPath = GetInstalledPath(identity.Id, identity.Version.ToPackageVersion());
+                if (installPath is null)
+                    return;
+
                 // Notify that uninstallation started.
-                var installPath = GetInstalledPath(identity.Id, identity.Version.ToPackageVersion())
-                    ?? throw new InvalidOperationException($"Could not find installation path for package {identity}");
                 OnPackageUninstalling(this, new PackageOperationEventArgs(new PackageName(package.Id, package.Version), installPath));
 
                 var projectContext = new EmptyNuGetProjectContext()
@@ -928,6 +1026,38 @@ public partial class NugetStore : INugetDownloadProgress
         }
     }
 
+    private static readonly HttpClient NuspecHttpClient = new(new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All });
+
+    /// <summary>
+    /// Gets the commit a package of a feed was built from (<c>&lt;repository commit="..."&gt;</c> of its nuspec), or null when
+    /// the feed or the nuspec doesn't say. Only its nuspec is downloaded, from the package base address of the feed.
+    /// </summary>
+    public async Task<string?> GetRepositoryCommitAsync(NugetServerPackage package, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var repository = sourceRepositoryProvider.CreateRepository(new PackageSource(package.Source));
+            var serviceIndex = await repository.GetResourceAsync<ServiceIndexResourceV3>(cancellationToken);
+            var baseAddress = serviceIndex?.GetServiceEntryUri(ServiceTypes.PackageBaseAddress);
+            if (baseAddress is null)
+                return null;
+
+            var id = package.Id.ToLowerInvariant();
+            var version = package.NuGetVersion.ToNormalizedString().ToLowerInvariant();
+            var nuspecUri = new Uri($"{baseAddress.AbsoluteUri.TrimEnd('/')}/{id}/{version}/{id}.nuspec");
+            using var response = await NuspecHttpClient.GetAsync(nuspecUri, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            return new NuspecReader(stream).GetRepositoryMetadata()?.Commit is { Length: > 0 } commit ? commit : null;
+        }
+        // Best effort, whatever goes wrong (a timeout is a TaskCanceledException), unless the caller cancels
+        catch (Exception e) when (e is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Look for available packages from source containing <paramref name="searchTerm"/> in either the Id or description of the package.
     /// </summary>
@@ -1078,6 +1208,23 @@ public partial class NugetStore : INugetDownloadProgress
         return Directory.Exists(dir) ? dir : null;
     }
 
+    /// <summary>
+    /// The build output (<c>bin/&lt;StrideDevConfiguration&gt;</c>) of the checkout project a dev-redirect stub installed at
+    /// <paramref name="packagePath"/> stands for, or null when the folder isn't such a stub or the project isn't built.
+    /// A stub drops the tools/ closure of a tool package, so a tool of a dev version runs from there.
+    /// </summary>
+    public static string? TryGetDevRedirectOutputDirectory(string packagePath, string packageId)
+    {
+        var projectDirectory = TryGetDevRedirectProjectDirectory(packagePath, packageId);
+        if (projectDirectory is null)
+            return null;
+
+        var text = File.ReadAllText(Path.Combine(packagePath, "build", $"{packageId}.props"));
+        var configuration = Regex.Match(text, "<StrideDevConfiguration[^>]*>(.*?)</StrideDevConfiguration>").Groups[1].Value;
+        var outputDirectory = Path.Combine(projectDirectory, "bin", string.IsNullOrEmpty(configuration) ? "Debug" : configuration);
+        return Directory.Exists(outputDirectory) ? outputDirectory : null;
+    }
+
     public string GetRedirectFile(NugetLocalPackage package)
     {
         return Path.Combine(package.Path, $"{package.Id}.redirect");
@@ -1088,6 +1235,33 @@ public partial class NugetStore : INugetDownloadProgress
         return package.Version < new PackageVersion(3, 1, 0, 0)
             ? File.Exists(GetRedirectFile(package))
             : (package.Version.SpecialVersion?.StartsWith("dev", StringComparison.Ordinal) == true && !package.Version.SpecialVersion.Contains('.'));
+    }
+
+    /// <summary>
+    /// Deletes the restore the NuGet resolver made of a dev version when it was started: built again under the same
+    /// version, it would otherwise start with the old dependency graph, as a no-op restore. A release keeps its
+    /// dependencies, so its restore stays valid and is left.
+    /// </summary>
+    /// <param name="packageId">The package id.</param>
+    /// <param name="version">The package version.</param>
+    /// <param name="resolverCacheRoot">The folder of the restores, or null for the one the resolver uses.</param>
+    /// <returns>The number of restore folders deleted.</returns>
+    public static int DeleteResolverRestore(string packageId, PackageVersion version, string? resolverCacheRoot = null)
+    {
+        if (!IsDevVersion(version))
+            return 0;
+
+        // As the resolver names it: 4.5.0-dev, where a PackageVersion converted to NuGet keeps four parts (4.5.0.0-dev)
+        return NuGetResolverCache.Delete(packageId, version.ToNuGetVersion().ToNormalizedString(), resolverCacheRoot);
+    }
+
+    /// <summary>
+    /// Gets whether <paramref name="version"/> is the version of a local build: its label has a dev part, as in
+    /// 4.5.0-dev, 4.5.0-dev3 or 4.5.0-beta8-dev3. A local build can be built again under the same version.
+    /// </summary>
+    public static bool IsDevVersion(PackageVersion version)
+    {
+        return version.SpecialVersion?.Split('-').Any(x => x.StartsWith("dev", StringComparison.Ordinal) && x.Skip(3).All(char.IsAsciiDigit)) == true;
     }
 
     public bool IsDevRedirectPackage(NugetServerPackage package)

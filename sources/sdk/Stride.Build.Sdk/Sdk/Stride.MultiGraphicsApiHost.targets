@@ -18,7 +18,7 @@
     Routed in:
       (1) Stride.* graphics assemblies (same identity across APIs, so must be isolated;
           detected by their "bin/<cfg>[/<tfm>]/<Api>/" path),
-          with the natives their .ssdeps lists outside runtimes/ (Direct3D12/D3D12/D3D12Core.dll) and
+          with the natives their .ssdeps lists outside runtimes/ (Direct3D12/D3D12/D3D12Core.dll), and
 
       (2) API-exclusive interop (Silk.NET.Direct3D12/WinPixEventRuntime -> "Direct3D12/",
           Vortice.Vulkan -> "Vulkan/").
@@ -62,14 +62,14 @@
     <Task>
       <Code Type="Fragment" Language="cs"><![CDATA[
         var apis = Apis.Split([';'], System.StringSplitOptions.RemoveEmptyEntries);
-        
+
         var knownApis = new System.Collections.Generic.HashSet<string>(
             ["Direct3D11", "Direct3D12", "Vulkan", "Null"],
             System.StringComparer.OrdinalIgnoreCase);
-        
+
         // PackageId -> single owning API (Silk.NET.Direct3D12=Direct3D12, Vortice.Vulkan=Vulkan, etc)
         var exclusive = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
-        
+
         var pkgToApiPairs = (ExclusiveApiPackages ?? "").Split([';'], System.StringSplitOptions.RemoveEmptyEntries);
         foreach (var pair in pkgToApiPairs)
         {
@@ -77,24 +77,24 @@
             if (kv.Length == 2)
                 exclusive[kv[0].Trim()] = kv[1].Trim();
         }
-        
+
         var flat = new System.Collections.Generic.List<Microsoft.Build.Framework.ITaskItem>();
         var staged = new System.Collections.Generic.List<Microsoft.Build.Framework.ITaskItem>();
         var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-        
+
         foreach (var item in CopyLocalItems)
         {
             var path = item.GetMetadata("FullPath");
             var fileName = System.IO.Path.GetFileName(path);
             var dir = System.IO.Path.GetDirectoryName(path);
-        
+
             // (1) Stride.* graphics Assembly:
             //   Same identity across APIs, produced under "bin/<cfg>[/<tfm>]/<Api>/<file>".
             //   Isolate all its sibling variants into subdirectories.
             if (dir is not null && knownApis.Contains(System.IO.Path.GetFileName(dir)))
             {
                 flat.Add(item);
-        
+
                 // Strip the <Api> segment
                 var apiRoot = System.IO.Path.GetDirectoryName(dir);
                 foreach (var api in apis)
@@ -103,31 +103,31 @@
                     StageFileWithGraphicsApi(graphicsApiFile, api);
                     StageGraphicsApiNatives(graphicsApiFile, api);
                 }
-        
+
                 continue;
             }
-        
+
             // (2) API-exclusive interop / native package:
             //   Route this single file into its one API directory.
             //   Match by NuGet package id (package-origin copy-local) or, as a fallback,
             //   by file name (package id == assembly name for these interop packages).
             var pkgId = item.GetMetadata("NuGetPackageId");
             var nameNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);
-        
+
             // Try to check if specific to an owning API
             var apiSpecificPkg = !string.IsNullOrEmpty(pkgId) && exclusive.TryGetValue(pkgId, out string owningApi);
             var apiSpecificName = exclusive.TryGetValue(nameNoExt, out owningApi);
-        
+
             if (apiSpecificPkg || apiSpecificName)
             {
                 flat.Add(item);
                 StageFileWithGraphicsApi(path, owningApi);
             }
         }
-        
+
         FlatToRemove = flat.ToArray();
         Staged = staged.ToArray();
-        
+
         //
         // Stages a file (and its associated artifacts) with a specific Graphics API.
         //
@@ -139,20 +139,20 @@
                 System.IO.Path.ChangeExtension(srcFile, ".pdb"),
                 System.IO.Path.ChangeExtension(srcFile, ".xml")
             ];
-        
+
             foreach (var file in filesToStage)
             {
                 if (!System.IO.File.Exists(file) ||
                     !seen.Add(graphicsApi + "|" + System.IO.Path.GetFileName(file)))
                     continue;
-        
+
                 var taskItem = new Microsoft.Build.Utilities.TaskItem(file);
                 taskItem.SetMetadata("StageSubPath", System.IO.Path.Combine(graphicsApi, System.IO.Path.GetFileName(file)));
-        
+
                 staged.Add(taskItem);
             }
         }
-        
+
         //
         // Stages the native files of an API variant outside "runtimes/<rid>/native/"
         // (e.g., Direct3D12/D3D12/D3D12Core.dll), listed in its .ssdeps.
@@ -164,28 +164,28 @@
             var ssdeps = System.IO.Path.ChangeExtension(assemblyFile, ".ssdeps");
             if (!System.IO.File.Exists(ssdeps))
                 return;
-        
+
             var variantDir = System.IO.Path.GetDirectoryName(assemblyFile);
-        
+
             foreach (var line in System.IO.File.ReadAllLines(ssdeps))
             {
                 var parts = line.Split(';');
                 if (parts.Length < 2 || parts[0] != "NativeLib")
                     continue;
-        
+
                 var relativePath = parts[1].TrimStart('.', '/', '\\');
-        
+
                 var source = System.IO.Path.Combine(variantDir, relativePath);
                 if (relativePath.StartsWith("runtimes/") ||
                     !System.IO.File.Exists(source) ||
                     !seen.Add(graphicsApi + "|" + relativePath))
                     continue;
-        
+
                 var destPath = System.IO.Path.Combine(graphicsApi, relativePath.Replace('/', System.IO.Path.DirectorySeparatorChar));
-        
+
                 var taskItem = new Microsoft.Build.Utilities.TaskItem(source);
                 taskItem.SetMetadata("StageSubPath", destPath);
-        
+
                 staged.Add(taskItem);
             }
         };

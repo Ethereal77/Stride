@@ -327,7 +327,8 @@ namespace Stride.Shaders.Compiler
                 }
                 else
                 {
-                    var spirvBytecodeArray = spirvBytecode.ToArray();
+                    // Without debug info, no source path or source text: the same sources give the same bytes on every machine
+                    var spirvBytecodeArray = effectParameters.Debug ? spirvBytecode.ToArray() : StripDebugInstructions(spirvBytecode);
                     var spirvBytecodeId = ObjectId.FromBytes(spirvBytecodeArray);
                     foreach (var entryPoint in entryPoints)
                     {
@@ -659,6 +660,38 @@ namespace Stride.Shaders.Compiler
                 File.WriteAllBytes(baseFilename + ".spv", spirvBytecode);
                 File.WriteAllText(baseFilename + ".spvdis", Spirv.Tools.Spv.Dis(SpirvBytecode.CreateFromSpan(spirvBytecode), DisassemblerFlags.Name | DisassemblerFlags.Id | DisassemblerFlags.InstructionIndex));
             }
+        }
+
+        /// <summary>
+        /// The SPIR-V without its debug instructions:
+        /// OpString (source paths), OpSource (the text of each source file), OpLine.
+        /// </summary>
+        private static byte[] StripDebugInstructions(ReadOnlySpan<byte> spirvBytecode)
+        {
+            const int HeaderWordCount = 5;
+
+            var words = MemoryMarshal.Cast<byte, uint>(spirvBytecode);
+
+            var result = new List<uint>(words.Length);
+            result.AddRange(words[..HeaderWordCount]);
+
+            for (var index = HeaderWordCount; index < words.Length;)
+            {
+                var wordCount = (int)(words[index] >> 16);
+                if (wordCount == 0)
+                    throw new InvalidOperationException($"Invalid SPIR-V instruction at word {index}");
+
+                var op = (Spirv.Specification.Op)(words[index] & 0xFFFF);
+                if (op is not (Spirv.Specification.Op.OpString or Spirv.Specification.Op.OpSource or
+                               Spirv.Specification.Op.OpSourceContinued or Spirv.Specification.Op.OpLine or
+                               Spirv.Specification.Op.OpNoLine or Spirv.Specification.Op.OpModuleProcessed))
+                {
+                    result.AddRange(words.Slice(index, wordCount));
+                }
+
+                index += wordCount;
+            }
+            return MemoryMarshal.AsBytes(CollectionsMarshal.AsSpan(result)).ToArray();
         }
     }
 }

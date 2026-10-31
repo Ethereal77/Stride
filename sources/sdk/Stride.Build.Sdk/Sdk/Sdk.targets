@@ -43,7 +43,7 @@
   <!-- Per-project Dev / CI Auto-versioning                             -->
   <!-- ================================================================ -->
 
-  <Import Project="$(StrideRoot)sources\targets\Stride.WorktreeVersion.targets"
+  <Import Project="Stride.WorktreeVersion.targets"
           Condition="'$(_StrideWorktreeVersionTargetsImported)' != 'true'" />
 
   <!-- ================================================================ -->
@@ -79,6 +79,16 @@
 
   <PropertyGroup Condition="'$(StrideCompilerTargetsEnable)' == 'false' And '$(IsTestProject)' == 'true'">
     <LanguageTargets>$(MSBuildThisFileDirectory)Stride.DisableBuild.targets</LanguageTargets>
+  </PropertyGroup>
+
+  <!-- ================================================================ -->
+  <!-- XML Documentation File                                           -->
+  <!-- ================================================================ -->
+
+  <!-- This import MUST come before Microsoft.NET.Sdk Sdk.targets because
+       he SDK computes DocumentationFile from it -->
+  <PropertyGroup Condition="'$(StridePublicApi)' == 'true'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- ================================================================ -->
@@ -236,7 +246,6 @@
   <!-- ================================================================ -->
 
   <PropertyGroup Condition="'$(StridePublicApi)' == 'true'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.usrdoc</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);_StrideRegisterUserDocOutputs</TargetsForTfmSpecificBuildOutput>
@@ -305,17 +314,46 @@
 
   <Target Name="_StridePrepareAssetsForPack"
           BeforeTargets="_GetPackageFiles"
-          Condition="'$(StridePackAssets)' == 'true' Or '$(StrideContainsAssetTypes)' == 'true'">
+          DependsOnTargets="_StrideInferEditorToolkit;_StrideResolveCompanionProjects"
+          Condition="'$(StridePackAssets)' == 'true' Or
+                     '$(StrideContainsAssetTypes)' == 'true' Or
+                     '$(StridePackageKind)' != '' Or
+                     '@(StrideCompanionProject)' != '' Or '@(StrideCompanionPackage)' != ''">
 
-    <!-- Host-loadable assembly whose types appear in assets:
-           written into the packed .sdpkg's AssetAssemblies so the asset compiler loads exactly it
-           (relative to lib/<host-tfm>/) -->
+    <!--
+      Host-loadable assembly whose types appear in assets:
+        written into the packed .sdpkg's HostAssemblies so the host loads
+        the build matching its runtime, one entry per produced framework the host can load
+        (a base netX.0 or a net*-windows*).
+    -->
 
-    <PropertyGroup>
-      <_StridePackAssetAssembliesArg Condition="'$(StrideContainsAssetTypes)' == 'true'"> --pack-asset-assembly=&quot;lib/$(StrideFramework)/$(AssemblyName).dll&quot;</_StridePackAssetAssembliesArg>
+    <PropertyGroup Condition="'$(StrideContainsAssetTypes)' == 'true'">
+      <_StrideSingleTargetFramework>$(TargetFramework)</_StrideSingleTargetFramework>
+      <_StrideSingleTargetFramework Condition="$(TargetFramework.EndsWith('-windows')) And '$(TargetPlatformVersion)' != ''">$(TargetFramework)$(TargetPlatformVersion)</_StrideSingleTargetFramework>
     </PropertyGroup>
 
-    <Exec Command="dotnet &quot;$(StrideRoot)sources/core/Stride.Core.Tasks/bin/$(Configuration)/$(StrideFramework)/Stride.Core.Tasks.dll&quot; pack-assets &quot;$(MSBuildProjectFile)&quot; &quot;$(IntermediateOutputPath)stride&quot;$(_StridePackAssetAssembliesArg)"
+    <ItemGroup Condition="'$(StrideContainsAssetTypes)' == 'true'">
+      <_StrideAssetAssemblyTfm Include="$(TargetFrameworks)"
+                               Condition="'$(TargetFrameworks)' != ''" />
+
+      <_StrideAssetAssemblyTfm Include="$(_StrideSingleTargetFramework)"
+                               Condition="'$(TargetFrameworks)' == ''" />
+
+      <_StrideHostAssetAssemblyTfm
+          Include="@(_StrideAssetAssemblyTfm)"
+          Condition="!$([System.String]::Copy('%(Identity)').Contains('-')) Or $([System.String]::Copy('%(Identity)').Contains('-windows'))" />
+
+      <_StrideHostAssetAssembly Include="lib/%(_StrideHostAssetAssemblyTfm.Identity)/$(AssemblyName).dll" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_StridePackHostAssembliesArg Condition="'$(StrideContainsAssetTypes)' == 'true'">@(_StrideHostAssetAssembly->' --pack-host-assembly=&quot;%(Identity)&quot;', '')</_StridePackHostAssembliesArg>
+      <_StridePackCompanionArg>@(_StrideCompanion->' --pack-companion=&quot;%(Kind):%(PackageId):%(PackageVersion):%(Replaces):%(Toolkit)&quot;', '')</_StridePackCompanionArg>
+      <_StridePackKindArg Condition="'$(StridePackageKind)' != ''"> --pack-kind=&quot;$(StridePackageKind)&quot;</_StridePackKindArg>
+      <_StridePackKindArg Condition="'$(StrideEditorToolkit)' != ''">$(_StridePackKindArg) --pack-toolkit=&quot;$(StrideEditorToolkit)&quot;</_StridePackKindArg>
+    </PropertyGroup>
+
+    <Exec Command="dotnet &quot;$(StrideRoot)sources/core/Stride.Core.Tasks/bin/$(Configuration)/$(StrideFramework)/Stride.Core.Tasks.dll&quot; pack-assets &quot;$(MSBuildProjectFile)&quot; &quot;$(IntermediateOutputPath)stride&quot;$(_StridePackHostAssembliesArg)$(_StridePackCompanionArg)$(_StridePackKindArg)"
           ConsoleToMsBuild="true">
 
       <Output TaskParameter="ConsoleOutput" ItemName="PackAssetsLine" />
@@ -383,9 +421,8 @@
   <!-- Dev packages mode:
          Skip packing and use redirect packages (must set StrideSkipAutoPack
          before Stride.AutoPackDeploy.targets evaluates its GeneratePackageOnBuild gate) -->
-
-  <Import Project="$(StrideRoot)sources\targets\Stride.DevPackages.targets" />
-  <Import Project="$(StrideRoot)sources\targets\Stride.AutoPackDeploy.targets" />
+  <Import Project="Stride.DevPackages.targets" />
+  <Import Project="Stride.AutoPackDeploy.targets" />
 
   <!-- ================================================================ -->
   <!-- Swap SharedAssemblyInfo.cs -> SharedAssemblyInfo.Generated.cs    -->
@@ -396,7 +433,7 @@
 
        * Dev/CI builds: StrideEnsureWorktreeVersion (a dependency) generates the overlay first.
 
-       * Package builds: The overlay is generated once up front by StrideGitVersion in Stride.build,
+       * Package builds: The overlay is generated once up front by StrideGitVersion in package.proj,
          so here we only require that it exists. If it is somehow missing we leave the base template,
          which compiles the sentinel PublicVersion (4.4.65534) - loud rather than a plausible-looking
          wrong version. -->
@@ -406,7 +443,7 @@
           BeforeTargets="PrepareResources">
 
     <Error Condition="'$(StridePackageBuild)' == 'true' And !Exists('$(StrideRoot)sources\shared\SharedAssemblyInfo.Generated.cs')"
-           Text="SharedAssemblyInfo.Generated.cs has not been generated. Make sure the Stride.build PackageEnvironment target (StrideGitVersion) ran successfully before the package build."/>
+           Text="SharedAssemblyInfo.Generated.cs has not been generated. Make sure the package.proj PackageEnvironment target (StrideGitVersion) ran successfully before the package build."/>
 
     <ItemGroup Condition="Exists('$(StrideRoot)sources\shared\SharedAssemblyInfo.Generated.cs')">
 

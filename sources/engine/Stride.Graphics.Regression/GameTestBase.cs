@@ -765,7 +765,7 @@ namespace Stride.Graphics.Regression
         ///   Gets the root directory that contains the <c>tests</c> folder with reference and local images.
         /// </summary>
         /// <remarks>
-        ///   On desktop this is the Stride solution root, located by traversing upward for <c>build/Stride.slnx</c>.
+        ///   On desktop this is the Stride solution root, where <c>Stride.slnx</c> is located.
         /// </remarks>
         private static string GetTestsRootDirectory()
         {
@@ -786,7 +786,7 @@ namespace Stride.Graphics.Regression
             var dir = startDir;
             while (dir is not null)
             {
-                var candidate = Path.Combine(dir, "build", "Stride.slnx");
+                var candidate = Path.Combine(dir, "Stride.slnx");
                 if (File.Exists(candidate))
                 {
                     ImageTester.DiagLog($"FindRoot: Found root={dir}");
@@ -802,7 +802,8 @@ namespace Stride.Graphics.Regression
 
         /// <summary>
         ///   Compares the test result image against the gold reference and saves a local copy
-        ///   when no match is found (or when <see cref="ForceSaveImageOnSuccess"/> is set).
+        ///   when no match is found, when a threshold rule let it pass against this lane's gold,
+        ///   or when <see cref="ForceSaveImageOnSuccess"/> is set.
         /// </summary>
         /// <param name="image">The Image to compare and save.</param>
         /// <param name="testName">
@@ -822,25 +823,23 @@ namespace Stride.Graphics.Regression
 
             var platformSpecificDir = GetPlatformSpecificDirectory();
 
-            var testsBaseDir = Path.Combine(GetTestsRootDirectory(), "tests");
+            // Gold images in tests/baselines/, the renders of this run in tests/local/
+            var testsDir = Path.Combine(GetTestsRootDirectory(), "tests");
+            var testsBaseDir = Path.Combine(testsDir, "baselines");
             var testFileName = GenerateTestArtifactFileName(testsBaseDir, frameName, platformSpecificDir, ".png");
 
-            var testsLocalBaseDir = Path.Combine(testsBaseDir, "local");
+            var testsLocalBaseDir = Path.Combine(testsDir, "local");
             var testLocalFileName = GenerateTestArtifactFileName(testsLocalBaseDir, frameName, platformSpecificDir, ".png");
 
-            var testFileNames = new List<string> { testFileName };
-
-            // First, if exact match doesn't exist, test any other pattern
+            // The golds of this bucket (the image and its variants); without any, the golds of every other bucket
             // TODO: We might want to sort/filter partially (platform, etc...)?
-            var matchingImage = File.Exists(testFileName);
-            if (!matchingImage)
+            var testFileNames = GoldVariant.InBucket(Path.GetDirectoryName(testFileName)!, Path.GetFileName(testFileName));
+            if (testFileNames.Count == 0)
             {
-                testFileNames.Clear();
-
                 var wildcard = "*" + Path.DirectorySeparatorChar + "*";
                 var testFileNamePattern = GenerateTestArtifactFileName(testsBaseDir, frameName, wildcard, ".png");
                 var regexSep = Regex.Escape(Path.DirectorySeparatorChar.ToString());
-                var testFileNameRegex = new Regex("^" + Regex.Escape(testFileNamePattern).Replace(@"\*", "[^" + regexSep + "]*") + "$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                var testFileNameRegex = new Regex("^" + Regex.Escape(testFileNamePattern[..^".png".Length]).Replace(@"\*", "[^" + regexSep + "]*") + GoldVariant.SuffixPattern + @"\.png$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var testFileNameRoot = testFileNamePattern[..testFileNamePattern.IndexOf('*')];
 
                 if (Directory.Exists(testFileNameRoot))
@@ -912,13 +911,16 @@ namespace Stride.Graphics.Regression
                         matchedFile = file;
                         break;
                     }
-                    var isExactMatch = file == testFileName;
+                    var isExactMatch = Path.GetDirectoryName(file) == Path.GetDirectoryName(testFileName);
                     pendingFailMessages.Add($"  {file} ({(isExactMatch ? "reference" : "different platform/device")}) — {stats}");
                 }
 
-                // Sidecar always; PNG only on fail (sidecar carries the stats CompareGold
-                // needs to render a passing cell; the pixel data would be redundant with gold
-                // for exact matches and isn't worth the disk for the common case).
+                // Sidecar always; PNG on fail, with ForceSaveImageOnSuccess, and on a pass against this lane's own
+                // gold with pixels at diff 3+ (pixels a threshold rule allowed: CompareGold can then tell the
+                // renders apart and turn them into variants). The sidecar carries the stats CompareGold needs to
+                // render a passing cell; for the other passes the pixel data would be redundant with gold and isn't
+                // worth the disk. A pass against another lane's gold keeps no PNG: it would look like a new gold
+                // for this lane.
                 ImageTester.SaveSidecar(testLocalFileName, new ImageTester.Sidecar
                 {
                     Outcome = anyMatch ? "Pass" : "Fail",
@@ -932,6 +934,12 @@ namespace Stride.Graphics.Regression
                     ImageTester.SaveImage(image, testLocalFileName);
                     comparisonFailedMessages.Add($"* {testLocalFileName} (current)");
                     comparisonFailedMessages.AddRange(pendingFailMessages);
+                }
+                else if (ForceSaveImageOnSuccess ||
+                         (lastStats.PixelsAtDiff3Plus > 0 &&
+                          Path.GetDirectoryName(matchedFile) == Path.GetDirectoryName(testFileName)))
+                {
+                    ImageTester.SaveImage(image, testLocalFileName);
                 }
                 else if (File.Exists(testLocalFileName))
                 {
@@ -1105,6 +1113,21 @@ namespace Stride.Graphics.Regression
         public static void RequireGraphicPlatform(GraphicsPlatform platform)
         {
             Skip.IfNot(GraphicsDevice.Platform == platform, $"This test requires the '{platform}' graphics platform. It has been skipped");
+        }
+
+        /// <summary>
+        ///   Skips the test unless Vulkan synchronization validation runs and also checks the buffers and images
+        ///   shaders access through descriptors: a debug device, <c>STRIDE_VULKAN_SYNC_VALIDATION=1</c>
+        ///   and a validation layer of version 1.3.290 or later.
+        /// </summary>
+        public static void RequireShaderAccessSyncValidation()
+        {
+#if STRIDE_GRAPHICS_API_VULKAN && DEBUG
+            bool isActive = GraphicsAdapterFactory.GetInstance(enableValidation: true).HasShaderAccessSyncValidation;
+#else
+            bool isActive = false;
+#endif
+            Skip.IfNot(isActive, "This test requires Vulkan synchronization validation of shader accesses. It has been skipped");
         }
     }
 }

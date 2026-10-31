@@ -33,6 +33,9 @@ public static partial class NativeLibraryHelper
     private static readonly Dictionary<string, nint> loadedLibraries = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Lock loadedLibrariesLock = new();
     private static readonly HashSet<string> registeredDirectories = new(StringComparer.OrdinalIgnoreCase);
+    // Registered directories searched only when a library is asked for (see RegisterDependenciesFrom)
+    private static readonly List<string> flatDirectories = [];
+
     private static bool globalResolverRegistered;
 
     private static readonly HashSet<System.Runtime.Loader.AssemblyLoadContext> resolvedLoadContexts = [];
@@ -121,17 +124,15 @@ public static partial class NativeLibraryHelper
     {
         var nameWithExtension = libraryName + libExtension;
 
-        // Resolver-registered natives: the extension-less map is keyed by base name;
-        // the with-extension map only matches an exact unversioned filename.
-        if (nativeDependenciesWithoutExtensions.TryGetValue(libraryName, out string? knownPath)
-            || nativeDependenciesWithExtensions.TryGetValue(nameWithExtension, out knownPath))
+        // Resolver-registered natives:
+        //   The extension-less map is keyed by base name (matches "assimp").
+        //   The with-extension map only matches an exact filename.
+        if (nativeDependenciesWithoutExtensions.TryGetValue(libraryName, out string? knownPath) ||
+            nativeDependenciesWithExtensions.TryGetValue(nameWithExtension, out knownPath) ||
+            TryFindInRegisteredDirectories(libraryName, out knownPath))
             return knownPath;
 
-        // Try in current path
-        if (File.Exists(nameWithExtension))
-            return nameWithExtension;
-
-        // Try runtimes specific path (globs SONAME-versioned variants, picks highest)
+        // Try runtimes specific path
         if (TryFindLibraryPath(ownerType, nameWithExtension, out knownPath))
             return knownPath;
 
@@ -177,7 +178,8 @@ public static partial class NativeLibraryHelper
             }
 
             // Was the dependency registered beforehand?
-            if (nativeDependenciesWithoutExtensions.TryGetValue(libraryName, out string? path) &&
+            if ((nativeDependenciesWithoutExtensions.TryGetValue(libraryName, out string? path) ||
+                 TryFindInRegisteredDirectories(libraryName, out path)) &&
                 NativeLibrary.TryLoad(path, out nint knownLibHandle))
             {
                 return AddLoadedLibrary(libraryName, knownLibHandle);
@@ -269,43 +271,43 @@ public static partial class NativeLibraryHelper
         string baseDir = AppContext.BaseDirectory;
         string currentExeDir = Path.GetDirectoryName(Environment.ProcessPath) ?? string.Empty;
 
-        result = ProbePath(Path.Combine(ownerAssemblyDir, platformNativeLibsDir)) ??
-                 ProbePath(Path.Combine(baseDir, platformNativeLibsDir)) ??
-                 ProbePath(Path.Combine(Environment.CurrentDirectory, platformNativeLibsDir)) ??
-                 ProbePath(Path.Combine(currentExeDir, platformNativeLibsDir)) ??
+        result = ProbeDirectory(Path.Combine(ownerAssemblyDir, platformNativeLibsDir), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(baseDir, platformNativeLibsDir), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(Environment.CurrentDirectory, platformNativeLibsDir), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(currentExeDir, platformNativeLibsDir), libraryNameWithExtension) ??
                  // .NET flattens runtimes/<rid>/native/ to the publish root when RuntimeIdentifier
                  // is set, so probe the bare directories too.
-                 ProbePath(ownerAssemblyDir) ??
-                 ProbePath(baseDir) ??
-                 ProbePath(Environment.CurrentDirectory) ??
-                 ProbePath(currentExeDir) ??
+                 ProbeDirectory(ownerAssemblyDir, libraryNameWithExtension) ??
+                 ProbeDirectory(baseDir, libraryNameWithExtension) ??
+                 ProbeDirectory(Environment.CurrentDirectory, libraryNameWithExtension) ??
+                 ProbeDirectory(currentExeDir, libraryNameWithExtension) ??
                  // Also try without platform for Windows-only packages (backwards compatible for editor packages)
-                 ProbePath(Path.Combine(ownerAssemblyDir, cpu)) ??
-                 ProbePath(Path.Combine(baseDir, cpu)) ??
-                 ProbePath(Path.Combine(Environment.CurrentDirectory, cpu)) ??
-                 ProbePath(Path.Combine(currentExeDir, cpu));
+                 ProbeDirectory(Path.Combine(ownerAssemblyDir, cpu), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(baseDir, cpu), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(Environment.CurrentDirectory, cpu), libraryNameWithExtension) ??
+                 ProbeDirectory(Path.Combine(currentExeDir, cpu), libraryNameWithExtension);
 
         return result is not null;
+    }
 
-        //
-        // Probes the specified directory for the presence of the native library file.
-        //
-        string? ProbePath(string path)
-        {
-            // A relative path comes from an assembly without a location (loaded from bytes). It resolves against the
-            // current directory, which dlopen does not search: the current directory is probed by its full path instead.
-            if (!Path.IsPathRooted(path))
-                return null;
-
-            var libraryFilePath = Path.Combine(path, libraryNameWithExtension);
-            if (File.Exists(libraryFilePath))
-                return libraryFilePath;
-
-            if (!Directory.Exists(path))
-                return null;
-
+    /// <summary>
+    ///   Probes the specified directory for the presence of the native library file.
+    /// </summary>
+    private static string? ProbeDirectory(string path, string libraryNameWithExtension)
+    {
+        // A relative path comes from an assembly without a location (loaded from bytes). It resolves against the
+        // current directory, which dlopen does not search: the current directory is probed by its full path instead.
+        if (!Path.IsPathRooted(path))
             return null;
-        }
+
+        var libraryFilePath = Path.Combine(path, libraryNameWithExtension);
+        if (File.Exists(libraryFilePath))
+            return libraryFilePath;
+
+        if (!Directory.Exists(path))
+            return null;
+
+        return null;
     }
 
     /// <summary>
@@ -371,9 +373,11 @@ public static partial class NativeLibraryHelper
     public static void RegisterDependenciesFrom(string directory)
     {
         ArgumentNullException.ThrowIfNull(directory);
+
+        var fullDirectory = Path.GetFullPath(directory);
         lock (loadedLibrariesLock)
         {
-            if (!registeredDirectories.Add(Path.GetFullPath(directory)))
+            if (!registeredDirectories.Add(fullDirectory))
                 return;
         }
 
@@ -384,20 +388,43 @@ public static partial class NativeLibraryHelper
                 RegisterDependency(file);
         }
 
+        // The directory itself is searched only when a library is asked for: listing it here meant opening each of
+        // its DLLs to skip the managed ones (on Windows they share the extension), tens of milliseconds each with an
+        // antivirus, for the dozens of assemblies a build folder holds
         if (Directory.Exists(directory))
         {
-            var pattern = "*" + libExtension;
-            foreach (var file in Directory.EnumerateFiles(directory, pattern))
+            lock (loadedLibrariesLock)
             {
-                if (Platform.Type != PlatformType.Windows || !IsManagedAssembly(file))
-                    RegisterDependency(file);
+                flatDirectories.Add(fullDirectory);
+                EnsureGlobalResolverRegistered();
+            }
+        }
+    }
+
+    /// <summary>
+    ///   Looks for <paramref name="libraryName"/> in the directories <see cref="RegisterDependenciesFrom"/> searches on
+    ///   demand, and registers it when found.
+    /// </summary>
+    private static bool TryFindInRegisteredDirectories(string libraryName, [NotNullWhen(true)] out string? libraryPath)
+    {
+        lock (loadedLibrariesLock)
+        {
+            foreach (var directory in flatDirectories)
+            {
+                libraryPath = ProbeDirectory(directory, libraryName + libExtension);
+
+                // On Windows, the managed assemblies next to the native libraries share their extension
+                if (libraryPath is not null && (Platform.Type != PlatformType.Windows || !IsManagedAssembly(libraryPath)))
+                {
+                    RegisterDependency(libraryPath);
+                    return true;
+                }
             }
         }
 
-        //
-        // Determines if a file is a managed Assembly.
-        // Used to skip managed assemblies when registering native dependencies on Windows.
-        //
+        libraryPath = null;
+        return false;
+
         static bool IsManagedAssembly(string file)
         {
             try
@@ -449,6 +476,7 @@ public static partial class NativeLibraryHelper
         var context = System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly);
         if (context is null || context == System.Runtime.Loader.AssemblyLoadContext.Default)
             return;
+
         lock (loadedLibrariesLock)
         {
             if (!resolvedLoadContexts.Add(context))
@@ -468,7 +496,8 @@ public static partial class NativeLibraryHelper
             if (loadedLibraries.TryGetValue(name, out var handle))
                 return handle;
 
-            if (nativeDependenciesWithoutExtensions.TryGetValue(name, out var path) &&
+            if ((nativeDependenciesWithoutExtensions.TryGetValue(name, out var path) ||
+                 TryFindInRegisteredDirectories(name, out path)) &&
                 NativeLibrary.TryLoad(path, out var loadedHandle))
             {
                 loadedLibraries.Add(name, loadedHandle);

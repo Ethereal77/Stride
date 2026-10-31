@@ -22,7 +22,7 @@
       StrideNuGetVersion (+ parts) from "SharedAssemblyInfo[.Generated].cs".
       Shared with "Stride.Templates.Common.targets".
   -->
-  <Import Project="$(StrideRoot)sources\targets\Stride.NuGetVersion.props" />
+  <Import Project="Stride.NuGetVersion.props" />
 
   <!--
     Static (non-version) metadata.

@@ -8,24 +8,6 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-// #if !DEBUG
-// [assembly: ObfuscateAssembly(false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Effects.Modules.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Engine.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Framework.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Framework.Graphics.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Importer.FBX.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Stride.Importer.Assimp.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Mono.Options.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.D3DCompiler.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.DXGI.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.Direct3D11.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.DirectInput.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.RawInput.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed SharpDX.XInput.dll", Exclude = false)]
-// #endif
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.

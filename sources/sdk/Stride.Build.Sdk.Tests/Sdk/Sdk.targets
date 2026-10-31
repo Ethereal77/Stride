@@ -64,7 +64,7 @@
       (which would otherwise both resolve StridePlatform=Windows via Stride.Platform.props's
       host fallback).
 
-      Game is suppressed when a runnable host (Windows-without-mobile) is also in the list:
+      Game is suppressed when a runnable host (Windows) is also in the list:
       the runnable's net10.0 DLL is already host-loadable by CompilerApp, so Game would be
       redundant and would clobber the runnable's StridePlatform identity.
     -->
@@ -245,11 +245,11 @@
     Force the Game inner build to finish before any peer TFM runs StrideCompileAsset.
 
     CompilerApp resolves the project's TargetPath via VSProjectHelper which picks TargetFrameworks.First()
-    (that's $(StrideFramework)=Game).
+    (that's $(StrideFramework) = Game).
 
     Cross-targeting dispatches inner builds in parallel by default, so without this barrier
     a peer TFM's compile-asset step can race ahead of Game finishing.
-    Re-entering the same csproj is cached by MSBuild (no-op if Game is already built, blocking barrier otherwise).
+    Re-entering the same .csproj is cached by MSBuild (no-op if Game is already built, blocking barrier otherwise).
 
     The peer's manifest references the Game's: Build alone can return before another request writes it.
   -->
@@ -324,7 +324,10 @@
   <!-- Platform Target Metadata                                         -->
   <!-- ================================================================ -->
 
-  <!-- Used by Stride.build to detect if unit tests prefer to run in 32 or 64 bits -->
+  <!--
+    Exposes the test project's PlatformTarget (32 or 64 bits).
+    The old test runner of the build script read it, nothing in the repo does now.
+  -->
   <Target Name="_StrideAfterGetTargetPathWithTargetPlatformMoniker"
           AfterTargets="GetTargetPathWithTargetPlatformMoniker">
 

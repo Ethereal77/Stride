@@ -53,7 +53,6 @@ public unsafe partial struct GraphicsDeviceFeatures
         mapFeaturesPerFormat = new FeaturesPerFormat[256];
 
         // Set back the real GraphicsProfile that is used
-        // TODO D3D12
         RequestedProfile = device.RequestedProfile;
         CurrentProfile = GraphicsProfileHelper.FromFeatureLevel(device.CurrentFeatureLevel);
 
@@ -68,11 +67,19 @@ public unsafe partial struct GraphicsDeviceFeatures
 
         HasDoublePrecision = d3D12Options.DoublePrecisionFloatShaderOps;
 
+        // The GPU level, for the log; BindlessTier is what the backend uses
+        GpuBindless = GetD3D12BindlessSupport((int)d3D12Options.ResourceBindingTier);
+
         // TODO: D3D12: Confirm these are correct
         // Some docs: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476876(v=vs.85).aspx
         HasDepthAsSRV = true;
         HasDepthAsReadOnlyRT = true;
         HasMultiSampleDepthAsSRV = true;
+
+        // Feature level is clamped to 11_0 at device creation.
+        HasIndex32Bits = true;
+        HasGeometryShaders = true;
+        HasPixelShaderUnorderedAccess = true;
 
         HasResourceRenaming = false;
 

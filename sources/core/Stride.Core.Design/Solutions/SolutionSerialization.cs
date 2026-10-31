@@ -199,14 +199,18 @@ internal static class SolutionSerialization
         foreach (var project in solution.Projects.Where(project => !project.IsSolutionFolder && !existingProjectIds.Contains(project.Guid)))
         {
             var parent = project.ParentGuid != Guid.Empty && folders.TryGetValue(project.ParentGuid, out var folder) ? folder : null;
+
             // Forward slashes: SolutionPersistence's portable form (it writes '\' for .sln, '/' for .slnx).
-            // Backslash isn't a path separator on Linux, so forcing it leaves '\' literal in the .slnx.
+            // Backslash isn't a path separator on some platforms, so forcing it leaves '\' literal in the .slnx.
             var relativePath = GetRelativePath(solutionDirectory, project.FullPath).Replace('\\', '/');
+
             // .slnx infers the C# type from the .csproj (keep it clean); a .sln would infer the legacy guid, so keep it there.
             var typeName = isSlnx && relativePath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase)
                 ? null
                 : ProjectTypeName(project);
+
             var added = model.AddProject(relativePath, typeName, parent);
+
             // .slnx omits the project id — SolutionPersistence regenerates a stable one from the path on load
             // and Stride reconciles by that; a .sln needs the explicit guid, so keep writing it there.
             if (!isSlnx)

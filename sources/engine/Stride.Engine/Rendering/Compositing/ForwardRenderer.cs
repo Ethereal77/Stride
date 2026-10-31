@@ -134,21 +134,28 @@ namespace Stride.Rendering.Compositing
 
             if (MSAALevel != MultisampleCount.None)
             {
-                actualMultisampleCount = (MultisampleCount)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MultisampleCountMax);
-                actualMultisampleCount = (MultisampleCount)Math.Min((int)actualMultisampleCount, (int)GraphicsDevice.Features[DepthBufferFormat].MultisampleCountMax);
+                var colorMax = GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MultisampleCountMax;
+                var depthMax = GraphicsDevice.Features[DepthBufferFormat].MultisampleCountMax;
 
-                // Note: we cannot support MSAA on DX10 now
-                if (GraphicsDevice.Features.HasMultiSampleDepthAsSRV == false)
-                {
-                    // Direct3D has MSAA support starting from version 11 because it requires multisample depth buffers as shader resource views.
-                    // Therefore we force-disable MSAA on any platform that doesn't support MSAA.
+                actualMultisampleCount = (MultisampleCount)Math.Min((int)MSAALevel, (int)colorMax);
+                actualMultisampleCount = (MultisampleCount)Math.Min((int)actualMultisampleCount, (int)depthMax);
 
+                // Direct3D has MSAA support starting from version 11 because it requires multisample depth
+                // buffers as shader resource views.
+                var hasMultisampleDepthAsSRV = GraphicsDevice.Features.HasMultiSampleDepthAsSRV;
+                if (!hasMultisampleDepthAsSRV)
                     actualMultisampleCount = MultisampleCount.None;
-                }
 
                 if (actualMultisampleCount != MSAALevel)
                 {
-                    logger.Warning("Multisample count of " + (int)MSAALevel + " samples not supported. Falling back to highest supported sample count of " + (int)actualMultisampleCount + " samples.");
+                    var because = !hasMultisampleDepthAsSRV
+                        ? "this Graphics Device cannot read a multisampled Depth-Stencil Buffer as a Shader Resource"
+                        : depthMax < MSAALevel
+                            ? $"this Graphics Device supports at most {(int) depthMax} samples for {DepthBufferFormat}"
+                            : $"this Graphics Device supports at most {(int) colorMax} samples for {PixelFormat.R16G16B16A16_Float}";
+
+                    logger.Warning($"Multisample count of {(int) MSAALevel} samples not available, because " +
+                                   $"{because}. Falling back to {(int) actualMultisampleCount} samples.");
                 }
             }
 

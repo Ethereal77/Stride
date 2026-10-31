@@ -16,17 +16,23 @@ flowchart TD
     SSV --> SSA
 ```
 
-Each entry in `MainViewModel.StrideVersions` corresponds to one `Major.Minor` pair. A `StrideStoreVersionViewModel` holds both the latest `NugetLocalPackage` installed and the latest `NugetServerPackage` from the feed — that's how the UI knows whether a version is installed, outdated, or download-only.
+Each entry in `MainViewModel.StrideVersions` corresponds to one `Major.Minor` pair, and a second one for its nightly builds (`IsNightly`, "Stride 4.5 Nightly", right before the release row of the same `Major.Minor`, since its builds are newer). A `StrideStoreVersionViewModel` holds both the latest `NugetLocalPackage` installed and the latest `NugetServerPackage` from the feed — that's how the UI knows whether a version is installed, outdated, or download-only.
+
+Nightly builds (`PackageVersion.IsNightly`, `X.Y.Z-nightly.YYYYMMDD.N`, see [versioning.md](../build/versioning.md#nightly-builds)) are kept in their own row so that a release row's default build, "Install latest", the first install and the default active version never move to a nightly. A recent project on a nightly opens with the nightly row, one on a release or prerelease with the release row; the nightlies are listed among its "open with" builds, but the upgrade arrow only suggests them to a project already on a nightly. The rows come from the nightly feed: "Show nightly builds" in the launcher settings adds it to or removes it from the user's NuGet.config (`NugetStore.SetPackageSource`) and refreshes the list (`MainViewModel.ShowNightlyBuilds`); turning it on asks first (unsigned builds, project upgrades not fully tested); installed nightlies stay listed when it's off.
+
+A nightly row has no release notes: its notes button is "What's new" (`StrideStoreVersionViewModel.WhatsNewCommand`), a GitHub compare page to the newest nightly, from the newest installed nightly when older, else from the newest release or prerelease before it (of any line, never a local build: 4.4.0 for the 4.5.0 nightlies until the first 4.5 prerelease), else from the previous nightly (`ChooseWhatsNewRange`). The commits are read from the packages' nuspec (`<repository commit>`): an installed package's own, or one download of the nuspec from its feed's package base address (`NugetStore.GetRepositoryCommitAsync`). The tooltip names both builds, refreshed after each listing.
+
+The icon before "Switch/update version" lists the versions again (`MainViewModel.RefreshCommand`), installed and on the feeds, so that a version published since the start shows without a restart. It skips the rest of the start: no launcher update check, news, first install, or cleanup of unused packages.
 
 ## Version discovery
 
 `MainViewModel.FetchOnlineData` orchestrates three phases:
 
-1. **Local.** `RetrieveLocalStrideVersions` calls `NugetStore.GetPackagesInstalled(MainPackageIds)` and filters with `FilterStrideMainPackages()` ([PackageFilterExtensions.cs](../../sources/launcher/Stride.Launcher/PackageFilterExtensions.cs)). Packages are grouped by `{Major}.{Minor}`.
+1. **Local.** `RetrieveLocalStrideVersions` calls `NugetStore.GetPackagesInstalled(MainPackageIds)` and filters with `FilterStrideMainPackages()` ([PackageFilterExtensions.cs](../../sources/launcher/Stride.Launcher/PackageFilterExtensions.cs)). Packages are grouped by `{Major}.{Minor}` and nightly or not.
 2. **Server.** `RetrieveServerStrideVersions` calls `NugetStore.FindSourcePackages(MainPackageIds, …)`. If the call returns nothing, `IsOffline` flips on and the UI shows an error with the accumulated log.
 3. **Dev.** Dev-redirect packages (detected via `NugetStore.IsDevRedirectPackage`) are added as `StrideDevVersionViewModel` with their real on-disk path from `NugetStore.GetRealPath`. Additionally, every entry in `LauncherSettings.DeveloperVersions` is added up front.
 
-The same `Major.Minor` key is looked up with `SortedObservableCollection.BinarySearch(Tuple.Create(major, minor))` to merge local and server state into a single view model.
+The same `(Major, Minor, IsNightly)` key is looked up with `SortedObservableCollection.BinarySearch` to merge local and server state into a single view model. The server listing only adds and updates rows: turning the nightlies off removes the nightly rows that aren't installed first.
 
 ## NuGet store
 
@@ -58,11 +64,13 @@ Progress is reported via `IPackagesLogger` — `MainViewModel` implements it and
 Two entry points:
 
 - **Per-version**, from the UI: `PackageVersionViewModel.Delete(removeFromUi: true, confirmPrompt: true)` prompts the user, calls `NugetStore.UninstallPackage`, and updates status.
-- **Full uninstall**, from `Stride.Launcher.exe /Uninstall`: [Launcher.cs](../../sources/launcher/Stride.Launcher/Launcher.cs)'s `UninstallAsync`:
-  1. Calls `UninstallHelper.CloseProcessesInPathAsync` to kill any running Stride/Game Studio process started from the launcher directory. The user is prompted to confirm via `MessageBox`.
-  2. Iterates `store.MainPackageIds` and uninstalls every matching local package.
-  3. Cleans `.lock` and `.old` files left over from previous self-updates.
+- **Launcher uninstall**, from `Stride.Launcher.exe /uninstall`, which the setup runs when the launcher is uninstalled (not on an upgrade). [Launcher.cs](../../sources/launcher/Stride.Launcher/Launcher.cs)'s `UninstallAsync`:
+  1. Calls `UninstallHelper.CloseProcessesInPathsAsync` for the processes started from the launcher directory: the user closes them (OK to try again) or cancels.
+  2. Deletes the `.lock` files and the `.old` files of the last self-update (locked ones are skipped).
+  3. Asks whether to also remove the installed Stride versions, with their size. **Keep** is the default: someone reinstalling the launcher wants them back. **Remove** uninstalls the versions and the Stride packages that only they use (`StridePackageReferences.FindRemovable`, the same walk of `Dependencies` as the cleanup after an uninstall in the UI). Local builds and what they use are never removed. The processes running from those packages (Game Studio) are checked first, through `NugetStore.UninstallGuard`.
   4. Cancels the app's `CancellationTokenSource` so the main loop exits.
+
+  With `/quiet` (the setup passes it when the MSI shows no dialog: `msiexec /x … /qn`, or `/qr` as in `winget uninstall`), or when the process has no desktop (`Environment.UserInteractive` is false: SYSTEM or session 0, e.g. Intune), nothing is shown, not even an app: only step 2 runs, and the versions are kept. A dialog there would be invisible, or would block the setup. Removing the versions in a script belongs to the CLI (`stride sdk uninstall <version>`).
 
 `UninstallHelper` also subscribes to `NugetStore.NugetPackageUninstalling` to close lingering processes before each package is removed — this is why it lives as a disposable member on `MainViewModel` (`uninstallHelper`).
 

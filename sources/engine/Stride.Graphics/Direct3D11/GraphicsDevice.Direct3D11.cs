@@ -24,8 +24,6 @@ namespace Stride.Graphics
 {
     public unsafe partial class GraphicsDevice
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger(nameof(GraphicsDevice));
-
         internal readonly int ConstantBufferDataPlacementAlignment = 16;
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
@@ -388,8 +386,8 @@ namespace Stride.Graphics
                 if (Adapter.VendorId == 0x8086)
                 {
                     // TODO: This is relevant still? Newer Intel Arc HW and drivers should have better support for 9.x
-                    if (graphicsProfile < GraphicsProfile.Level_10_0 && (!ShaderProfile.HasValue || ShaderProfile.Value < GraphicsProfile.Level_10_0))
-                        ShaderProfile = GraphicsProfile.Level_10_0;
+                    if (graphicsProfile < GraphicsProfile.Level_10_0 && (!shaderProfile.HasValue || shaderProfile.Value < GraphicsProfile.Level_10_0))
+                        shaderProfile = GraphicsProfile.Level_10_0;
                 }
 
                 RequestedProfile = graphicsProfile;
@@ -419,10 +417,9 @@ namespace Stride.Graphics
                     infoQueue.SetBreakOnSeverity(MessageSeverity.Warning, false);
 
                     // Suppress known harmless warnings:
-                    // - RT/SRV binding hazards: texture still bound as SRV while set as RT (or vice versa).
-                    //   D3D11 auto-unbinds the conflicting slot — on D3D12/Vulkan this is handled
-                    //   explicitly by SubresourceLayoutTracker which issues the proper barriers.
-                    // - SetPrivateData changing params: debug name size mismatch when reusing resources.
+                    // - RT/SRV binding hazards: Texture still bound as SRV while set as RT (or vice versa).
+                    //   D3D11 auto-unbinds the conflicting slot.
+                    // - SetPrivateData changing params: Debug name size mismatch when reusing resources.
                     var deniedMessages = stackalloc MessageID[]
                     {
                         MessageID.DeviceOmsetrendertargetsHazard,
@@ -623,9 +620,9 @@ namespace Stride.Graphics
         }
 
         // Backend implementation of the partial method declared in GraphicsDevice.DebugScope.cs;
-        // called once per frame from DebugEndFrame. D3D11 has no synchronous-callback equivalent
-        // of ID3D12InfoQueue1, so we poll the InfoQueue here. Aggregation of the immediate CL's
-        // localCounters runs first so the tree has data when the dump fires.
+        // called once per frame from DebugEndFrame.
+        // D3D11 has no synchronous-callback equivalent of ID3D12InfoQueue1, so we poll the InfoQueue here.
+        // Aggregation of the immediate CL's localCounters runs first so the tree has data when the dump fires.
         partial void DrainDebugMessages()
         {
             if (InternalMainCommandList is not null)

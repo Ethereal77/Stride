@@ -52,7 +52,8 @@ public static partial class NuGetAssemblyResolver
 
         while (folder != null)
         {
-            if (File.Exists(Path.Combine(folder, "build", "Stride.slnx")))
+            // Stride source checkout root
+            if (File.Exists(Path.Combine(folder, "Stride.slnx")) && Directory.Exists(Path.Combine(folder, "sources")))
             {
                 var settings = Settings.LoadDefaultSettings(null);
 
@@ -73,7 +74,9 @@ public static partial class NuGetAssemblyResolver
             return;
 
         // Note: we perform nuget restore inside the assembly resolver rather than top level module ctor (otherwise it freezes)
-        AppDomain.CurrentDomain.AssemblyResolve += (_, eventArgs) =>
+        // The default context's resolver: a load context that falls back to the default one (a session's package
+        // assemblies) gets the host's copy from here before trying its own files
+        System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += (_, aname) =>
         {
             if (!assembliesResolved)
             {
@@ -219,7 +222,6 @@ public static partial class NuGetAssemblyResolver
 
             if (assemblyNameToPath != null)
             {
-                var aname = new AssemblyName(eventArgs.Name);
                 if (aname.Name!.StartsWith("Microsoft.Build", StringComparison.Ordinal) && aname.Name != "Microsoft.Build.Locator")
                     return null;
 

@@ -27,7 +27,7 @@ public class TestPixelShaderUnorderedAccess : GraphicTestGameBase
     {
         PerformTest(game =>
         {
-            Skip.If(game.GraphicsDevice.Features.CurrentProfile < GraphicsProfile.Level_11_0, "The device has no pixel shader UAVs.");
+            Skip.IfNot(game.GraphicsDevice.Features.HasPixelShaderUnorderedAccess, "The Graphics Device does not support UAVs in the Pixel Shader stage.");
 
             var device = game.GraphicsDevice;
             var commandList = game.GraphicsContext.CommandList;

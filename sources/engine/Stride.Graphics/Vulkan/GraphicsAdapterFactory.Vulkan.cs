@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vortice.Vulkan;
 using static Vortice.Vulkan.Vulkan;
@@ -38,19 +39,24 @@ namespace Stride.Graphics
             Span<VkPhysicalDevice> nativePhysicalDevices = stackalloc VkPhysicalDevice[(int)physicalDevicesCount];
             defaultInstance.NativeInstanceApi.vkEnumeratePhysicalDevices(defaultInstance.NativeInstance, nativePhysicalDevices).CheckResult();
 
-            var physicalDevices = new List<(VkPhysicalDevice Device, VkPhysicalDeviceProperties Properties, VkPhysicalDeviceDriverProperties DriverProperties, int EnumerationIndex)>();
+            var physicalDevices = new List<(VkPhysicalDevice Device, VkPhysicalDeviceProperties Properties, VkPhysicalDeviceDriverProperties DriverProperties, long AdapterUid, int EnumerationIndex)>();
             for (int index = 0; index < nativePhysicalDevices.Length; index++)
             {
                 VkPhysicalDeviceProperties properties;
                 defaultInstance.NativeInstanceApi.vkGetPhysicalDeviceProperties(nativePhysicalDevices[index], out properties);
 
+                // The device LUID / UUID (core in 1.1) gives the adapter uid
+                VkPhysicalDeviceIDProperties idProps = new() { sType = VkStructureType.PhysicalDeviceIdProperties };
                 // VK_KHR_driver_properties (core in 1.2) exposes driver identity strings the packed driverVersion can't carry.
-                VkPhysicalDeviceDriverProperties driverProps = new() { sType = VkStructureType.PhysicalDeviceDriverProperties };
+                VkPhysicalDeviceDriverProperties driverProps = new() { sType = VkStructureType.PhysicalDeviceDriverProperties, pNext = &idProps };
                 VkPhysicalDeviceProperties2 properties2 = new() { sType = VkStructureType.PhysicalDeviceProperties2, pNext = &driverProps };
                 if (properties.apiVersion >= VkVersion.Version_1_2)
                     defaultInstance.NativeInstanceApi.vkGetPhysicalDeviceProperties2(nativePhysicalDevices[index], &properties2);
 
-                physicalDevices.Add((nativePhysicalDevices[index], properties, driverProps, index));
+                // The adapter keeps the driver properties: no pointer to this loop's locals
+                driverProps.pNext = null;
+
+                physicalDevices.Add((nativePhysicalDevices[index], properties, driverProps, GetAdapterUid(idProps), index));
             }
 
             // The fastest kind first, as DXGI's high-performance order does on Direct3D: a hybrid laptop enumerates its integrated GPU first.
@@ -59,8 +65,8 @@ namespace Stride.Graphics
             var adapterList = new List<GraphicsAdapter>();
             for (int index = 0; index < physicalDevices.Count; index++)
             {
-                var (device, properties, driverProps, enumerationIndex) = physicalDevices[index];
-                var adapter = new GraphicsAdapter(device, properties, driverProps, index, enumerationIndex);
+                var (device, properties, driverProps, adapterUid, enumerationIndex) = physicalDevices[index];
+                var adapter = new GraphicsAdapter(device, properties, driverProps, adapterUid, index, enumerationIndex);
                 staticCollector.Add(adapter);
                 adapterList.Add(adapter);
             }
@@ -69,6 +75,20 @@ namespace Stride.Graphics
             adapters = adapterList.ToArray();
 
             staticCollector.Add(new AnonymousDisposable(Cleanup));
+        }
+
+        /// <summary>
+        ///   Gets the <see cref="GraphicsAdapter.AdapterUid"/> of a physical device: its LUID when it has one (Windows), the
+        ///   same value as the DXGI adapter LUID, so <c>GraphicsDeviceManager.RequiredAdapterUid</c> picks the same GPU on
+        ///   every graphics API. Otherwise its device UUID folded to 64 bits.
+        /// </summary>
+        private static unsafe long GetAdapterUid(VkPhysicalDeviceIDProperties idProperties)
+        {
+            if (idProperties.deviceLUIDValid)
+                return Unsafe.ReadUnaligned<long>(idProperties.deviceLUID);
+
+            var uuid = (ulong*) idProperties.deviceUUID;
+            return (long) (uuid[0] ^ uuid[1]);
         }
 
         private static int PerformanceRank(VkPhysicalDeviceType type) => type switch
@@ -126,7 +146,16 @@ namespace Stride.Graphics
         internal bool HasSurfaceSupport;
         internal bool HasDebugUtilsSupport;
 
-        // We use GraphicsDevice
+        /// <summary>
+        ///   Whether synchronization validation also checks the memory accesses shaders make through descriptors.
+        /// </summary>
+        internal bool HasShaderAccessSyncValidation;
+
+        // Validation layers before this version have no syncval_shader_accesses_heuristic setting.
+        // They count a shader's storage writes as reads, so a shader write is never part of a hazard.
+        private static readonly VkVersion ShaderAccessesHeuristicMinimumLayerVersion = new(1, 3, 290);
+
+        // We use GraphicsDevice (similar to OpenGL)
         private static readonly Logger Log = GlobalLogger.GetLogger(nameof(GraphicsDevice));
 
         /// <summary>
@@ -136,6 +165,9 @@ namespace Stride.Graphics
         /// <remarks>
         ///   <c>STRIDE_VULKAN_SYNC_VALIDATION=1</c> adds synchronization validation. The validation layer
         ///   provides its extension, so the ICD's instance extension list does not include it.
+        ///   On layers that have it, the <c>syncval_shader_accesses_heuristic</c> setting is turned on too:
+        ///   without it, synchronization validation ignores every buffer and image a shader reads or
+        ///   writes through a descriptor.
         /// </remarks>
         public unsafe GraphicsAdapterFactoryInstance(bool enableValidation)
         {
@@ -151,6 +183,7 @@ namespace Stride.Graphics
                 VK_LAYER_KHRONOS_VALIDATION_EXTENSION_NAME,
             };
             var enabledLayerNames = new List<VkUtf8String>();
+            var validationLayerVersion = default(VkVersion);
 
             if (enableValidation)
             {
@@ -169,7 +202,10 @@ namespace Stride.Graphics
                         var indexOfLayerName = validationLayerNames.IndexOf(name);
 
                         if (indexOfLayerName >= 0)
+                        {
                             enabledLayerNames.Add(validationLayerNames[indexOfLayerName]);
+                            validationLayerVersion = properties.specVersion;
+                        }
                     }
                 }
 
@@ -235,10 +271,49 @@ namespace Stride.Graphics
             if (enableSyncValidation)
                 instanceCreateInfo.pNext = &validationFeatures;
 
-            VkResult result = vkCreateInstance(&instanceCreateInfo, out NativeInstance);
+            // The validation layer reads its settings from the same struct, whether VK_EXT_layer_settings is enabled or not
+            bool enableShaderAccessesHeuristic = enableSyncValidation && validationLayerVersion >= ShaderAccessesHeuristicMinimumLayerVersion;
+            VkBool32 shaderAccessesHeuristic = VkBool32.True;
+            var layerSettingArray = stackalloc VkLayerSettingEXT[2];
+            uint layerSettingCount = 0;
+            VkResult result;
+            fixed (byte* pValidationLayerName = "VK_LAYER_KHRONOS_validation"u8)
+            fixed (byte* pShaderAccessesHeuristicKey = "syncval_shader_accesses_heuristic"u8)
+            {
+                if (enableShaderAccessesHeuristic)
+                {
+                    layerSettingArray[layerSettingCount++] = new VkLayerSettingEXT
+                    {
+                        pLayerName = pValidationLayerName,
+                        pSettingName = pShaderAccessesHeuristicKey,
+                        type = VkLayerSettingTypeEXT.Bool32,
+                        valueCount = 1,
+                        pValues = &shaderAccessesHeuristic
+                    };
+                }
+                var layerSettings = new VkLayerSettingsCreateInfoEXT
+                {
+                    sType = VkStructureType.LayerSettingsCreateInfoEXT,
+                    pNext = instanceCreateInfo.pNext,
+                    settingCount = layerSettingCount,
+                    pSettings = layerSettingArray
+                };
+                if (layerSettingCount > 0)
+                    instanceCreateInfo.pNext = &layerSettings;
+
+                result = vkCreateInstance(&instanceCreateInfo, out NativeInstance);
+            }
 
             if (result != VK_SUCCESS)
                 throw new InvalidOperationException($"Failed to create vulkan instance: {result}");
+
+            HasShaderAccessSyncValidation = enableShaderAccessesHeuristic;
+            if (enableSyncValidation)
+            {
+                Log.Info(enableShaderAccessesHeuristic
+                    ? "Vulkan synchronization validation enabled, shader accesses included"
+                    : $"Vulkan synchronization validation enabled, shader accesses not checked (validation layer {validationLayerVersion} is older than {ShaderAccessesHeuristicMinimumLayerVersion})");
+            }
 
             NativeInstanceApi = GetApi(NativeInstance);
 
