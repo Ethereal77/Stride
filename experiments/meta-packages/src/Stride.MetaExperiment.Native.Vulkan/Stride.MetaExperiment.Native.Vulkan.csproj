@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Native.Vulkan</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Native.Vulkan</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Native.Vulkan</PackageId>
+    <Description>Simulated native Vulkan dependency of the Stride.Graphics meta-package experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_vulkan.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="runtimes\linux-x64\native\libstride_vulkan.so" Pack="true" PackagePath="runtimes\linux-x64\native\" />
+  </ItemGroup>
+</Project>

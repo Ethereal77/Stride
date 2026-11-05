@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Native.Direct3D11</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Native.Direct3D11</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Native.Direct3D11</PackageId>
+    <Description>Simulated native Direct3D 11 dependency of the Stride.Graphics meta-package experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Simulated native payload: NuGet resolves it as a RID-specific runtime asset. -->
+    <None Include="runtimes\win-x64\native\stride_d3d11.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+  </ItemGroup>
+</Project>

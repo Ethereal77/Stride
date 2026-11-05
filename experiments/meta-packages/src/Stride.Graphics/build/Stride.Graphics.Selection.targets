@@ -1,0 +1,131 @@
+<Project>
+  <!--
+    ==================================================================
+    Stride.Graphics meta-package: consumer-side selection logic.
+
+    Two jobs:
+      1. Expose the selected API (and platform) to source code as
+         compile-time constants, e.g. STRIDE_GRAPHICS_API_VULKAN.
+      2. Remove the assets of every non-selected variant from the
+         build graphs.
+
+    There is deliberately no runtime selection: no reflection, no
+    interfaces, no virtual dispatch. The consumer compiles against
+    exactly one variant, so calls into Stride.Graphics bind directly to
+    that variant's concrete types.
+
+    NuGet restore is static, so Stride.Graphics always restores every
+    variant; the build prunes the ones the consumer did not select.
+
+    Compile pruning is unconditional: every variant declares the same
+    types (Stride.Graphics.GraphicsDevice), so two variants in the
+    compile graph would be an immediate CS0433. Runtime/native pruning
+    is skipped for a multi-API host, which deploys every variant but
+    still compiles against the selected one.
+    ==================================================================
+  -->
+
+  <PropertyGroup>
+    <!-- Alias so conditions below read a little better. -->
+    <_StrideMetaPlatform>$(StridePlatform)</_StrideMetaPlatform>
+  </PropertyGroup>
+
+  <!-- 1. Compile-time selection: same symbols the monolithic Stride.Graphics uses today. -->
+  <PropertyGroup>
+    <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Direct3D11'">$(DefineConstants);STRIDE_GRAPHICS_API_DIRECT3D11</DefineConstants>
+    <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Direct3D12'">$(DefineConstants);STRIDE_GRAPHICS_API_DIRECT3D12</DefineConstants>
+    <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Vulkan'">$(DefineConstants);STRIDE_GRAPHICS_API_VULKAN</DefineConstants>
+
+    <!-- Families group APIs that share optional dependencies (PIX/WARP vs Lavapipe). -->
+    <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Direct3D11' or '$(StrideGraphicsApi)' == 'Direct3D12'">$(DefineConstants);STRIDE_GRAPHICS_FAMILY_DIRECT3D</DefineConstants>
+    <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Vulkan'">$(DefineConstants);STRIDE_GRAPHICS_FAMILY_VULKAN</DefineConstants>
+
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'Windows' or '$(_StrideMetaPlatform)' == 'UWP'">$(DefineConstants);STRIDE_PLATFORM_WINDOWS</DefineConstants>
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'UWP'">$(DefineConstants);STRIDE_PLATFORM_UWP</DefineConstants>
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'Linux'">$(DefineConstants);STRIDE_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'macOS'">$(DefineConstants);STRIDE_PLATFORM_MACOS</DefineConstants>
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'Android'">$(DefineConstants);STRIDE_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants Condition="'$(_StrideMetaPlatform)' == 'iOS'">$(DefineConstants);STRIDE_PLATFORM_IOS</DefineConstants>
+  </PropertyGroup>
+
+  <!-- 2a. Fail early on an API the package graph cannot satisfy. -->
+  <Target Name="_StrideMetaValidateGraphicsApi" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <_StrideMetaSelectedVariant Include="@(StrideMetaGraphicsVariant)"
+                                  Condition="'%(StrideMetaGraphicsVariant.GraphicsApi)' == '$(StrideGraphicsApi)'" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_StrideMetaKnownApis>;@(StrideMetaGraphicsVariant->'%(GraphicsApi)');</_StrideMetaKnownApis>
+      <_StrideMetaSelectedPlatforms>;@(_StrideMetaSelectedVariant->'%(Platforms)');</_StrideMetaSelectedPlatforms>
+    </PropertyGroup>
+
+    <Error Condition="'@(StrideMetaGraphicsVariant)' != '' and !$(_StrideMetaKnownApis.Contains(';$(StrideGraphicsApi);'))"
+           Text="StrideGraphicsApi='$(StrideGraphicsApi)' is not provided by any Stride.Graphics variant in this project. Available: @(StrideMetaGraphicsVariant->'%(GraphicsApi)')." />
+
+    <Error Condition="'@(_StrideMetaSelectedVariant)' != '' and !$(_StrideMetaSelectedPlatforms.Contains(';$(_StrideMetaPlatform);'))"
+           Text="StrideGraphicsApi='$(StrideGraphicsApi)' is not supported on platform '$(_StrideMetaPlatform)'. Supported platforms: @(_StrideMetaSelectedVariant->'%(Platforms)')." />
+  </Target>
+
+  <!--
+    2b. Prune the assets of the variants and conditional packages the consumer
+    did not select.
+
+    Runs right after ResolvePackageAssets, i.e. before ResolveLockFileReferences
+    and ResolveLockFileCopyLocalFiles turn those items into references and
+    copy-local paths.
+
+    A package is kept when the consumer references it directly: that is the
+    documented escape hatch (and what makes a direct variant reference behave
+    like the real Stride.Graphics.Direct3D11-style packages).
+
+    StrideMetaGraphicsApiSpecificPackage carries an Apis list, so a package can
+    be shared by a family (e.g. PIX and WARP for Direct3D11;Direct3D12) or bound
+    to a single API (e.g. Lavapipe for Vulkan).
+  -->
+  <Target Name="_StrideMetaFilterGraphicsAssets" AfterTargets="ResolvePackageAssets">
+    <ItemGroup>
+      <_StrideMetaStripCandidate Include="@(StrideMetaGraphicsApiSpecificPackage)"
+                                 Condition="!$([System.String]::Copy(';%(StrideMetaGraphicsApiSpecificPackage.Apis);').Contains(';$(StrideGraphicsApi);'))" />
+      <_StrideMetaStripVariant Include="@(StrideMetaGraphicsVariant)"
+                               Condition="'%(StrideMetaGraphicsVariant.GraphicsApi)' != '$(StrideGraphicsApi)'" />
+      <_StrideMetaDirectPackage Include="@(PackageReference)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_StrideMetaStripIds>;@(_StrideMetaStripCandidate);</_StrideMetaStripIds>
+      <_StrideMetaDirectIds>;@(_StrideMetaDirectPackage);</_StrideMetaDirectIds>
+      <_StrideMetaStripAssemblies>;@(_StrideMetaStripVariant->'%(AssemblyName)');</_StrideMetaStripAssemblies>
+    </PropertyGroup>
+
+    <!--
+      Compile references: always pruned, even for a multi-API host, because the
+      variants expose identical type names. Also match by file name when NuGet
+      metadata is missing.
+    -->
+    <ItemGroup>
+      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)"
+        Condition="('%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);')))
+                   or ('%(NuGetPackageId)' == '' and $(_StrideMetaStripAssemblies.Contains(';%(Filename)%(Extension);')))" />
+    </ItemGroup>
+
+    <!-- Runtime assets: a multi-API host deploys every variant on purpose. -->
+    <ItemGroup Condition="'$(StrideMultiGraphicsApiHost)' != 'true'">
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <ResourceCopyLocalItems Remove="@(ResourceCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);'))" />
+
+      <!-- Safety net for anything already projected into the copy-local list. -->
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideMetaStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideMetaDirectIds.Contains(';%(NuGetPackageId);'))" />
+    </ItemGroup>
+
+    <Message Importance="normal"
+             Text="Stride.Graphics meta-package: selected $(StrideGraphicsApi) on $(_StrideMetaPlatform); pruning @(_StrideMetaStripCandidate)." />
+  </Target>
+</Project>

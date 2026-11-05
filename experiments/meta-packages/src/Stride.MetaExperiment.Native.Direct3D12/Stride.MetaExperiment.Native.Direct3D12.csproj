@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Native.Direct3D12</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Native.Direct3D12</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Native.Direct3D12</PackageId>
+    <Description>Simulated native Direct3D 12 dependency of the Stride.Graphics meta-package experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_d3d12.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+  </ItemGroup>
+</Project>

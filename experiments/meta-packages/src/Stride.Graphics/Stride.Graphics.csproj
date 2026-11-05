@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Stride.Graphics</PackageId>
+    <RootNamespace>Stride.Graphics</RootNamespace>
+
+    <!--
+      Meta-package: it ships no assembly of its own. Its public surface lives in
+      Stride.Graphics.Common; the API-specific implementations live in the three
+      variant packages it depends on.
+    -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Description>Graphics meta-package: picks Stride.Graphics.Direct3D11, .Direct3D12 or .Vulkan per consumer and platform (experiment).</Description>
+
+    <!--
+      StrideMetaPacking=true switches the variant dependencies from project
+      references to package references. It is required when packing: the pack task
+      always writes ProjectReference dependencies with exclude="Build,Analyzers",
+      which would hide the variants' buildTransitive targets from consumers.
+      test.ps1 therefore packs the variants first, then runs:
+        dotnet pack src/Stride.Graphics -p:StrideMetaPacking=true
+    -->
+    <StrideMetaPacking Condition="'$(StrideMetaPacking)' == ''">false</StrideMetaPacking>
+  </PropertyGroup>
+
+  <!-- Normal builds: project references, so the solution builds without a populated feed. -->
+  <ItemGroup Condition="'$(StrideMetaPacking)' != 'true'">
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Direct3D11\Stride.Graphics.Direct3D11.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Direct3D12\Stride.Graphics.Direct3D12.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Vulkan\Stride.Graphics.Vulkan.csproj" />
+
+    <!-- Conditional packages: restored with the meta-package, pruned by the selection targets. -->
+    <ProjectReference Include="..\Stride.MetaExperiment.Pix\Stride.MetaExperiment.Pix.csproj" />
+    <ProjectReference Include="..\Stride.MetaExperiment.Warp\Stride.MetaExperiment.Warp.csproj" />
+    <ProjectReference Include="..\Stride.MetaExperiment.Lavapipe\Stride.MetaExperiment.Lavapipe.csproj" />
+  </ItemGroup>
+
+  <!--
+    Packing: real package dependencies, so every asset (including buildTransitive)
+    flows to consumers.
+
+    PrivateAssets="none" is required: PackageReference defaults to
+    PrivateAssets="contentfiles;analyzers;build", which would write
+    exclude="Build,Analyzers" in the nuspec and hide the variants' targets from
+    consumers of the meta-package.
+  -->
+  <ItemGroup Condition="'$(StrideMetaPacking)' == 'true'">
+    <PackageReference Include="Stride.Graphics.Common" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Direct3D11" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Direct3D12" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Vulkan" Version="$(PackageVersion)" PrivateAssets="none" />
+
+    <!--
+      Conditional packages must also keep their buildTransitive assets, because
+      that is where each one declares the Apis it applies to.
+    -->
+    <PackageReference Include="Stride.MetaExperiment.Pix" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.MetaExperiment.Warp" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.MetaExperiment.Lavapipe" Version="$(PackageVersion)" PrivateAssets="none" />
+  </ItemGroup>
+
+  <!-- Packing without the switch would emit a package whose variant dependencies lose their build assets. -->
+  <Target Name="_StrideMetaRequirePackingMode"
+          BeforeTargets="GenerateNuspec"
+          Condition="'$(StrideMetaPacking)' != 'true'">
+    <Error Text="Pack Stride.Graphics with -p:StrideMetaPacking=true, after the variant packages have been packed into the local feed. See test.ps1." />
+  </Target>
+
+  <ItemGroup>
+    <!-- _._ keeps the package compatible with consumers without shipping a lib assembly. -->
+    <None Include="lib\net10.0\_._" Pack="true" PackagePath="lib\net10.0\" />
+    <None Include="build\*.props" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.props" Pack="true" PackagePath="buildTransitive\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

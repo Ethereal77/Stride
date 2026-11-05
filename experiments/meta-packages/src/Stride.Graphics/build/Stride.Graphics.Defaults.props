@@ -1,0 +1,29 @@
+<Project>
+  <!--
+    Platform and API defaults for the Stride.Graphics meta-package.
+
+    Imported once, from Stride.Graphics.props, i.e. before the project body.
+    The body can still override StrideGraphicsApi / StridePlatform (a later
+    property assignment wins); it cannot change the RuntimeIdentifier the
+    defaults read, so set that on the command line or in Directory.Build.props.
+  -->
+  <PropertyGroup>
+    <!-- Platform: explicit StridePlatform, else derived from RuntimeIdentifier, else host OS. -->
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win'))">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux'))">Linux</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('osx'))">macOS</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('android'))">Android</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('ios'))">iOS</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(OS)' == 'Windows_NT'">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and $([MSBuild]::IsOSPlatform('Linux'))">Linux</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and $([MSBuild]::IsOSPlatform('OSX'))">macOS</StridePlatform>
+
+    <!-- Default API per platform (same table as the real Stride.Graphics.props). -->
+    <StrideDefaultGraphicsApi Condition="'$(StrideDefaultGraphicsApi)' == '' and ('$(StridePlatform)' == 'Windows' or '$(StridePlatform)' == 'UWP')">Direct3D11</StrideDefaultGraphicsApi>
+    <StrideDefaultGraphicsApi Condition="'$(StrideDefaultGraphicsApi)' == ''">Vulkan</StrideDefaultGraphicsApi>
+
+    <!-- Selection order: explicit StrideGraphicsApi > first StrideGraphicsApis entry > platform default. -->
+    <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' and '$(StrideGraphicsApis)' != ''">$(StrideGraphicsApis.Split(';')[0].Trim())</StrideGraphicsApi>
+    <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == ''">$(StrideDefaultGraphicsApi)</StrideGraphicsApi>
+  </PropertyGroup>
+</Project>

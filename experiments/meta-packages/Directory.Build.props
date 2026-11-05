@@ -1,0 +1,35 @@
+<Project>
+  <!--
+    Shared defaults for the meta-package experiment.
+    This tree is intentionally isolated from the mirrored Stride build:
+    it uses plain Microsoft.NET.Sdk projects and never imports Stride.Build.Sdk.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <IsPackable>true</IsPackable>
+    <PackageVersion Condition="'$(PackageVersion)' == ''">0.1.0-meta</PackageVersion>
+    <Authors>Stride meta-package experiment</Authors>
+    <Description>Build-system experiment: Stride.Graphics as a meta-package.</Description>
+    <PackageTags>Stride;experiment;meta-package;graphics</PackageTags>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+
+    <!--
+      Local NuGet cache: keeps every file the experiment writes inside slim-sdk/.
+      The test script bumps StrideMetaVersion on each run so a freshly packed
+      package never collides with a cached copy of a previous run.
+    -->
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)artifacts\nuget-cache</RestorePackagesPath>
+    <StrideMetaVersion Condition="'$(StrideMetaVersion)' == ''">0.1.0-meta</StrideMetaVersion>
+
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+
+    <!-- NU5128: the meta-package intentionally ships no lib/ref assembly of its own. -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+</Project>

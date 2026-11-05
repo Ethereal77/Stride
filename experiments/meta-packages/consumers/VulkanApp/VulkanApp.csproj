@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>VulkanApp</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Per-project override: the consumer asks for Vulkan instead of the platform default. -->
+    <StrideGraphicsApi>Vulkan</StrideGraphicsApi>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\Program.cs" Link="Program.cs" />
+    <PackageReference Include="Stride.Graphics" Version="$(StrideMetaVersion)" />
+  </ItemGroup>
+</Project>

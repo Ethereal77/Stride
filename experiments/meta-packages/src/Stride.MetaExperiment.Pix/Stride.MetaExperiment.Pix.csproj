@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Pix</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Pix</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Pix</PackageId>
+    <Description>Simulated PIX profiling markers, shared by every Direct3D variant (experiment).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Simulated native payload: NuGet resolves it as a RID-specific runtime asset. -->
+    <None Include="runtimes\win-x64\native\WinPixEventRuntime.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

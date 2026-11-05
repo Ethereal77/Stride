@@ -1,0 +1,10 @@
+<Project>
+  <!--
+    Lavapipe is a software Vulkan implementation: it must survive a Vulkan
+    selection and disappear from every Direct3D build.
+  -->
+  <ItemGroup>
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.MetaExperiment.Lavapipe"
+                                          Apis="Vulkan" />
+  </ItemGroup>
+</Project>

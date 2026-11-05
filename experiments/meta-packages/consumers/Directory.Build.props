@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- Consumers restore the prototype packages from artifacts/packages through the experiment nuget.config. -->
+    <StrideMetaVersion Condition="'$(StrideMetaVersion)' == ''">0.1.0-meta</StrideMetaVersion>
+  </PropertyGroup>
+</Project>

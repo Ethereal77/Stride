@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>VariantApp</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\VariantProgram.cs" Link="Program.cs" />
+    <!-- Escape hatch: reference a variant package directly, no meta-package involved. -->
+    <PackageReference Include="Stride.Graphics.Direct3D11" Version="$(StrideMetaVersion)" />
+  </ItemGroup>
+</Project>

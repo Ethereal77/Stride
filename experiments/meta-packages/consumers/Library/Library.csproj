@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConsumerLibrary</AssemblyName>
+    <RootNamespace>ConsumerLibrary</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GraphicsLibrary.cs" />
+    <PackageReference Include="Stride.Graphics" Version="$(StrideMetaVersion)" />
+  </ItemGroup>
+</Project>

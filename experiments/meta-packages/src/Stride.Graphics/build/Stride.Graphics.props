@@ -1,0 +1,4 @@
+<Project>
+  <!-- Early defaults: see Stride.Graphics.Defaults.props. -->
+  <Import Project="$(MSBuildThisFileDirectory)Stride.Graphics.Defaults.props" />
+</Project>

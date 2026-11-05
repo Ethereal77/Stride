@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.Graphics.Common</AssemblyName>
+    <RootNamespace>Stride.Graphics</RootNamespace>
+    <PackageId>Stride.Graphics.Common</PackageId>
+    <Description>API-neutral graphics surface shared by every Stride.Graphics API variant (experiment).</Description>
+  </PropertyGroup>
+</Project>

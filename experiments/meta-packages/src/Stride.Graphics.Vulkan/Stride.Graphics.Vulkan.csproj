@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.Graphics.Vulkan</AssemblyName>
+    <RootNamespace>Stride.Graphics.Vulkan</RootNamespace>
+    <PackageId>Stride.Graphics.Vulkan</PackageId>
+    <Description>Vulkan variant of the Stride.Graphics meta-package (experiment).</Description>
+
+    <!-- Vulkan is cross-platform: only the API constant is fixed by the variant. -->
+    <DefineConstants>$(DefineConstants);STRIDE_GRAPHICS_API_VULKAN</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.MetaExperiment.Native.Vulkan\Stride.MetaExperiment.Native.Vulkan.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

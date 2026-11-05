@@ -1,0 +1,10 @@
+<Project>
+  <!--
+    Stride.Graphics.Defaults.props is imported by Stride.Graphics.props, before the
+    project body. It is intentionally not imported again here: MSBuild ignores a
+    second import of the same file (MSB4011), so the late pass would be a no-op.
+    Everything that must react to project-body properties runs inside
+    Stride.Graphics.Selection.targets, at target execution time.
+  -->
+  <Import Project="$(MSBuildThisFileDirectory)Stride.Graphics.Selection.targets" />
+</Project>

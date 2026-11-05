@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    PIX is common to every Direct3D variant: it must survive a Direct3D 11 or
+    Direct3D 12 selection and disappear from a Vulkan build.
+
+    The package declares its own applicability; the meta-package only filters by
+    the Apis list. Adding a new D3D API to this list is enough to keep PIX.
+  -->
+  <ItemGroup>
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.MetaExperiment.Pix"
+                                          Apis="Direct3D11;Direct3D12" />
+  </ItemGroup>
+</Project>

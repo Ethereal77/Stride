@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    Intentionally empty: MSBuild imports only the nearest Directory.Build.targets.
+    This empty file prevents the slim-sdk skeleton layer (build/skeleton/Skeleton.targets)
+    from being imported into the experiment, so the experiment behaves like a normal
+    consumer of the packages.
+  -->
+</Project>

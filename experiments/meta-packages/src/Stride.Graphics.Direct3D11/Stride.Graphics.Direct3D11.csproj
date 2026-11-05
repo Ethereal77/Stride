@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.Graphics.Direct3D11</AssemblyName>
+    <RootNamespace>Stride.Graphics.Direct3D11</RootNamespace>
+    <PackageId>Stride.Graphics.Direct3D11</PackageId>
+    <Description>Direct3D 11 variant of the Stride.Graphics meta-package (experiment).</Description>
+
+    <!--
+      Every API-specific fact of this variant lives in this assembly: the API and
+      platform constants are compile-time only, exactly like the #if symbols the
+      monolithic Stride.Graphics.csproj uses today.
+    -->
+    <DefineConstants>$(DefineConstants);STRIDE_GRAPHICS_API_DIRECT3D11;STRIDE_PLATFORM_WINDOWS</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.MetaExperiment.Native.Direct3D11\Stride.MetaExperiment.Native.Direct3D11.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- NuGet imports <PackageId>.props/targets from buildTransitive for direct and transitive references. -->
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

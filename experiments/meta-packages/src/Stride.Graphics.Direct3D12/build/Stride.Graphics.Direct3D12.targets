@@ -1,0 +1,12 @@
+<Project>
+  <ItemGroup>
+    <StrideMetaGraphicsVariant Include="Stride.Graphics.Direct3D12"
+                               GraphicsApi="Direct3D12"
+                               Platforms="Windows;UWP"
+                               AssemblyName="Stride.Graphics.Direct3D12.dll"
+                               DisplayName="Direct3D 12" />
+
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.Graphics.Direct3D12" Apis="Direct3D12" />
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.MetaExperiment.Native.Direct3D12" Apis="Direct3D12" />
+  </ItemGroup>
+</Project>

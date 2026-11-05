@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>LibraryApp</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <!--
+      Deliberately no direct PackageReference to Stride.Graphics: the app must get
+      the meta-package, its selection targets and the runtime config transitively
+      through the library.
+    -->
+    <ProjectReference Include="..\Library\Library.csproj" />
+  </ItemGroup>
+</Project>

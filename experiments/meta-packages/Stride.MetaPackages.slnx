@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="src/Stride.Graphics.Common/Stride.Graphics.Common.csproj" />
+  <Project Path="src/Stride.Graphics.Direct3D11/Stride.Graphics.Direct3D11.csproj" />
+  <Project Path="src/Stride.Graphics.Direct3D12/Stride.Graphics.Direct3D12.csproj" />
+  <Project Path="src/Stride.Graphics.Vulkan/Stride.Graphics.Vulkan.csproj" />
+  <Project Path="src/Stride.Graphics/Stride.Graphics.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Native.Direct3D11/Stride.MetaExperiment.Native.Direct3D11.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Native.Direct3D12/Stride.MetaExperiment.Native.Direct3D12.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Native.Vulkan/Stride.MetaExperiment.Native.Vulkan.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Pix/Stride.MetaExperiment.Pix.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Warp/Stride.MetaExperiment.Warp.csproj" />
+  <Project Path="src/Stride.MetaExperiment.Lavapipe/Stride.MetaExperiment.Lavapipe.csproj" />
+</Solution>

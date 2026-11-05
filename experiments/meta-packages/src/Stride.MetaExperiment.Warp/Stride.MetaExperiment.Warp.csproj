@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Warp</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Warp</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Warp</PackageId>
+    <Description>Simulated WARP (software Direct3D) bindings, Direct3D-only (experiment).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Simulated native payload: NuGet resolves it as a RID-specific runtime asset. -->
+    <None Include="runtimes\win-x64\native\d3d10warp.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

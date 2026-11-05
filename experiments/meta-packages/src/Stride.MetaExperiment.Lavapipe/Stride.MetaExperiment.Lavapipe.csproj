@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Stride.MetaExperiment.Lavapipe</AssemblyName>
+    <RootNamespace>Stride.MetaExperiment.Lavapipe</RootNamespace>
+    <PackageId>Stride.MetaExperiment.Lavapipe</PackageId>
+    <Description>Simulated Lavapipe (software Vulkan) bindings, Vulkan-only (experiment).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Simulated native payloads: NuGet resolves them as RID-specific runtime assets. -->
+    <None Include="runtimes\win-x64\native\vulkan_lvp.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="runtimes\linux-x64\native\libvulkan_lvp.so" Pack="true" PackagePath="runtimes\linux-x64\native\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

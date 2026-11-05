@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>MultiApiHostApp</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Keeps every variant deployed; the host picks the API at launch. -->
+    <StrideMultiGraphicsApiHost>true</StrideMultiGraphicsApiHost>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\MultiApiProgram.cs" Link="Program.cs" />
+    <PackageReference Include="Stride.Graphics" Version="$(StrideMetaVersion)" />
+  </ItemGroup>
+</Project>

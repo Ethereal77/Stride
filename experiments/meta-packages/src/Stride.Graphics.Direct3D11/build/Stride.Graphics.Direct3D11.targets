@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Declares this variant to the Stride.Graphics meta-package. Imported through
+    buildTransitive/, so it also reaches projects that only reference the
+    meta-package indirectly (e.g. through a library).
+  -->
+  <ItemGroup>
+    <StrideMetaGraphicsVariant Include="Stride.Graphics.Direct3D11"
+                               GraphicsApi="Direct3D11"
+                               Platforms="Windows;UWP"
+                               AssemblyName="Stride.Graphics.Direct3D11.dll"
+                               DisplayName="Direct3D 11" />
+
+    <!-- Packages that must not reach a consumer that selected another API. -->
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.Graphics.Direct3D11" Apis="Direct3D11" />
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.MetaExperiment.Native.Direct3D11" Apis="Direct3D11" />
+  </ItemGroup>
+</Project>

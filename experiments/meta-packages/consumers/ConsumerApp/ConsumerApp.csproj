@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ConsumerApp</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\Program.cs" Link="Program.cs" />
+    <PackageReference Include="Stride.Graphics" Version="$(StrideMetaVersion)" />
+  </ItemGroup>
+</Project>

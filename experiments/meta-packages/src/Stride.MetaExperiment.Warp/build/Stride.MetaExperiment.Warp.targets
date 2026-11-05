@@ -1,0 +1,10 @@
+<Project>
+  <!--
+    WARP is a software Direct3D rasterizer: it applies to both Direct3D
+    variants and must never reach a Vulkan build.
+  -->
+  <ItemGroup>
+    <StrideMetaGraphicsApiSpecificPackage Include="Stride.MetaExperiment.Warp"
+                                          Apis="Direct3D11;Direct3D12" />
+  </ItemGroup>
+</Project>
