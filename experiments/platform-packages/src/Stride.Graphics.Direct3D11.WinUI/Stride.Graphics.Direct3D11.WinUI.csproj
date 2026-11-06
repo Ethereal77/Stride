@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>Stride.Graphics.Direct3D11.WinUI</AssemblyName>
+    <RootNamespace>Stride.Graphics.Direct3D11.WinUI</RootNamespace>
+    <PackageId>Stride.Graphics.Direct3D11.WinUI</PackageId>
+    <Description>Simulated WinUI + Direct3D 11 composition package (experiment).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Direct3D11\Stride.Graphics.Direct3D11.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows.WinUI\Stride.Platform.Windows.WinUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_graphics_winui.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

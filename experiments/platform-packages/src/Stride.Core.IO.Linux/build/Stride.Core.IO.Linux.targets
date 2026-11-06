@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <StridePlatformSpecificPackage Include="Stride.Core.IO.Linux"
+                                   Platforms="Linux"
+                                   AssemblyName="Stride.Core.IO.Linux.dll" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- net10.0 is also shipped so a net10.0 host can restore this package. -->
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <AssemblyName>Stride.Platform.Windows</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Windows</PackageId>
+    <Description>Simulated Windows operating-system services for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

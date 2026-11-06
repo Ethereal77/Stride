@@ -1,0 +1,189 @@
+<Project>
+  <!--
+    ==================================================================
+    Stride.Platform meta-package: consumer-side resolution.
+
+    One owner for the platform axis:
+      1. Resolve StridePlatform / StrideWindowSystem / StrideGraphicsApi.
+      2. Expose STRIDE_PLATFORM_* and STRIDE_WINDOWSYSTEM_* constants.
+      3. Prune platform packages that do not match the resolution.
+
+    Stride.Graphics owns STRIDE_GRAPHICS_* and prunes API variants and
+    compositions; it reads the properties resolved here.
+
+    Import order between buildTransitive packages is not guaranteed, so the
+    properties above are evaluated here and the graphics filters run in a
+    target (after evaluation), never in a props file.
+    ==================================================================
+  -->
+
+  <!-- 1. Platform from the TFM, when the TFM identifies one. -->
+  <PropertyGroup>
+    <_StridePlatformFromTfm Condition="'$(TargetPlatformIdentifier)' == 'Windows'">Windows</_StridePlatformFromTfm>
+    <_StridePlatformFromTfm Condition="'$(TargetPlatformIdentifier)' == 'macOS'">macOS</_StridePlatformFromTfm>
+    <_StridePlatformFromTfm Condition="'$(TargetPlatformIdentifier)' == 'MacCatalyst'">macOS</_StridePlatformFromTfm>
+    <_StridePlatformFromTfm Condition="'$(TargetPlatformIdentifier)' == 'Android'">Android</_StridePlatformFromTfm>
+    <_StridePlatformFromTfm Condition="'$(TargetPlatformIdentifier)' == 'iOS'">iOS</_StridePlatformFromTfm>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(_StridePlatformFromTfm)' != ''">$(_StridePlatformFromTfm)</StridePlatform>
+
+    <!-- RID fallback, for a net10.0 build that opted into a concrete OS. -->
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win'))">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux'))">Linux</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('osx'))">macOS</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('android'))">Android</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('ios'))">iOS</StridePlatform>
+
+    <!--
+      Host fallback: only for executables. A platform-neutral library stays
+      portable and only sees Stride.Platform.Common.
+    -->
+    <StridePlatform Condition="'$(StridePlatform)' == '' and ('$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe') and $([MSBuild]::IsOSPlatform('Windows'))">Windows</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and ('$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe') and $([MSBuild]::IsOSPlatform('Linux'))">Linux</StridePlatform>
+    <StridePlatform Condition="'$(StridePlatform)' == '' and ('$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe') and $([MSBuild]::IsOSPlatform('OSX'))">macOS</StridePlatform>
+  </PropertyGroup>
+
+  <!-- 2. Defaults per platform; explicit values always win. -->
+  <PropertyGroup>
+    <StrideWindowSystem Condition="'$(StrideWindowSystem)' == '' and '$(StridePlatform)' == 'Windows'">Win32</StrideWindowSystem>
+    <StrideWindowSystem Condition="'$(StrideWindowSystem)' == '' and '$(StridePlatform)' == 'Linux'">X11</StrideWindowSystem>
+
+    <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' and '$(StridePlatform)' == 'Windows'">Direct3D11</StrideGraphicsApi>
+    <StrideGraphicsApi Condition="'$(StrideGraphicsApi)' == '' and '$(StridePlatform)' == 'Linux'">Vulkan</StrideGraphicsApi>
+  </PropertyGroup>
+
+  <!-- 3. Compile-time constants. -->
+  <PropertyGroup>
+    <DefineConstants Condition="'$(StridePlatform)' == 'Windows'">$(DefineConstants);STRIDE_PLATFORM_WINDOWS</DefineConstants>
+    <DefineConstants Condition="'$(StridePlatform)' == 'Linux'">$(DefineConstants);STRIDE_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants Condition="'$(StridePlatform)' == 'macOS'">$(DefineConstants);STRIDE_PLATFORM_MACOS</DefineConstants>
+    <DefineConstants Condition="'$(StridePlatform)' == 'Android'">$(DefineConstants);STRIDE_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants Condition="'$(StridePlatform)' == 'iOS'">$(DefineConstants);STRIDE_PLATFORM_IOS</DefineConstants>
+    <DefineConstants Condition="'$(StridePlatform)' == ''">$(DefineConstants);STRIDE_PLATFORM_PORTABLE</DefineConstants>
+
+    <DefineConstants Condition="'$(StrideWindowSystem)' == 'Win32'">$(DefineConstants);STRIDE_WINDOWSYSTEM_WIN32</DefineConstants>
+    <DefineConstants Condition="'$(StrideWindowSystem)' == 'WinUI'">$(DefineConstants);STRIDE_WINDOWSYSTEM_WINUI</DefineConstants>
+    <DefineConstants Condition="'$(StrideWindowSystem)' == 'X11'">$(DefineConstants);STRIDE_WINDOWSYSTEM_X11</DefineConstants>
+    <DefineConstants Condition="'$(StrideWindowSystem)' == 'Wayland'">$(DefineConstants);STRIDE_WINDOWSYSTEM_WAYLAND</DefineConstants>
+  </PropertyGroup>
+
+  <!--
+    4. Fail early on impossible combinations.
+
+    Skipped inside the meta-packages themselves: they deliberately reference
+    every axis package to build their dependency groups, so the consumer-side
+    checks do not apply to them.
+  -->
+  <Target Name="_StridePlatformValidate" BeforeTargets="CoreCompile"
+          Condition="'$(StridePlatformSkipAxisValidation)' != 'true'">
+    <PropertyGroup>
+      <_StrideKnownPlatforms>;Windows;Linux;macOS;Android;iOS;</_StrideKnownPlatforms>
+      <_StrideKnownWindowSystems>;Win32;WinUI;X11;Wayland;</_StrideKnownWindowSystems>
+      <_StridePlatformList>;$(StridePlatform);</_StridePlatformList>
+      <_StridePlatformWindowList>;$(StrideWindowSystem);</_StridePlatformWindowList>
+    </PropertyGroup>
+
+    <Error Condition="'$(_StridePlatformFromTfm)' != '' and '$(StridePlatform)' != '' and '$(StridePlatform)' != '$(_StridePlatformFromTfm)'"
+           Text="StridePlatform='$(StridePlatform)' contradicts the target framework '$(TargetFramework)' (which implies '$(_StridePlatformFromTfm)')." />
+
+    <Error Condition="'$(StridePlatform)' != '' and !$(_StrideKnownPlatforms.Contains(';$(StridePlatform);'))"
+           Text="StridePlatform='$(StridePlatform)' is not a known platform. Known: Windows, Linux, macOS, Android, iOS." />
+
+    <Error Condition="'$(StridePlatform)' == '' and '$(StrideWindowSystem)' != ''"
+           Text="StrideWindowSystem='$(StrideWindowSystem)' was set, but no platform was resolved. Use a platform TFM, a RID, or set StridePlatform explicitly." />
+
+    <Error Condition="'$(StridePlatform)' == '' and '$(StrideGraphicsApi)' != ''"
+           Text="StrideGraphicsApi='$(StrideGraphicsApi)' was set, but no platform was resolved. Use a platform TFM, a RID, or set StridePlatform explicitly." />
+
+    <Error Condition="'$(StrideWindowSystem)' != '' and !$(_StrideKnownWindowSystems.Contains(';$(StrideWindowSystem);'))"
+           Text="StrideWindowSystem='$(StrideWindowSystem)' is not a known windowing system. Known: Win32, WinUI, X11, Wayland." />
+
+    <ItemGroup>
+      <_StrideSelectedPlatformVariant Include="@(StridePlatformVariant)"
+                                      Condition="'%(StridePlatformVariant.Platform)' == '$(StridePlatform)'" />
+      <_StrideSelectedComponent Include="@(StridePlatformComponent)"
+                                Condition="'%(StridePlatformComponent.Platforms)' == '$(StridePlatform)' and $([System.String]::Copy(';%(StridePlatformComponent.WindowSystems);').Contains(';$(StrideWindowSystem);'))" />
+    </ItemGroup>
+
+    <Error Condition="'$(StridePlatform)' != '' and '@(StridePlatformVariant)' != '' and '@(_StrideSelectedPlatformVariant)' == ''"
+           Text="StridePlatform='$(StridePlatform)' is not provided by any Stride.Platform package in this project. Available: @(StridePlatformVariant->'%(Platform)')." />
+
+    <Error Condition="'$(StrideWindowSystem)' != '' and '@(StridePlatformComponent)' != '' and '@(_StrideSelectedComponent)' == ''"
+           Text="StrideWindowSystem='$(StrideWindowSystem)' is not available on platform '$(StridePlatform)' with the restored packages. Available: @(StridePlatformComponent->'%(Platforms)/%(WindowSystems)'). If you need WinUI, target net10.0-windows." />
+
+    <!--
+      A direct reference to a platform-specific package pins that axis. It must
+      agree with the resolved platform/windowing values.
+    -->
+    <PropertyGroup>
+      <_StrideDirectIds>;@(PackageReference);</_StrideDirectIds>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_StrideIncompatibleDirect Include="@(StridePlatformSpecificPackage)"
+        Condition="$(_StrideDirectIds.Contains(';%(StridePlatformSpecificPackage.Identity);'))
+                   and (('%(StridePlatformSpecificPackage.Platforms)' != '' and !$([System.String]::Copy(';%(StridePlatformSpecificPackage.Platforms);').Contains(';$(StridePlatform);')))
+                        or ('%(StridePlatformSpecificPackage.WindowSystems)' != '' and !$([System.String]::Copy(';%(StridePlatformSpecificPackage.WindowSystems);').Contains(';$(StrideWindowSystem);'))))" />
+    </ItemGroup>
+
+    <Error Condition="'@(_StrideIncompatibleDirect)' != ''"
+           Text="Direct reference(s) incompatible with the resolved platform '$(StridePlatform)' / windowing '$(StrideWindowSystem)': @(_StrideIncompatibleDirect). Reference the meta-packages instead, or fix the conflicting selection." />
+  </Target>
+
+  <!--
+    5. Prune the assets of platform packages that do not match.
+
+    Runs after ResolvePackageAssets, before ResolveLockFileReferences and
+    ResolveLockFileCopyLocalFiles turn the items into references and copy-local
+    paths. Direct package references are kept when compatible (escape hatch).
+  -->
+  <Target Name="_StridePlatformFilterAssets" AfterTargets="ResolvePackageAssets"
+          Condition="'$(StridePlatformSkipAxisValidation)' != 'true'">
+    <PropertyGroup>
+      <_StridePlatformList>;$(StridePlatform);</_StridePlatformList>
+      <_StridePlatformWindowList>;$(StrideWindowSystem);</_StridePlatformWindowList>
+      <_StrideDirectIds>;@(PackageReference);</_StrideDirectIds>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_StridePlatformStripCandidate Include="@(StridePlatformSpecificPackage)"
+        Condition="('%(StridePlatformSpecificPackage.Platforms)' != '' and !$([System.String]::Copy(';%(StridePlatformSpecificPackage.Platforms);').Contains(';$(StridePlatform);')))
+                   or ('%(StridePlatformSpecificPackage.WindowSystems)' != '' and !$([System.String]::Copy(';%(StridePlatformSpecificPackage.WindowSystems);').Contains(';$(StrideWindowSystem);')))" />
+
+      <_StridePlatformStripVariant Include="@(StridePlatformVariant)"
+        Condition="'%(StridePlatformVariant.Platform)' != '$(StridePlatform)'" />
+
+      <_StridePlatformStripComponent Include="@(StridePlatformComponent)"
+        Condition="'%(StridePlatformComponent.Platforms)' != '$(StridePlatform)' or !$([System.String]::Copy(';%(StridePlatformComponent.WindowSystems);').Contains(';$(StrideWindowSystem);'))" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_StridePlatformStripIds>;@(_StridePlatformStripCandidate);</_StridePlatformStripIds>
+      <_StridePlatformStripAssemblies>;@(_StridePlatformStripVariant->'%(AssemblyName)');@(_StridePlatformStripComponent->'%(AssemblyName)');</_StridePlatformStripAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)"
+        Condition="('%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);')))
+                   or ('%(NuGetPackageId)' == '' and $(_StridePlatformStripAssemblies.Contains(';%(Filename)%(Extension);')))" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <ResourceCopyLocalItems Remove="@(ResourceCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StridePlatformStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+    </ItemGroup>
+
+    <Message Importance="normal"
+             Text="Stride.Platform: platform=$(StridePlatform) windowing=$(StrideWindowSystem) api=$(StrideGraphicsApi); pruning @(_StridePlatformStripCandidate)." />
+  </Target>
+</Project>

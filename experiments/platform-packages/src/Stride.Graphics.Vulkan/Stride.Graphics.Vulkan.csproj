@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Graphics.Vulkan</AssemblyName>
+    <RootNamespace>Stride.Graphics</RootNamespace>
+    <PackageId>Stride.Graphics.Vulkan</PackageId>
+    <Description>Simulated Vulkan graphics variant for the platform meta-package experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_vulkan.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="runtimes\linux-x64\native\libstride_vulkan.so" Pack="true" PackagePath="runtimes\linux-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

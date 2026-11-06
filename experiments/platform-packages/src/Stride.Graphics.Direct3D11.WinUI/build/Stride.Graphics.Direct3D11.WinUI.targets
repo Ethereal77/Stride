@@ -1,0 +1,12 @@
+<Project>
+  <ItemGroup>
+    <StrideGraphicsComposition Include="Stride.Graphics.Direct3D11.WinUI"
+                               Apis="Direct3D11"
+                               Platforms="Windows"
+                               WindowSystems="WinUI"
+                               AssemblyName="Stride.Graphics.Direct3D11.WinUI.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Graphics.Direct3D11.WinUI"
+                                   Platforms="Windows"
+                                   WindowSystems="WinUI" />
+  </ItemGroup>
+</Project>

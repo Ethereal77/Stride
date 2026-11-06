@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Platform-neutral: no TFM platform, no platform-specific reference. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.AppModel</AssemblyName>
+    <RootNamespace>Stride.AppModel</RootNamespace>
+    <PackageId>Stride.AppModel</PackageId>
+    <Description>Platform-neutral application lifecycle for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+
+  <!-- Normal builds: project reference, so the solution builds from source. -->
+  <ItemGroup Condition="'$(StridePlatformPacking)' != 'true'">
+    <ProjectReference Include="..\Stride.Platform\Stride.Platform.csproj" />
+  </ItemGroup>
+
+  <!-- Packing: a package reference keeps the meta-package's buildTransitive assets. -->
+  <ItemGroup Condition="'$(StridePlatformPacking)' == 'true'">
+    <PackageReference Include="Stride.Platform" Version="$(PackageVersion)" PrivateAssets="none" />
+  </ItemGroup>
+</Project>

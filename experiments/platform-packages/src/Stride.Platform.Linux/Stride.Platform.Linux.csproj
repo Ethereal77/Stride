@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Platform.Linux</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Linux</PackageId>
+    <Description>Simulated Linux operating-system services for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

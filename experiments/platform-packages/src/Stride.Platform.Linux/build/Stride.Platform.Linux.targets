@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+    <StridePlatformVariant Include="Stride.Platform.Linux"
+                           Platform="Linux"
+                           AssemblyName="Stride.Platform.Linux.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Platform.Linux" Platforms="Linux" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Platform.Common</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Common</PackageId>
+    <Description>Shared platform types for the Stride.Platform meta-package experiment.</Description>
+  </PropertyGroup>
+</Project>

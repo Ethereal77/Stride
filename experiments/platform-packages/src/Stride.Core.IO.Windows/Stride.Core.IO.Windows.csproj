@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <AssemblyName>Stride.Core.IO.Windows</AssemblyName>
+    <RootNamespace>Stride.Core.IO</RootNamespace>
+    <PackageId>Stride.Core.IO.Windows</PackageId>
+    <Description>Simulated Windows I/O for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Core.IO.Common\Stride.Core.IO.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_io_windows.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

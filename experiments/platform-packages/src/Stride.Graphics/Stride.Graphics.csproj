@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <PackageId>Stride.Graphics</PackageId>
+    <RootNamespace>Stride.Graphics</RootNamespace>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Description>Graphics meta-package for the platform experiment: selects one API variant and its compositions.</Description>
+
+    <!-- This project references every axis package on purpose; consumer checks do not apply. -->
+    <StridePlatformSkipAxisValidation>true</StridePlatformSkipAxisValidation>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(StridePlatformPacking)' != 'true'">
+    <ProjectReference Include="..\Stride.Platform\Stride.Platform.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Common\Stride.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Direct3D11\Stride.Graphics.Direct3D11.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Vulkan\Stride.Graphics.Vulkan.csproj" />
+    <ProjectReference Include="..\Stride.Graphics.Direct3D11.WinUI\Stride.Graphics.Direct3D11.WinUI.csproj"
+                      Condition="'$(TargetFramework)' == 'net10.0-windows'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(StridePlatformPacking)' == 'true'">
+    <PackageReference Include="Stride.Platform" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Common" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Direct3D11" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Vulkan" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Graphics.Direct3D11.WinUI" Version="$(PackageVersion)" PrivateAssets="none"
+                      Condition="'$(TargetFramework)' == 'net10.0-windows'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="lib\net10.0\_._" Pack="true" PackagePath="lib\net10.0\" />
+    <None Include="lib\net10.0-windows7.0\_._" Pack="true" PackagePath="lib\net10.0-windows7.0\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

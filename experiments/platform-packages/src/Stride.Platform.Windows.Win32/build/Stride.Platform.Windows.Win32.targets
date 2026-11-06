@@ -1,0 +1,11 @@
+<Project>
+  <ItemGroup>
+    <StridePlatformComponent Include="Stride.Platform.Windows.Win32"
+                             Platforms="Windows"
+                             WindowSystems="Win32"
+                             AssemblyName="Stride.Platform.Windows.Win32.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Platform.Windows.Win32"
+                                   Platforms="Windows"
+                                   WindowSystems="Win32" />
+  </ItemGroup>
+</Project>

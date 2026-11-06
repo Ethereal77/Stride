@@ -1,0 +1,30 @@
+<Project>
+  <!--
+    Shared defaults for the platform meta-package experiment.
+    Isolated from the mirrored Stride build: plain Microsoft.NET.Sdk projects.
+  -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <IsPackable>true</IsPackable>
+    <PackageVersion Condition="'$(PackageVersion)' == ''">0.1.0-platform</PackageVersion>
+    <Authors>Stride platform meta-package experiment</Authors>
+    <Description>Build-system experiment: Stride.Platform as a meta-package.</Description>
+    <PackageTags>Stride;experiment;meta-package;platform</PackageTags>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)artifacts\nuget-cache</RestorePackagesPath>
+
+    <!-- Allows building net10.0-windows on non-Windows CI agents. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+
+    <!-- Meta-packages intentionally ship no lib/ref assembly of their own. -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+</Project>

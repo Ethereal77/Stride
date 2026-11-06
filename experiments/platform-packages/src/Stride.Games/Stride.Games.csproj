@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Platform-neutral: game loop only, no windowing and no graphics variant. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Games</AssemblyName>
+    <RootNamespace>Stride.Games</RootNamespace>
+    <PackageId>Stride.Games</PackageId>
+    <Description>Platform-neutral game loop for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(StridePlatformPacking)' != 'true'">
+    <ProjectReference Include="..\Stride.AppModel\Stride.AppModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(StridePlatformPacking)' == 'true'">
+    <PackageReference Include="Stride.AppModel" Version="$(PackageVersion)" PrivateAssets="none" />
+  </ItemGroup>
+</Project>

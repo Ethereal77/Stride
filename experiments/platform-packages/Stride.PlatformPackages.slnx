@@ -1,0 +1,20 @@
+<Solution>
+  <Project Path="src/Stride.Platform.Common/Stride.Platform.Common.csproj" />
+  <Project Path="src/Stride.Platform.Windows/Stride.Platform.Windows.csproj" />
+  <Project Path="src/Stride.Platform.Windows.Win32/Stride.Platform.Windows.Win32.csproj" />
+  <Project Path="src/Stride.Platform.Windows.WinUI/Stride.Platform.Windows.WinUI.csproj" />
+  <Project Path="src/Stride.Platform.Linux/Stride.Platform.Linux.csproj" />
+  <Project Path="src/Stride.Platform.Linux.X11/Stride.Platform.Linux.X11.csproj" />
+  <Project Path="src/Stride.Platform/Stride.Platform.csproj" />
+  <Project Path="src/Stride.Core.IO.Common/Stride.Core.IO.Common.csproj" />
+  <Project Path="src/Stride.Core.IO.Windows/Stride.Core.IO.Windows.csproj" />
+  <Project Path="src/Stride.Core.IO.Linux/Stride.Core.IO.Linux.csproj" />
+  <Project Path="src/Stride.Core.IO/Stride.Core.IO.csproj" />
+  <Project Path="src/Stride.Graphics.Common/Stride.Graphics.Common.csproj" />
+  <Project Path="src/Stride.Graphics.Direct3D11/Stride.Graphics.Direct3D11.csproj" />
+  <Project Path="src/Stride.Graphics.Vulkan/Stride.Graphics.Vulkan.csproj" />
+  <Project Path="src/Stride.Graphics.Direct3D11.WinUI/Stride.Graphics.Direct3D11.WinUI.csproj" />
+  <Project Path="src/Stride.Graphics/Stride.Graphics.csproj" />
+  <Project Path="src/Stride.AppModel/Stride.AppModel.csproj" />
+  <Project Path="src/Stride.Games/Stride.Games.csproj" />
+</Solution>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Invalid on purpose: a direct reference pins WinUI while Win32 is resolved. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Platform.Windows.WinUI" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

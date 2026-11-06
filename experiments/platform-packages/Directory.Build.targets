@@ -1,0 +1,6 @@
+<Project>
+  <!--
+    Intentionally empty: blocks slim-sdk/Directory.Build.targets (Skeleton.targets)
+    from leaking into the isolated experiment.
+  -->
+</Project>

@@ -1,0 +1,9 @@
+<Project>
+  <ItemGroup>
+    <StrideMetaGraphicsVariant Include="Stride.Graphics.Direct3D11"
+                               GraphicsApi="Direct3D11"
+                               Platforms="Windows"
+                               AssemblyName="Stride.Graphics.Direct3D11.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Graphics.Direct3D11" Platforms="Windows" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Portable library: net10.0 with no platform and no host fallback. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PortableGameLib</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Games" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

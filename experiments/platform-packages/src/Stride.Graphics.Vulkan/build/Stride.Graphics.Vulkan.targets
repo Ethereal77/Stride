@@ -1,0 +1,9 @@
+<Project>
+  <ItemGroup>
+    <StrideMetaGraphicsVariant Include="Stride.Graphics.Vulkan"
+                               GraphicsApi="Vulkan"
+                               Platforms="Windows;Linux"
+                               AssemblyName="Stride.Graphics.Vulkan.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Graphics.Vulkan" Platforms="Windows;Linux" />
+  </ItemGroup>
+</Project>

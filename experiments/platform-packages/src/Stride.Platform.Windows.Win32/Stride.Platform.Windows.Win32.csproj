@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <AssemblyName>Stride.Platform.Windows.Win32</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Windows.Win32</PackageId>
+    <Description>Simulated Win32 windowing and run loop for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows\Stride.Platform.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_platform_win32.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

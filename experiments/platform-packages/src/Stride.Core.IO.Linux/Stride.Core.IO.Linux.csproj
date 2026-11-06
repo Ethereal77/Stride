@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Core.IO.Linux</AssemblyName>
+    <RootNamespace>Stride.Core.IO</RootNamespace>
+    <PackageId>Stride.Core.IO.Linux</PackageId>
+    <Description>Simulated Linux I/O for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Core.IO.Common\Stride.Core.IO.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\linux-x64\native\libstride_io_linux.so" Pack="true" PackagePath="runtimes\linux-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+<Project>
+  <ItemGroup>
+    <StridePlatformComponent Include="Stride.Platform.Linux.X11"
+                             Platforms="Linux"
+                             WindowSystems="X11"
+                             AssemblyName="Stride.Platform.Linux.X11.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Platform.Linux.X11"
+                                   Platforms="Linux"
+                                   WindowSystems="X11" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Invalid on purpose: X11 is not part of the Windows TFM group. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <StrideWindowSystem>X11</StrideWindowSystem>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

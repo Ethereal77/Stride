@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Invalid on purpose: a direct reference pins Vulkan while Direct3D11 is resolved. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Graphics" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Graphics.Vulkan" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

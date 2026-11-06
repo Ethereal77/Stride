@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <PackageId>Stride.Platform</PackageId>
+    <RootNamespace>Stride.Platform</RootNamespace>
+
+    <!-- Meta-package: no assembly of its own. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Description>Platform meta-package: resolves platform, windowing system and graphics API per TFM (experiment).</Description>
+
+    <!-- This project references every axis package on purpose; consumer checks do not apply. -->
+    <StridePlatformSkipAxisValidation>true</StridePlatformSkipAxisValidation>
+  </PropertyGroup>
+
+  <!-- Normal builds: project references, so the solution builds without a populated feed. -->
+  <ItemGroup Condition="'$(StridePlatformPacking)' != 'true'">
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows\Stride.Platform.Windows.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows.Win32\Stride.Platform.Windows.Win32.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Linux\Stride.Platform.Linux.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Linux.X11\Stride.Platform.Linux.X11.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows.WinUI\Stride.Platform.Windows.WinUI.csproj"
+                      Condition="'$(TargetFramework)' == 'net10.0-windows'" />
+  </ItemGroup>
+
+  <!--
+    Packing: project references are written with exclude="Build,Analyzers", which
+    would hide buildTransitive targets. Switch to package references so the
+    nuspec carries per-TFM dependency groups with all assets.
+  -->
+  <ItemGroup Condition="'$(StridePlatformPacking)' == 'true'">
+    <PackageReference Include="Stride.Platform.Common" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Platform.Windows" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Platform.Windows.Win32" Version="$(PackageVersion)" PrivateAssets="none" />
+    <PackageReference Include="Stride.Platform.Linux" Version="$(PackageVersion)" PrivateAssets="none"
+                      Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="Stride.Platform.Linux.X11" Version="$(PackageVersion)" PrivateAssets="none"
+                      Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="Stride.Platform.Windows.WinUI" Version="$(PackageVersion)" PrivateAssets="none"
+                      Condition="'$(TargetFramework)' == 'net10.0-windows'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Folder names are already normalized (net10.0-windows7.0) for NuGet. -->
+    <None Include="lib\net10.0\_._" Pack="true" PackagePath="lib\net10.0\" />
+    <None Include="lib\net10.0-windows7.0\_._" Pack="true" PackagePath="lib\net10.0-windows7.0\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

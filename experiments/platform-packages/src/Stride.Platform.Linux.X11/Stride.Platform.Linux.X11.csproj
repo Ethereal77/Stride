@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Platform.Linux.X11</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Linux.X11</PackageId>
+    <Description>Simulated X11 windowing and run loop for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Linux\Stride.Platform.Linux.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\linux-x64\native\libstride_platform_x11.so" Pack="true" PackagePath="runtimes\linux-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

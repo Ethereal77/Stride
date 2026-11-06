@@ -1,0 +1,108 @@
+<Project>
+  <!--
+    ==================================================================
+    Stride.Graphics meta-package (platform experiment).
+
+    The platform axis is resolved by Stride.Platform. This file owns:
+      1. STRIDE_GRAPHICS_* constants.
+      2. Validation of StrideGraphicsApi against the resolved platform.
+      3. Pruning of non-selected API variants and compositions.
+
+    Compositions are sparse pairwise packages (e.g. Direct3D 11 + WinUI).
+    They are selected by the same three values: API, platform, windowing.
+    ==================================================================
+  -->
+
+  <Target Name="_StrideGraphicsValidate" BeforeTargets="CoreCompile"
+          Condition="'$(StridePlatformSkipAxisValidation)' != 'true'">
+    <PropertyGroup>
+      <_StridePlatformList>;$(StridePlatform);</_StridePlatformList>
+      <_StridePlatformWindowList>;$(StrideWindowSystem);</_StridePlatformWindowList>
+      <_StrideDirectIds>;@(PackageReference);</_StrideDirectIds>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_StrideGraphicsSelectedVariant Include="@(StrideMetaGraphicsVariant)"
+        Condition="'%(StrideMetaGraphicsVariant.GraphicsApi)' == '$(StrideGraphicsApi)' and $([System.String]::Copy(';%(StrideMetaGraphicsVariant.Platforms);').Contains(';$(StridePlatform);'))" />
+
+      <_StrideGraphicsSelectedComposition Include="@(StrideGraphicsComposition)"
+        Condition="$([System.String]::Copy(';%(StrideGraphicsComposition.Apis);').Contains(';$(StrideGraphicsApi);'))
+                   and $([System.String]::Copy(';%(StrideGraphicsComposition.Platforms);').Contains(';$(StridePlatform);'))
+                   and $([System.String]::Copy(';%(StrideGraphicsComposition.WindowSystems);').Contains(';$(StrideWindowSystem);'))" />
+
+      <_StrideGraphicsIncompatibleDirect Include="@(StrideMetaGraphicsVariant)"
+        Condition="$(_StrideDirectIds.Contains(';%(StrideMetaGraphicsVariant.Identity);'))
+                   and ('%(StrideMetaGraphicsVariant.GraphicsApi)' != '$(StrideGraphicsApi)'
+                        or !$([System.String]::Copy(';%(StrideMetaGraphicsVariant.Platforms);').Contains(';$(StridePlatform);')))" />
+
+      <_StrideGraphicsIncompatibleDirect Include="@(StrideGraphicsComposition)"
+        Condition="$(_StrideDirectIds.Contains(';%(StrideGraphicsComposition.Identity);'))
+                   and (!$([System.String]::Copy(';%(StrideGraphicsComposition.Apis);').Contains(';$(StrideGraphicsApi);'))
+                        or !$([System.String]::Copy(';%(StrideGraphicsComposition.Platforms);').Contains(';$(StridePlatform);'))
+                        or !$([System.String]::Copy(';%(StrideGraphicsComposition.WindowSystems);').Contains(';$(StrideWindowSystem);')))" />
+    </ItemGroup>
+
+    <Error Condition="'$(StridePlatform)' != '' and '@(StrideMetaGraphicsVariant)' != '' and '@(_StrideGraphicsSelectedVariant)' == ''"
+           Text="StrideGraphicsApi='$(StrideGraphicsApi)' is not provided on platform '$(StridePlatform)'. Available: @(StrideMetaGraphicsVariant->'%(GraphicsApi)/%(Platforms)')." />
+
+    <Error Condition="'@(_StrideGraphicsIncompatibleDirect)' != ''"
+           Text="Direct graphics reference(s) incompatible with api '$(StrideGraphicsApi)' / platform '$(StridePlatform)' / windowing '$(StrideWindowSystem)': @(_StrideGraphicsIncompatibleDirect). Reference Stride.Graphics instead, or fix the selection." />
+  </Target>
+
+  <Target Name="_StrideGraphicsDefineConstants" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Direct3D11'">$(DefineConstants);STRIDE_GRAPHICS_API_DIRECT3D11</DefineConstants>
+      <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Vulkan'">$(DefineConstants);STRIDE_GRAPHICS_API_VULKAN</DefineConstants>
+
+      <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Direct3D11'">$(DefineConstants);STRIDE_GRAPHICS_FAMILY_DIRECT3D</DefineConstants>
+      <DefineConstants Condition="'$(StrideGraphicsApi)' == 'Vulkan'">$(DefineConstants);STRIDE_GRAPHICS_FAMILY_VULKAN</DefineConstants>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="_StrideGraphicsFilterAssets" AfterTargets="ResolvePackageAssets"
+          Condition="'$(StridePlatformSkipAxisValidation)' != 'true'">
+    <PropertyGroup>
+      <_StridePlatformList>;$(StridePlatform);</_StridePlatformList>
+      <_StridePlatformWindowList>;$(StrideWindowSystem);</_StridePlatformWindowList>
+      <_StrideDirectIds>;@(PackageReference);</_StrideDirectIds>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_StrideGraphicsStripVariant Include="@(StrideMetaGraphicsVariant)"
+        Condition="'%(StrideMetaGraphicsVariant.GraphicsApi)' != '$(StrideGraphicsApi)'
+                   or !$([System.String]::Copy(';%(StrideMetaGraphicsVariant.Platforms);').Contains(';$(StridePlatform);'))" />
+
+      <_StrideGraphicsStripComposition Include="@(StrideGraphicsComposition)"
+        Condition="!$([System.String]::Copy(';%(StrideGraphicsComposition.Apis);').Contains(';$(StrideGraphicsApi);'))
+                   or !$([System.String]::Copy(';%(StrideGraphicsComposition.Platforms);').Contains(';$(StridePlatform);'))
+                   or !$([System.String]::Copy(';%(StrideGraphicsComposition.WindowSystems);').Contains(';$(StrideWindowSystem);'))" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_StrideGraphicsStripIds>;@(_StrideGraphicsStripVariant);@(_StrideGraphicsStripComposition);</_StrideGraphicsStripIds>
+      <_StrideGraphicsStripAssemblies>;@(_StrideGraphicsStripVariant->'%(AssemblyName)');@(_StrideGraphicsStripComposition->'%(AssemblyName)');</_StrideGraphicsStripAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)"
+        Condition="('%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);')))
+                   or ('%(NuGetPackageId)' == '' and $(_StrideGraphicsStripAssemblies.Contains(';%(Filename)%(Extension);')))" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <ResourceCopyLocalItems Remove="@(ResourceCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+        Condition="'%(NuGetPackageId)' != '' and $(_StrideGraphicsStripIds.Contains(';%(NuGetPackageId);')) and !$(_StrideDirectIds.Contains(';%(NuGetPackageId);'))" />
+    </ItemGroup>
+
+    <Message Importance="normal"
+             Text="Stride.Graphics: api=$(StrideGraphicsApi) platform=$(StridePlatform) windowing=$(StrideWindowSystem); pruning @(_StrideGraphicsStripVariant) @(_StrideGraphicsStripComposition)." />
+  </Target>
+</Project>

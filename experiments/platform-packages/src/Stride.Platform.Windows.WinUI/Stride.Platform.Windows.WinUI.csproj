@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- WinUI only exists on the Windows TFM; it is not part of the net10.0 group. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>Stride.Platform.Windows.WinUI</AssemblyName>
+    <RootNamespace>Stride.Platform</RootNamespace>
+    <PackageId>Stride.Platform.Windows.WinUI</PackageId>
+    <Description>Simulated WinUI windowing and run loop for the Stride.Platform experiment.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stride.Platform.Common\Stride.Platform.Common.csproj" />
+    <ProjectReference Include="..\Stride.Platform.Windows\Stride.Platform.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtimes\win-x64\native\stride_platform_winui.dll" Pack="true" PackagePath="runtimes\win-x64\native\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\*.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+</Project>

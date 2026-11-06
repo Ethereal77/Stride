@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <StridePlatformSpecificPackage Include="Stride.Core.IO.Windows"
+                                   Platforms="Windows"
+                                   AssemblyName="Stride.Core.IO.Windows.dll" />
+  </ItemGroup>
+</Project>

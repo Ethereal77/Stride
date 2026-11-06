@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    Declares the Windows operating-system package. Imported through
+    buildTransitive/, so projects that reference Stride.Platform transitively
+    also see the descriptor.
+  -->
+  <ItemGroup>
+    <StridePlatformVariant Include="Stride.Platform.Windows"
+                           Platform="Windows"
+                           AssemblyName="Stride.Platform.Windows.dll" />
+    <StridePlatformSpecificPackage Include="Stride.Platform.Windows" Platforms="Windows" />
+  </ItemGroup>
+</Project>
