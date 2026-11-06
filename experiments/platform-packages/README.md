@@ -38,6 +38,7 @@ platform-packages/
   test.ps1                     empaquetado, builds, ejecución y auditoría
   src/                         paquetes y meta-paquetes
   consumers/                   aplicaciones y bibliotecas de prueba
+  tests/                       proyectos de test (Library, dotnet test)
 ```
 
 ### Paquetes por eje
@@ -295,6 +296,50 @@ La aplicación crea el `PlatformHost` concreto en tiempo de compilación y le pa
 un `PlatformServices` (delegados: crear superficie y ejecutar el bucle). No hay
 reflexión, interfaces ni despacho virtual entre la biblioteca y la plataforma.
 
+## Editores y herramientas
+
+Un editor o una herramienta no son un juego: no necesitan `Stride.Games` para su
+bucle principal. La UI (WPF, Avalonia o la consola) es el host y aporta la
+superficie nativa; Stride aporta plataforma, ventanas e I/O.
+
+### Editor WPF (GameStudio)
+
+`consumers/EditorApp` simula GameStudio: `WinExe`/`Exe` sobre
+`net10.0-windows`, que resuelve Windows, `Win32` y Direct3D 11. Referencia los
+metas `Stride.Games`, `Stride.Graphics` y `Stride.Core.IO`, pero **no** elige
+paquetes de eje.
+
+Los componentes internos de escena y preview sí derivan de `Game`:
+
+- `consumers/EditorShared/EditorGame.cs` contiene `EditorGame`, `SceneViewGame`
+  y `AssetPreviewGame`; el editor completo no es un `Game`.
+- `WpfWin32SurfaceAdapter` convierte la superficie de WPF (`HwndHost`) en un
+  `SurfaceDescriptor` con `SurfaceKind.Win32Hwnd`. WPF no es un
+  `WindowSystemKind` de Stride.
+
+Un futuro cambio a Direct3D 12 solo tocaría `StrideGraphicsApi` y la variante
+gráfica; GameStudio seguiría siendo Windows-only por WPF.
+
+### Editor Avalonia multi-plataforma
+
+`consumers/EditorAvaloniaApp` simula un head Linux: `net10.0` + `linux-x64`,
+`StridePlatform=Linux`, `StrideWindowSystem=X11` y
+`StrideGraphicsApi=Vulkan`. Comparte los mismos componentes internos
+(`EditorShared`) y usa `AvaloniaSurfaceAdapter`, que traduce el top level nativo
+de Avalonia a `X11Window` (o `Win32Hwnd` en un head Windows).
+
+No hay un único binario multi-OS: se compila un head por OS/RID. El núcleo del
+editor puede ser portable (`Common`), pero cada head fija plataforma,
+windowing y API. Avalonia no es el `WindowSystemKind`; lo es la superficie
+nativa que proporcione.
+
+### Herramienta de consola
+
+`consumers/AssetTool` es un `Exe` `net10.0` con `StridePlatform=Windows`
+explícito. Solo referencia `Stride.Core.IO`: no arrastra gráficos ni
+windowing. Para distribuirla, cada build debe fijar su OS/RID; no conviene
+depender del fallback de host.
+
 ## Matriz de consumidores
 
 | Consumidor | Escenario | Qué valida |
@@ -305,6 +350,9 @@ reflexión, interfaces ni despacho virtual entre la biblioteca y la plataforma.
 | `PortableGameLib` | biblioteca `net10.0` | `STRIDE_PLATFORM_PORTABLE`, sin variantes ni plataforma |
 | `MultiTargetProbe` | `net10.0;net10.0-windows` | `net10.0` portable y `net10.0-windows` Windows/Win32 |
 | `DirectPinLib` | `net10.0-windows`, WinUI + `Stride.Platform.Windows.WinUI` directo | pin compatible con aviso `STRIDE0001` y opt-out documentado |
+| `EditorApp` | `net10.0-windows`, Win32 + Direct3D11 | editor WPF simulado, adaptador WPF→Win32, `EditorGame`/`SceneViewGame` internos |
+| `EditorAvaloniaApp` | `net10.0` + Linux/X11/Vulkan + `linux-x64` | head Avalonia, adaptador Avalonia→X11, componentes de editor compartidos |
+| `AssetTool` | `Exe` `net10.0`, `StridePlatform=Windows` | herramienta de consola con I/O, sin gráficos |
 | `invalid/InvalidLinuxD3D11` | Linux + Direct3D11 | error de API no disponible |
 | `invalid/InvalidWindowsX11` | Windows + X11 | error de windowing no disponible |
 | `invalid/InvalidWinUIOnNet10` | `net10.0` + WinUI | error con sugerencia de usar `net10.0-windows` |
@@ -312,6 +360,55 @@ reflexión, interfaces ni despacho virtual entre la biblioteca y la plataforma.
 | `invalid/InvalidDirectGraphics` | Direct3D11 resuelto + `Stride.Graphics.Vulkan` directo | error de pin gráfico incompatible |
 
 Los casos inválidos se compilan esperando un fallo y comprobando el mensaje.
+
+## Tests
+
+Los tests son proyectos **`Library`** con `Microsoft.NET.Test.Sdk` + xUnit. Se
+ejecutan con `dotnet test` (CI o IDE), no como ejecutables normales. Cada
+proyecto fija una sola combinación de plataforma y API: la matriz se cubre con
+varios builds, no con un proceso que cambie de variante en tiempo de ejecución.
+
+| Proyecto | Tipo | Combinación |
+| --- | --- | --- |
+| `Stride.Tests.Portable` | contrato portable | `net10.0`, solo paquetes `Common` |
+| `Stride.Tests.Platform.Windows` | contrato de plataforma | Windows / Win32, metas `Stride.Platform` + `Stride.Core.IO` |
+| `Stride.Tests.Platform.Linux` | contrato de plataforma | Linux / X11, metas con plataforma explícita |
+| `Stride.Tests.Graphics.Windows.D3D11` | contrato de gráficos | Windows / Direct3D11 |
+| `Stride.Tests.Graphics.Linux.Vulkan` | contrato de gráficos | Linux / Vulkan |
+| `Stride.Tests.Regression.Windows` | regresión | pin directo a `Stride.Platform.Windows.Win32` con opt-out |
+| `Stride.Tests.Regression.Linux` | regresión | pin directo a `Stride.Platform.Linux.X11` con opt-out |
+
+- **Portables**: solo `Stride.Platform.Common`, `Stride.Graphics.Common` y
+  `Stride.Core.IO.Common`. No se define ninguna constante de plataforma ni de
+  API y no se copia ninguna implementación.
+- **Contrato de plataforma**: comprueban que `PlatformHost`, `PlatformServices`
+  y `FileSystem` se comportan según la implementación resuelta. El proyecto
+  Linux se ejecuta como biblioteca en cualquier host; la compilación, no el OS
+  del runner, elige la implementación.
+- **Contrato de gráficos**: misma abstracción (`GraphicsDevice`) contra cada
+  variante. El meta-paquete poda la API no seleccionada, así que un binario no
+  puede ver Direct3D 11 y Vulkan a la vez.
+- **Regresión**: pruebas de una implementación concreta. Usan una referencia
+  directa intencionada y `StridePlatformAllowDirectReferences=true`; además
+  comprueban que la poda elimina las implementaciones del otro OS/API.
+
+Los tests de contrato llevan `[Trait("Category", "PlatformContract")]` o
+`GraphicsContract`; los de regresión, `[Trait("Category", "PlatformRegression")]`.
+Se pueden filtrar con:
+
+```powershell
+dotnet test tests/Stride.Tests.Regression.Windows/Stride.Tests.Regression.Windows.csproj `
+  --filter "Category=PlatformRegression"
+```
+
+`test.ps1` empaqueta primero y pasa `StridePlatformVersion` y
+`BaseOutputPath` a cada proyecto. Para ejecutar un test suelto manualmente hace
+falta indicar la versión empaquetada:
+
+```powershell
+dotnet test tests/Stride.Tests.Platform.Linux/Stride.Tests.Platform.Linux.csproj `
+  -c Release -p:StridePlatformVersion=0.1.0-platform.<sufijo>
+```
 
 ## Cómo ejecutar
 
@@ -327,18 +424,22 @@ El script:
 3. empaqueta en fases: bases → `Stride.Platform` → resto de metas;
 4. inspecciona los `.nupkg` (placeholders, `buildTransitive`, grupos por TFM,
    ausencia de `exclude` en las dependencias de `AppModel`/`Games`);
-5. compila y ejecuta los consumidores válidos;
+5. compila y ejecuta los consumidores válidos (juegos, editor WPF, head
+   Avalonia y herramienta de consola);
 6. comprueba ensamblados presentes, ensamblados podados y activos nativos;
-7. compila los casos inválidos y verifica sus diagnósticos;
-8. comprueba la advertencia `STRIDE0001` y su opt-out.
+7. ejecuta los siete proyectos de test con `dotnet test`;
+8. compila los casos inválidos y verifica sus diagnósticos;
+9. comprueba la advertencia `STRIDE0001` y su opt-out.
 
 Opciones:
 
 - `-SkipPack`: reutiliza los paquetes más recientes de `artifacts/packages`.
+  Omite la comprobación de los paquetes recién empaquetados, así que el contador
+  baja a `181/181`.
 - `-KeepArtifacts`: no borra `artifacts/build`.
 - `-Configuration Debug|Release`.
 
-Resultado esperado: `116/116 checks passed`.
+Resultado esperado: `182/182 checks passed`.
 
 ## Empaquetado
 
@@ -365,3 +466,9 @@ del `ItemGroup`, porque la evaluación exterior del proyecto multi-TFM no los ve
 - `Stride.Games` no referencia ninguna variante gráfica: el dispositivo lo posee
   la aplicación. Referenciar una variante desde la biblioteca rompería a los
   consumidores que eligen otra API.
+- Los adaptadores WPF y Avalonia son simulados: no referencian WPF ni Avalonia
+  reales. Solo demuestran dónde se traduce la superficie de la UI a
+  `SurfaceDescriptor`.
+- El editor y los tests se compilan para una plataforma/API por binario. La
+  matriz completa requiere un job de CI por OS; no hay un ejecutable único
+  multi-plataforma.

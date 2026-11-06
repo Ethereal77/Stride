@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      Regression test: it deliberately pins the concrete Win32 package to check
+      that implementation in isolation. The opt-out keeps STRIDE0001 quiet.
+    -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <StrideWindowSystem>Win32</StrideWindowSystem>
+    <StridePlatformAllowDirectReferences>true</StridePlatformAllowDirectReferences>
+    <AssemblyName>Stride.Tests.Regression.Windows</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Platform.Windows.Win32" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

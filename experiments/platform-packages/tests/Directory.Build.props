@@ -1,0 +1,18 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+  <PropertyGroup>
+    <!-- Tests are libraries: they run through dotnet test / the IDE test host. -->
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <StridePlatformVersion Condition="'$(StridePlatformVersion)' == ''">0.1.0-platform</StridePlatformVersion>
+    <TestSdkVersion>17.14.1</TestSdkVersion>
+    <XunitVersion>2.9.3</XunitVersion>
+    <XunitRunnerVersion>3.1.4</XunitRunnerVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVersion)" PrivateAssets="all" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

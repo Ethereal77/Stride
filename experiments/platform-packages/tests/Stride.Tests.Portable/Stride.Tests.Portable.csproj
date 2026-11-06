@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Portable: only Common packages, no platform meta and no host fallback. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Stride.Tests.Portable</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform.Common" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Graphics.Common" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Core.IO.Common" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

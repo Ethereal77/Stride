@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Simulated cross-platform Avalonia head: one build per OS/RID. -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <StridePlatform>Linux</StridePlatform>
+    <StrideWindowSystem>X11</StrideWindowSystem>
+    <StrideGraphicsApi>Vulkan</StrideGraphicsApi>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <AssemblyName>EditorAvaloniaApp</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Games" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Graphics" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Core.IO" Version="$(StridePlatformVersion)" />
+    <Compile Include="..\EditorShared\EditorGame.cs" Link="EditorGame.cs" />
+    <Compile Include="..\EditorShared\AvaloniaSurfaceAdapter.cs" Link="AvaloniaSurfaceAdapter.cs" />
+  </ItemGroup>
+</Project>

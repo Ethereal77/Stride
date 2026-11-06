@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      Regression test: pins the concrete X11 package to check Linux windowing
+      in isolation. The opt-out keeps STRIDE0001 quiet.
+    -->
+    <TargetFramework>net10.0</TargetFramework>
+    <StridePlatform>Linux</StridePlatform>
+    <StrideWindowSystem>X11</StrideWindowSystem>
+    <StridePlatformAllowDirectReferences>true</StridePlatformAllowDirectReferences>
+    <AssemblyName>Stride.Tests.Regression.Linux</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Platform.Linux.X11" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

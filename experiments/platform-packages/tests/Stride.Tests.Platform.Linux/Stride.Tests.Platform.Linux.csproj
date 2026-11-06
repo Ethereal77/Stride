@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Linux has no TFM: the platform is explicit and the build stays a library. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <StridePlatform>Linux</StridePlatform>
+    <StrideWindowSystem>X11</StrideWindowSystem>
+    <AssemblyName>Stride.Tests.Platform.Linux</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Core.IO" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

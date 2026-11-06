@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    Packs the platform meta-package experiment and runs the consumer matrix.
+    Packs the platform meta-package experiment and runs the consumer and test matrix.
 
 .DESCRIPTION
     Everything the script writes stays inside experiments/platform-packages:
@@ -38,6 +38,7 @@ Set-StrictMode -Version Latest
 
 $env:MSBUILDDISABLENODEREUSE = '1'
 $env:DOTNET_CLI_USE_MSBUILD_SERVER = '0'
+$env:DOTNET_CLI_UI_LANGUAGE = 'en'
 
 $root = $PSScriptRoot
 $artifacts = Join-Path $root 'artifacts'
@@ -129,6 +130,28 @@ function Invoke-Build {
     }
 
     $arguments += $ExtraProperties
+    return Invoke-Dotnet -Arguments $arguments
+}
+
+function Invoke-Test {
+    param(
+        [string]$Project,
+        [string]$Scenario,
+        [string[]]$ExtraProperties = @()
+    )
+
+    $outRoot = Join-Path $buildDir "$Scenario\"
+    $results = Join-Path $buildDir "$Scenario\test-results"
+    $arguments = @(
+        'test', (Join-Path $root $Project)
+        '-c', $Configuration
+        '-v:minimal'
+        "-p:StridePlatformVersion=$version"
+        "-p:BaseOutputPath=$outRoot"
+        '--results-directory', $results
+        '-nodeReuse:false'
+    ) + $ExtraProperties
+
     return Invoke-Dotnet -Arguments $arguments
 }
 
@@ -248,6 +271,15 @@ function Assert-OutputContains {
         Write-Host "  [FAIL] $Message (expected '$Expected')" -ForegroundColor Red
         Write-Host ($Result.Output -split "`n" | Select-Object -First 30 | ForEach-Object { "         $_" })
     }
+}
+
+function Assert-TestsPass {
+    param([pscustomobject]$Result, [string]$Message)
+
+    Assert-True ($Result.ExitCode -eq 0) $Message
+    if ($Result.ExitCode -ne 0) { Write-Host $Result.Output }
+    Assert-True ($Result.Output -match 'Passed!') "$Message (test summary)"
+    Assert-True ($Result.Output -match 'Failed:\s+0,') "$Message (no failures)"
 }
 
 function Test-Asset {
@@ -476,6 +508,63 @@ Assert-True ($build.ExitCode -eq 0) 'Build succeeds with StridePlatformAllowDire
 Assert-True (-not $build.Output.Contains('STRIDE0001')) 'The opt-out suppresses the direct-reference warning'
 if ($build.ExitCode -ne 0) { Write-Host $build.Output }
 
+Write-Step 'Editor consumer (WPF -> Win32, Direct3D11, internal games)'
+$build = Invoke-Build -Project 'consumers/EditorApp/EditorApp.csproj' -Scenario 'editor-win'
+Assert-True ($build.ExitCode -eq 0) 'Editor builds with Win32 + Direct3D11 and no direct axis reference'
+Assert-True (-not $build.Output.Contains('STRIDE0001')) 'The editor consumes only meta-packages'
+if ($build.ExitCode -ne 0) { Write-Host $build.Output }
+
+$run = Invoke-App -Scenario 'editor-win' -TargetFramework 'net10.0-windows' -RuntimeIdentifier '' -AssemblyName 'EditorApp'
+Assert-True ($run.ExitCode -eq 0) 'EditorApp runs'
+Assert-OutputContains $run 'host=Windows/Win32' 'The WPF editor host resolves Windows/Win32'
+Assert-OutputContains $run 'api=Direct3D11' 'The editor views use the Direct3D11 variant'
+Assert-OutputContains $run 'surface=Win32Hwnd' 'The WPF -> Win32 adapter supplies an HWND surface'
+Assert-OutputContains $run 'adapter=WPF HwndHost' 'The adapter is the WPF surface seam'
+Assert-OutputContains $run 'scene-frames=2 draws=2' 'The internal scene game runs and draws'
+Assert-OutputContains $run 'preview-frames=2 draws=2' 'The internal asset-preview game runs and draws'
+Assert-OutputContains $run 'submitted=4' 'Both internal games reach the shared device'
+Assert-OutputContains $run 'assets=C:\ProgramData\Stride\assets' 'The editor uses the Windows I/O implementation'
+
+$outputDir = Get-OutputDirectory -Scenario 'editor-win' -TargetFramework 'net10.0-windows' -RuntimeIdentifier ''
+Assert-True (Test-Path (Join-Path $outputDir 'Stride.Games.dll')) 'The editor references Stride.Games for its internal games'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Vulkan.dll'))) 'The editor prunes the Vulkan variant'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.WinUI.dll'))) 'The editor prunes WinUI'
+
+Write-Step 'Editor consumer (Avalonia -> X11, Vulkan, separate head)'
+$build = Invoke-Build -Project 'consumers/EditorAvaloniaApp/EditorAvaloniaApp.csproj' -Scenario 'editor-avalonia-linux' -RuntimeIdentifier 'linux-x64'
+Assert-True ($build.ExitCode -eq 0) 'The Avalonia Linux head builds with explicit platform, windowing and API'
+if ($build.ExitCode -ne 0) { Write-Host $build.Output }
+
+$run = Invoke-App -Scenario 'editor-avalonia-linux' -TargetFramework 'net10.0' -RuntimeIdentifier 'linux-x64' -AssemblyName 'EditorAvaloniaApp'
+Assert-True ($run.ExitCode -eq 0) 'EditorAvaloniaApp runs (no native calls)'
+Assert-OutputContains $run 'host=Linux/X11' 'The Avalonia head resolves Linux/X11'
+Assert-OutputContains $run 'api=Vulkan' 'The Avalonia head uses the Vulkan variant'
+Assert-OutputContains $run 'surface=X11Window' 'The Avalonia -> X11 adapter supplies a native window'
+Assert-OutputContains $run 'adapter=Avalonia X11 window' 'The adapter is the Avalonia surface seam'
+Assert-OutputContains $run 'platform-native=libstride_platform_x11.so' 'The Linux X11 host is selected'
+Assert-OutputContains $run 'assets=/var/lib/stride/assets' 'The Avalonia head uses the Linux I/O implementation'
+
+$outputDir = Get-OutputDirectory -Scenario 'editor-avalonia-linux' -TargetFramework 'net10.0' -RuntimeIdentifier 'linux-x64'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Direct3D11.dll'))) 'The Avalonia Linux head prunes Direct3D11'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.dll'))) 'The Avalonia Linux head prunes the Windows platform'
+
+Write-Step 'Console tool consumer (explicit platform, I/O only)'
+$build = Invoke-Build -Project 'consumers/AssetTool/AssetTool.csproj' -Scenario 'asset-tool'
+Assert-True ($build.ExitCode -eq 0) 'AssetTool builds with Stride.Core.IO and an explicit platform'
+if ($build.ExitCode -ne 0) { Write-Host $build.Output }
+
+$run = Invoke-App -Scenario 'asset-tool' -TargetFramework 'net10.0' -RuntimeIdentifier '' -AssemblyName 'AssetTool'
+Assert-True ($run.ExitCode -eq 0) 'AssetTool runs'
+Assert-OutputContains $run 'tool=asset' 'The console tool starts'
+Assert-OutputContains $run 'platform=Windows' 'The console tool resolves the explicit platform'
+Assert-OutputContains $run 'io-separator=\' 'The console tool uses the Windows I/O implementation'
+Assert-OutputContains $run 'io-case-sensitive=False' 'The console tool sees Windows path rules'
+Assert-OutputContains $run 'assets=C:\ProgramData\Stride\assets' 'The console tool composes asset paths'
+
+$outputDir = Get-OutputDirectory -Scenario 'asset-tool' -TargetFramework 'net10.0' -RuntimeIdentifier ''
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Common.dll'))) 'The console tool pulls no graphics assembly'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Core.IO.Linux.dll'))) 'The console tool prunes the Linux I/O implementation'
+
 Write-Step 'Linux / X11 consumer (explicit platform, Vulkan)'
 $build = Invoke-Build -Project 'consumers/GameLinuxApp/GameLinuxApp.csproj' -Scenario 'game-linux' -RuntimeIdentifier 'linux-x64'
 Assert-True ($build.ExitCode -eq 0) 'Build succeeds for net10.0 + StridePlatform=Linux + linux-x64'
@@ -533,6 +622,51 @@ Assert-True ($windowsProbeReferences -contains 'Stride.Platform.Windows.Win32') 
 Assert-True ($windowsProbeDeps.Contains('"Stride.Platform.Windows/')) 'net10.0-windows restores the Windows OS package'
 Assert-True (-not $windowsProbeDeps.Contains('Stride.Platform.Linux') -and -not $windowsProbeDeps.Contains('Stride.Platform.Windows.WinUI')) 'net10.0-windows prunes Linux and WinUI'
 Assert-True (-not $portableProbeDeps.Contains('"Stride.Platform.Windows/') -and -not $portableProbeDeps.Contains('Stride.Platform.Linux')) 'net10.0 restores only Stride.Platform.Common'
+
+Write-Step 'Tests: portable contract (net10.0, Common only)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Portable/Stride.Tests.Portable.csproj' -Scenario 'tests-portable'
+Assert-TestsPass $test 'Portable contract tests pass'
+$outputDir = Get-OutputDirectory -Scenario 'tests-portable' -TargetFramework 'net10.0' -RuntimeIdentifier ''
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.dll'))) 'Portable tests pull no platform implementation'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Direct3D11.dll'))) 'Portable tests pull no graphics variant'
+
+Write-Step 'Tests: platform contract (Windows)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Platform.Windows/Stride.Tests.Platform.Windows.csproj' -Scenario 'tests-platform-win'
+Assert-TestsPass $test 'Windows platform contract tests pass'
+$outputDir = Get-OutputDirectory -Scenario 'tests-platform-win' -TargetFramework 'net10.0-windows' -RuntimeIdentifier ''
+Assert-True (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.Win32.dll')) 'Windows tests keep the Win32 implementation'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.WinUI.dll'))) 'Windows tests prune WinUI'
+
+Write-Step 'Tests: platform contract (Linux)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Platform.Linux/Stride.Tests.Platform.Linux.csproj' -Scenario 'tests-platform-linux'
+Assert-TestsPass $test 'Linux platform contract tests pass'
+$outputDir = Get-OutputDirectory -Scenario 'tests-platform-linux' -TargetFramework 'net10.0' -RuntimeIdentifier ''
+Assert-True (Test-Path (Join-Path $outputDir 'Stride.Platform.Linux.X11.dll')) 'Linux tests keep the X11 implementation'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.dll'))) 'Linux tests prune the Windows implementation'
+
+Write-Step 'Tests: graphics contract (Windows / Direct3D11)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Graphics.Windows.D3D11/Stride.Tests.Graphics.Windows.D3D11.csproj' -Scenario 'tests-graphics-win-d3d11'
+Assert-TestsPass $test 'Direct3D11 graphics contract tests pass'
+$outputDir = Get-OutputDirectory -Scenario 'tests-graphics-win-d3d11' -TargetFramework 'net10.0-windows' -RuntimeIdentifier ''
+Assert-True (Test-Path (Join-Path $outputDir 'Stride.Graphics.Direct3D11.dll')) 'Direct3D11 tests keep the Direct3D11 variant'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Vulkan.dll'))) 'Direct3D11 tests prune Vulkan'
+
+Write-Step 'Tests: graphics contract (Linux / Vulkan)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Graphics.Linux.Vulkan/Stride.Tests.Graphics.Linux.Vulkan.csproj' -Scenario 'tests-graphics-linux-vulkan'
+Assert-TestsPass $test 'Vulkan graphics contract tests pass'
+$outputDir = Get-OutputDirectory -Scenario 'tests-graphics-linux-vulkan' -TargetFramework 'net10.0' -RuntimeIdentifier ''
+Assert-True (Test-Path (Join-Path $outputDir 'Stride.Graphics.Vulkan.dll')) 'Vulkan tests keep the Vulkan variant'
+Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Direct3D11.dll'))) 'Vulkan tests prune Direct3D11'
+
+Write-Step 'Tests: platform regression (Windows, direct Win32 pin)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Regression.Windows/Stride.Tests.Regression.Windows.csproj' -Scenario 'tests-regression-win'
+Assert-TestsPass $test 'Windows regression tests pass'
+Assert-True (-not $test.Output.Contains('STRIDE0001')) 'The regression opt-out keeps the direct pin quiet'
+
+Write-Step 'Tests: platform regression (Linux, direct X11 pin)'
+$test = Invoke-Test -Project 'tests/Stride.Tests.Regression.Linux/Stride.Tests.Regression.Linux.csproj' -Scenario 'tests-regression-linux'
+Assert-TestsPass $test 'Linux regression tests pass'
+Assert-True (-not $test.Output.Contains('STRIDE0001')) 'The regression opt-out keeps the direct pin quiet'
 
 Write-Step 'Validation: Direct3D11 on Linux'
 $build = Invoke-Build -Project 'consumers/invalid/InvalidLinuxD3D11/InvalidLinuxD3D11.csproj' -Scenario 'invalid-linux-d3d11'

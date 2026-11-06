@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Platform contract: a normal consumer of the meta-packages. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>Stride.Tests.Platform.Windows</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Core.IO" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

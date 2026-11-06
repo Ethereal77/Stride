@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- One API per test binary: Linux + Vulkan, no second variant in the same run. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <StridePlatform>Linux</StridePlatform>
+    <StrideWindowSystem>X11</StrideWindowSystem>
+    <StrideGraphicsApi>Vulkan</StrideGraphicsApi>
+    <AssemblyName>Stride.Tests.Graphics.Linux.Vulkan</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Graphics" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

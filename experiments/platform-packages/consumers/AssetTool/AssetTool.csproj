@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Console asset tool: platform explicitly Windows, no graphics. -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <StridePlatform>Windows</StridePlatform>
+    <AssemblyName>AssetTool</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Core.IO" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>

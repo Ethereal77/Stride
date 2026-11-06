@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Simulated WPF/GameStudio host: Windows-only, Win32 surface, Direct3D 11. -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <StrideWindowSystem>Win32</StrideWindowSystem>
+    <StrideGraphicsApi>Direct3D11</StrideGraphicsApi>
+    <AssemblyName>EditorApp</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Games" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Graphics" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Core.IO" Version="$(StridePlatformVersion)" />
+    <Compile Include="..\EditorShared\EditorGame.cs" Link="EditorGame.cs" />
+  </ItemGroup>
+</Project>
