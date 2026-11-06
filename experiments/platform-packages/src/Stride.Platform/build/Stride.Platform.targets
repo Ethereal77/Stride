@@ -130,6 +130,22 @@
 
     <Error Condition="'@(_StrideIncompatibleDirect)' != ''"
            Text="Direct reference(s) incompatible with the resolved platform '$(StridePlatform)' / windowing '$(StrideWindowSystem)': @(_StrideIncompatibleDirect). Reference the meta-packages instead, or fix the conflicting selection." />
+
+    <!--
+      A compatible direct reference is an escape hatch: it pins one axis
+      package. It builds, but it bypasses the meta-package selection, so warn
+      once with the list. Incompatible references already failed above.
+    -->
+    <ItemGroup>
+      <_StrideCompatibleDirect Include="@(StridePlatformSpecificPackage)"
+        Condition="$(_StrideDirectIds.Contains(';%(StridePlatformSpecificPackage.Identity);'))
+                   and ('%(StridePlatformSpecificPackage.Platforms)' == '' or $([System.String]::Copy(';%(StridePlatformSpecificPackage.Platforms);').Contains(';$(StridePlatform);')))
+                   and ('%(StridePlatformSpecificPackage.WindowSystems)' == '' or $([System.String]::Copy(';%(StridePlatformSpecificPackage.WindowSystems);').Contains(';$(StrideWindowSystem);')))" />
+    </ItemGroup>
+
+    <Warning Condition="'@(_StrideCompatibleDirect)' != '' and '$(StridePlatformAllowDirectReferences)' != 'true'"
+             Code="STRIDE0001"
+             Text="Direct reference(s) to platform-specific packages: @(_StrideCompatibleDirect). Reference the meta-packages (Stride.Platform, Stride.Graphics, Stride.Core.IO, Stride.Games) so the build selects and prunes the right implementation. If the pin is intentional, set StridePlatformAllowDirectReferences=true." />
   </Target>
 
   <!--

@@ -419,6 +419,7 @@ Assert-True ($winuiEntries -contains 'buildTransitive/Stride.Graphics.Direct3D11
 Write-Step 'Windows / Win32 consumer (default selection)'
 $build = Invoke-Build -Project 'consumers/GameApp/GameApp.csproj' -Scenario 'game-win'
 Assert-True ($build.ExitCode -eq 0) 'Build succeeds with only meta-package references'
+Assert-True (-not $build.Output.Contains('STRIDE0001')) 'Meta-only build emits no direct-reference warning'
 if ($build.ExitCode -ne 0) { Write-Host $build.Output }
 
 $run = Invoke-App -Scenario 'game-win' -TargetFramework 'net10.0-windows' -RuntimeIdentifier '' -AssemblyName 'GameApp'
@@ -462,6 +463,18 @@ Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Platform.Windows.Win3
 Assert-True (-not (Test-Path (Join-Path $outputDir 'Stride.Graphics.Vulkan.dll'))) 'Vulkan is pruned'
 Assert-True (Test-Asset -OutputDirectory $outputDir -Name 'stride_platform_winui.dll') 'The WinUI native asset is deployed'
 Assert-True (Test-Asset -OutputDirectory $outputDir -Name 'stride_graphics_winui.dll') 'The composition native asset is deployed'
+
+Write-Step 'Compatible direct package pin (warning + opt-out)'
+$build = Invoke-Build -Project 'consumers/DirectPinLib/DirectPinLib.csproj' -Scenario 'direct-pin'
+Assert-True ($build.ExitCode -eq 0) 'Build succeeds with a compatible direct WinUI reference'
+Assert-OutputContains $build 'STRIDE0001' 'A warning discourages the direct reference'
+Assert-OutputContains $build 'Reference the meta-packages' 'The warning recommends the meta-packages'
+if ($build.ExitCode -ne 0) { Write-Host $build.Output }
+
+$build = Invoke-Build -Project 'consumers/DirectPinLib/DirectPinLib.csproj' -Scenario 'direct-pin-optout' -ExtraProperties @('-p:StridePlatformAllowDirectReferences=true')
+Assert-True ($build.ExitCode -eq 0) 'Build succeeds with StridePlatformAllowDirectReferences=true'
+Assert-True (-not $build.Output.Contains('STRIDE0001')) 'The opt-out suppresses the direct-reference warning'
+if ($build.ExitCode -ne 0) { Write-Host $build.Output }
 
 Write-Step 'Linux / X11 consumer (explicit platform, Vulkan)'
 $build = Invoke-Build -Project 'consumers/GameLinuxApp/GameLinuxApp.csproj' -Scenario 'game-linux' -RuntimeIdentifier 'linux-x64'

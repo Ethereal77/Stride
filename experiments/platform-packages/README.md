@@ -137,6 +137,21 @@ con la plataforma, el windowing o la API resueltos, el build falla con un error
 explícito. Es una vía de escape deliberada, no la forma recomendada de consumir
 el experimento.
 
+Las referencias directas **compatibles** siguen permitidas, pero emiten la
+advertencia `STRIDE0001` para recordar que se está saltando la selección de los
+meta-paquetes. Si el pin es intencionado, se puede desactivar con:
+
+```xml
+<StridePlatformAllowDirectReferences>true</StridePlatformAllowDirectReferences>
+```
+
+Las referencias incompatibles siguen siendo un error y no se silencian con esa
+propiedad.
+
+La advertencia vive en el meta-paquete `Stride.Platform`; un proyecto que
+referencie únicamente un paquete de eje no importa esta validación y queda fuera
+del modelo de resolución.
+
 ## Ejemplos de resolución
 
 La plataforma, el windowing y la API se resuelven antes de validar las
@@ -289,6 +304,7 @@ reflexión, interfaces ni despacho virtual entre la biblioteca y la plataforma.
 | `GameLinuxApp` | `net10.0`, `StridePlatform=Linux`, `StrideWindowSystem=X11`, Vulkan, `linux-x64` | Linux/X11/Vulkan, `Core.IO.Linux`, activos `.so` |
 | `PortableGameLib` | biblioteca `net10.0` | `STRIDE_PLATFORM_PORTABLE`, sin variantes ni plataforma |
 | `MultiTargetProbe` | `net10.0;net10.0-windows` | `net10.0` portable y `net10.0-windows` Windows/Win32 |
+| `DirectPinLib` | `net10.0-windows`, WinUI + `Stride.Platform.Windows.WinUI` directo | pin compatible con aviso `STRIDE0001` y opt-out documentado |
 | `invalid/InvalidLinuxD3D11` | Linux + Direct3D11 | error de API no disponible |
 | `invalid/InvalidWindowsX11` | Windows + X11 | error de windowing no disponible |
 | `invalid/InvalidWinUIOnNet10` | `net10.0` + WinUI | error con sugerencia de usar `net10.0-windows` |
@@ -313,7 +329,8 @@ El script:
    ausencia de `exclude` en las dependencias de `AppModel`/`Games`);
 5. compila y ejecuta los consumidores válidos;
 6. comprueba ensamblados presentes, ensamblados podados y activos nativos;
-7. compila los casos inválidos y verifica sus diagnósticos.
+7. compila los casos inválidos y verifica sus diagnósticos;
+8. comprueba la advertencia `STRIDE0001` y su opt-out.
 
 Opciones:
 
@@ -321,7 +338,7 @@ Opciones:
 - `-KeepArtifacts`: no borra `artifacts/build`.
 - `-Configuration Debug|Release`.
 
-Resultado esperado: `110/110 checks passed`.
+Resultado esperado: `116/116 checks passed`.
 
 ## Empaquetado
 

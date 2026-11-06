@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Valid on purpose: the direct WinUI reference matches the explicit windowing. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <StrideWindowSystem>WinUI</StrideWindowSystem>
+    <AssemblyName>DirectPinLib</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stride.Platform" Version="$(StridePlatformVersion)" />
+    <PackageReference Include="Stride.Platform.Windows.WinUI" Version="$(StridePlatformVersion)" />
+  </ItemGroup>
+</Project>
