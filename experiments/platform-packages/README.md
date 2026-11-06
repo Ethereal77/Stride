@@ -36,7 +36,7 @@ platform-packages/
   nuget.config                 feed local + source mapping
   Stride.PlatformPackages.slnx solución con los proyectos de src/
   test.ps1                     empaquetado, builds, ejecución y auditoría
-  src/                         paquetes y meta-paquetes
+  src/                         paquetes y meta-paquetes (cada proyecto con su README)
   consumers/                   aplicaciones y bibliotecas de prueba
   tests/                       proyectos de test (Library, dotnet test)
 ```
